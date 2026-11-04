@@ -150,6 +150,24 @@ button.eliminar {
 .perfil-inicio h2 {margin:0 0 8px}
 .estado {color:var(--verde);font-size:13px}
 .estado.error {color:var(--rojo)}
+.documento {
+  background:var(--panel2);
+  border:1px solid #3a415d;
+  border-radius:12px;
+  padding:16px;
+  margin:12px 0;
+  overflow-wrap:anywhere;
+}
+.documento h3 {color:var(--oro);margin:0 0 10px}
+.documento p {color:var(--suave);margin:7px 0}
+.documento a {color:var(--oro);overflow-wrap:anywhere}
+.documento-acciones {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
 footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 @media(max-width:600px) {
   header {align-items:flex-start}
@@ -273,10 +291,45 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 
 <section id="documentos" class="seccion">
   <h1>Mis documentos</h1>
-  <p class="subtitulo">Un espacio para tener tus documentos organizados.</p>
+  <p class="subtitulo">Organiza tus documentos y encuentra rápidamente lo que necesitas.</p>
+
   <div class="panel">
-    <h2>Próximamente</h2>
-    <p>Estamos preparando esta sección para que puedas guardar y organizar tus documentos de forma segura.</p>
+    <h2>Añadir un documento</h2>
+
+    <label for="documentoNombre">Nombre del documento:</label>
+    <input id="documentoNombre" placeholder="Ej. Contrato de alquiler">
+
+    <label for="documentoCategoria">Categoría:</label>
+    <select id="documentoCategoria">
+      <option value="Personal">Personal</option>
+      <option value="Trabajo">Trabajo</option>
+      <option value="Vivienda">Vivienda</option>
+      <option value="Facturas">Facturas</option>
+      <option value="Estudios">Estudios</option>
+      <option value="Otros">Otros</option>
+    </select>
+
+    <label for="documentoFecha">Fecha:</label>
+    <input id="documentoFecha" type="date">
+
+    <label for="documentoDescripcion">Descripción:</label>
+    <textarea id="documentoDescripcion" placeholder="Añade una descripción (opcional)"></textarea>
+
+    <label for="documentoEnlace">Enlace al documento (opcional):</label>
+    <input id="documentoEnlace" type="url" placeholder="https://...">
+
+    <button class="accion" onclick="agregarDocumento()">Guardar documento</button>
+
+    <p class="subtitulo">
+      Puedes guardar los datos y un enlace al documento.
+      El archivo original no se sube a VIDA FÁCIL.
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>Mis documentos guardados</h2>
+    <input id="buscarDocumento" type="search" placeholder="Buscar por nombre o categoría..." oninput="mostrarDocumentos()">
+    <div id="listaDocumentos"></div>
   </div>
 </section>
 
@@ -302,6 +355,7 @@ let recordatorios = [];
 let movimientos = [];
 let compras = [];
 let notas = [];
+let documentos = [];
 
 function leerLocal(clave) {
   try {
@@ -318,6 +372,7 @@ function guardarLocal() {
   localStorage.setItem("vidaMovimientos", JSON.stringify(movimientos));
   localStorage.setItem("vidaCompras", JSON.stringify(compras));
   localStorage.setItem("vidaNotas", JSON.stringify(notas));
+  localStorage.setItem("vidaDocumentos", JSON.stringify(documentos));
 }
 
 function escapar(texto) {
@@ -351,8 +406,7 @@ function actualizarPerfil(usuario) {
   }
 }
 
-// Migración segura: los datos antiguos del navegador solo se
-// intentan importar una vez en este navegador, no para cada cuenta.
+// Migración de datos antiguos del navegador.
 async function migrarDatosAntiguos() {
   const marca = "vidaMigracionCompletada";
 
@@ -363,7 +417,8 @@ async function migrarDatosAntiguos() {
     recordatorios: leerLocal("vidaRecordatorios"),
     movimientos: leerLocal("vidaMovimientos"),
     compras: leerLocal("vidaCompras"),
-    notas: leerLocal("vidaNotas")
+    notas: leerLocal("vidaNotas"),
+    documentos: leerLocal("vidaDocumentos")
   };
 
   for (const apartado of Object.keys(antiguos)) {
@@ -386,6 +441,7 @@ async function cargarDatosNube() {
   movimientos = await obtenerDatos(usuarioActual.uid, "movimientos");
   compras = await obtenerDatos(usuarioActual.uid, "compras");
   notas = await obtenerDatos(usuarioActual.uid, "notas");
+  documentos = await obtenerDatos(usuarioActual.uid, "documentos");
   guardarLocal();
 }
 
@@ -617,6 +673,119 @@ function mostrarNotas() {
   });
 }
 
+// DOCUMENTOS
+async function agregarDocumento() {
+  if (!aplicacionLista) return;
+
+  const nombre = document.getElementById("documentoNombre").value.trim();
+  const categoria = document.getElementById("documentoCategoria").value;
+  const fecha = document.getElementById("documentoFecha").value;
+  const descripcion = document.getElementById("documentoDescripcion").value.trim();
+  const enlace = document.getElementById("documentoEnlace").value.trim();
+
+  if (!nombre) {
+    alert("Escribe el nombre del documento.");
+    return;
+  }
+
+  if (enlace) {
+    try {
+      const direccion = new URL(enlace);
+      if (direccion.protocol !== "https:" && direccion.protocol !== "http:") {
+        throw new Error("Enlace no permitido");
+      }
+    } catch {
+      alert("Introduce un enlace válido que empiece por https:// o http://");
+      return;
+    }
+  }
+
+  await guardarNuevo("documentos", documentos, {
+    nombre,
+    categoria,
+    fecha,
+    descripcion,
+    enlace
+  });
+
+  document.getElementById("documentoNombre").value = "";
+  document.getElementById("documentoFecha").value = "";
+  document.getElementById("documentoDescripcion").value = "";
+  document.getElementById("documentoEnlace").value = "";
+}
+
+function eliminarDocumento(i) {
+  if (aplicacionLista) borrarDato("documentos", documentos, i);
+}
+
+function mostrarDocumentos() {
+  const lista = document.getElementById("listaDocumentos");
+  const buscador = document.getElementById("buscarDocumento");
+  const busqueda = buscador.value.trim().toLocaleLowerCase("es");
+
+  lista.innerHTML = "";
+
+  const filtrados = documentos
+    .map((documento, indice) => ({...documento, indice}))
+    .filter(documento =>
+      String(documento.nombre || "").toLocaleLowerCase("es").includes(busqueda) ||
+      String(documento.categoria || "").toLocaleLowerCase("es").includes(busqueda)
+    );
+
+  if (!filtrados.length) {
+    return mostrarVacio(
+      "listaDocumentos",
+      busqueda ? "No se encontraron documentos." : "Todavía no has guardado documentos."
+    );
+  }
+
+  filtrados.forEach(documento => {
+    const tarjeta = document.createElement("div");
+    tarjeta.className = "documento";
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = documento.nombre || "Documento sin nombre";
+
+    const categoria = document.createElement("p");
+    categoria.textContent = "Categoría: " + (documento.categoria || "Otros");
+
+    tarjeta.append(titulo, categoria);
+
+    if (documento.fecha) {
+      const fecha = document.createElement("p");
+      fecha.textContent = "Fecha: " + documento.fecha;
+      tarjeta.appendChild(fecha);
+    }
+
+    if (documento.descripcion) {
+      const descripcion = document.createElement("p");
+      descripcion.textContent = documento.descripcion;
+      tarjeta.appendChild(descripcion);
+    }
+
+    const acciones = document.createElement("div");
+    acciones.className = "documento-acciones";
+
+    if (documento.enlace) {
+      const enlace = document.createElement("a");
+      enlace.href = documento.enlace;
+      enlace.target = "_blank";
+      enlace.rel = "noopener noreferrer";
+      enlace.textContent = "Abrir documento";
+      acciones.appendChild(enlace);
+    }
+
+    const boton = document.createElement("button");
+    boton.className = "eliminar";
+    boton.textContent = "Eliminar";
+    boton.onclick = () => eliminarDocumento(documento.indice);
+    acciones.appendChild(boton);
+
+    tarjeta.appendChild(acciones);
+    lista.appendChild(tarjeta);
+  });
+}
+
 function actualizarResumen() {
   document.getElementById("resumenTareas").textContent = tareas.filter(t => !t.hecha).length;
   document.getElementById("resumenRecordatorios").textContent = recordatorios.length;
@@ -632,6 +801,7 @@ function mostrarTodo() {
   mostrarMovimientos();
   mostrarCompra();
   mostrarNotas();
+  mostrarDocumentos();
   actualizarResumen();
 }
 
@@ -640,7 +810,8 @@ Object.assign(window, {
   agregarRecordatorio, eliminarRecordatorio,
   agregarMovimiento, eliminarMovimiento,
   agregarCompra, cambiarCompra, eliminarCompra,
-  agregarNota, eliminarNota
+  agregarNota, eliminarNota,
+  agregarDocumento, eliminarDocumento, mostrarDocumentos
 });
 
 onAuthStateChanged(auth, async usuario => {
