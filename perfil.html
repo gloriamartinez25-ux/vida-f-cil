@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi perfil - VIDA FÁCIL</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 25px 15px;
+      font-family: Arial, sans-serif;
+      color: white;
+      background: linear-gradient(135deg, #10152c, #241b42);
+    }
+    .contenedor {
+      max-width: 520px;
+      margin: 30px auto;
+      padding: 30px;
+      border: 1px solid #51446f;
+      border-radius: 20px;
+      background: #171b32;
+      box-shadow: 0 15px 45px #0006;
+    }
+    .logo {
+      text-align: center;
+      color: #e8c66a;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    h1 { text-align: center; font-size: 23px; }
+    .foto {
+      width: 110px;
+      height: 110px;
+      margin: 20px auto;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #292b49;
+      border: 3px solid #e8c66a;
+      color: #e8c66a;
+      font-size: 38px;
+    }
+    .foto img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .dato {
+      margin: 18px 0;
+      padding: 14px;
+      border-radius: 9px;
+      background: #242943;
+      overflow-wrap: anywhere;
+    }
+    .etiqueta {
+      display: block;
+      color: #e8c66a;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+    .valor { font-size: 16px; }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .principal {
+      background: #e8c66a;
+      color: #17152a;
+    }
+    .secundario {
+      background: #343451;
+      color: white;
+    }
+    #mensaje {
+      min-height: 22px;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .enlace {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #e8c66a;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="contenedor">
+    <div class="logo">VIDA FÁCIL</div>
+    <h1>Mi perfil</h1>
+
+    <div class="foto" id="foto">VF</div>
+
+    <div class="dato">
+      <span class="etiqueta">NOMBRE</span>
+      <span class="valor" id="nombre">Cargando...</span>
+    </div>
+
+    <div class="dato">
+      <span class="etiqueta">CORREO ELECTRÓNICO</span>
+      <span class="valor" id="correo">Cargando...</span>
+    </div>
+
+    <div class="dato">
+      <span class="etiqueta">ESTADO DE LA CUENTA</span>
+      <span class="valor" id="estado">Comprobando...</span>
+    </div>
+
+    <button class="principal" id="cerrarSesion">
+      Cerrar sesión
+    </button>
+
+    <button class="secundario" id="volver">
+      Volver a VIDA FÁCIL
+    </button>
+
+    <div id="mensaje" role="status"></div>
+    <a class="enlace" href="index.html">Ir al inicio</a>
+  </main>
+
+  <script type="module">
+    import { auth } from "./firebase.js";
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const nombre = document.getElementById("nombre");
+    const correo = document.getElementById("correo");
+    const foto = document.getElementById("foto");
+    const estado = document.getElementById("estado");
+    const mensaje = document.getElementById("mensaje");
+
+    onAuthStateChanged(auth, (usuario) => {
+      if (!usuario) {
+        window.location.href = "acceso.html";
+        return;
+      }
+
+      nombre.textContent = usuario.displayName || "Usuario de VIDA FÁCIL";
+      correo.textContent = usuario.email || "Sin correo";
+      estado.textContent = usuario.emailVerified
+        ? "Correo verificado"
+        : "Cuenta activa";
+
+      localStorage.setItem("vidaNombre", usuario.displayName || "");
+      localStorage.setItem("vidaCorreo", usuario.email || "");
+      localStorage.setItem("vidaFoto", usuario.photoURL || "");
+
+      if (usuario.photoURL) {
+        foto.innerHTML = "";
+        const imagen = document.createElement("img");
+        imagen.src = usuario.photoURL;
+        imagen.alt = "Foto de perfil";
+        foto.appendChild(imagen);
+      } else {
+        foto.textContent = (usuario.displayName || "VF")
+          .trim().charAt(0).toUpperCase();
+      }
+    });
+
+    document.getElementById("cerrarSesion").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        localStorage.removeItem("vidaNombre");
+        localStorage.removeItem("vidaCorreo");
+        localStorage.removeItem("vidaFoto");
+        window.location.href = "acceso.html";
+      } catch (error) {
+        mensaje.textContent = "No se ha podido cerrar la sesión.";
+      }
+    });
+
+    document.getElementById("volver").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  </script>
+
+</body>
+</html>

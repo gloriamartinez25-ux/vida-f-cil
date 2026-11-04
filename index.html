@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIDA FÁCIL</title>
+<style>
+:root {
+  --fondo:#101322; --panel:#1b2034; --panel2:#252b43;
+  --oro:#e7bd65; --morado:#8c70d6; --texto:#f5f3fa;
+  --suave:#aeb3c7; --verde:#64c99a; --rojo:#e87979;
+}
+* {box-sizing:border-box}
+body {margin:0;font-family:Arial,sans-serif;background:var(--fondo);color:var(--texto)}
+header {padding:22px;background:#171b2c;border-bottom:1px solid #343951;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo {color:var(--oro);font-size:25px;font-weight:bold;letter-spacing:1px}
+header p {color:var(--suave);margin:5px 0 0;font-size:13px}
+.perfil-link {color:var(--oro);text-decoration:none;border:1px solid var(--oro);padding:10px 15px;border-radius:10px}
+nav {display:flex;gap:8px;padding:14px;overflow-x:auto;background:#171b2c}
+nav button {white-space:nowrap;background:var(--panel2);color:var(--texto);border:0;padding:11px 15px;border-radius:9px;cursor:pointer}
+nav button.active,nav button:hover {background:var(--oro);color:#171717}
+main {max-width:1100px;margin:auto;padding:22px}
+.seccion {display:none}
+.seccion.active {display:block}
+h1 {font-size:27px}
+h2 {color:var(--oro);font-size:21px}
+.subtitulo {color:var(--suave)}
+.panel {background:var(--panel);border:1px solid #343951;border-radius:15px;padding:20px;margin:15px 0}
+.resumen {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.tarjeta {background:var(--panel2);padding:18px;border-radius:13px}
+.tarjeta strong {display:block;color:var(--oro);font-size:23px;margin-top:8px}
+input,textarea,select {width:100%;padding:12px;margin:7px 0 12px;border:1px solid #444b68;border-radius:9px;background:#111629;color:white;font-size:15px}
+textarea {min-height:95px;resize:vertical}
+button.accion {border:0;background:var(--oro);color:#171717;padding:12px 17px;border-radius:9px;font-weight:bold;cursor:pointer}
+button.eliminar {background:#713c50;color:white;border:0;padding:8px 11px;border-radius:7px;cursor:pointer}
+.item {display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel2);padding:12px;margin:9px 0;border-radius:9px;overflow-wrap:anywhere}
+.item label {display:flex;align-items:center;gap:9px}
+.item input[type="checkbox"] {width:auto;margin:0}
+.completado {text-decoration:line-through;color:var(--suave)}
+.verde {color:var(--verde)}
+.rojo {color:var(--rojo)}
+.nota {background:var(--panel2);padding:15px;border-radius:10px;margin:10px 0}
+.nota h3 {color:var(--oro);margin-top:0}
+.vacio {color:var(--suave);font-style:italic}
+.perfil-inicio {display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.foto-perfil {width:85px;height:85px;border-radius:50%;object-fit:cover;border:3px solid var(--oro);background:var(--panel2)}
+.perfil-inicio h2 {margin:0 0 8px}
+footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
+@media(max-width:600px) {
+ header {align-items:flex-start}
+ main {padding:14px}
+ h1 {font-size:23px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">VIDA FÁCIL</div>
+    <p>Todo en orden. Más tiempo para vivir.</p>
+  </div>
+  <a class="perfil-link" href="perfil.html">👤 Mi perfil</a>
+</header>
+
+<nav>
+  <button class="active" data-seccion="inicio">Inicio</button>
+  <button data-seccion="tareas">Tareas</button>
+  <button data-seccion="calendario">Calendario</button>
+  <button data-seccion="finanzas">Finanzas</button>
+  <button data-seccion="compra">La compra</button>
+  <button data-seccion="notas">Notas</button>
+  <button data-seccion="documentos">Documentos</button>
+</nav>
+
+<main>
+
+<section id="inicio" class="seccion active">
+  <h1>¡Bienvenido a VIDA FÁCIL!</h1>
+  <p class="subtitulo">Organiza tu día y ten todo bajo control.</p>
+
+  <div class="panel perfil-inicio">
+    <img id="fotoInicio" class="foto-perfil" alt="Fotografía de perfil">
+    <div>
+      <h2 id="nombreInicio">¡Hola!</h2>
+      <p id="correoInicio" class="subtitulo">Tu espacio personal te espera.</p>
+      <a class="perfil-link" href="perfil.html">Editar mi perfil</a>
+    </div>
+  </div>
+
+  <div class="resumen">
+    <div class="tarjeta">Tareas pendientes<strong id="resumenTareas">0</strong></div>
+    <div class="tarjeta">Recordatorios<strong id="resumenRecordatorios">0</strong></div>
+    <div class="tarjeta">Gastos registrados<strong id="resumenGastos">0,00 €</strong></div>
+    <div class="tarjeta">Artículos de compra<strong id="resumenCompra">0</strong></div>
+  </div>
+
+  <div class="panel">
+    <h2>Tu espacio personal</h2>
+    <p>VIDA FÁCIL te ayuda a organizar tus tareas, controlar tus gastos y recordar lo importante.</p>
+  </div>
+</section>
+
+<section id="tareas" class="seccion">
+  <h1>Mis tareas</h1>
+  <p class="subtitulo">Organiza todo lo que tienes pendiente.</p>
+  <div class="panel">
+    <h2>Añadir una tarea</h2>
+    <input id="tareaTexto" placeholder="¿Qué tienes que hacer?">
+    <button class="accion" onclick="agregarTarea()">Añadir tarea</button>
+  </div>
+  <div class="panel">
+    <h2>Mi lista de tareas</h2>
+    <div id="listaTareas"></div>
+  </div>
+</section>
+
+<section id="calendario" class="seccion">
+  <h1>Calendario y recordatorios</h1>
+  <p class="subtitulo">No vuelvas a olvidar una fecha importante.</p>
+  <div class="panel">
+    <h2>Crear recordatorio</h2>
+    <input id="recordatorioTexto" placeholder="Nombre del recordatorio">
+    <label for="recordatorioFecha">Fecha:</label>
+    <input id="recordatorioFecha" type="date">
+    <button class="accion" onclick="agregarRecordatorio()">Guardar recordatorio</button>
+  </div>
+  <div class="panel">
+    <h2>Mis recordatorios</h2>
+    <div id="listaRecordatorios"></div>
+  </div>
+</section>
+
+<section id="finanzas" class="seccion">
+  <h1>Mis finanzas</h1>
+  <p class="subtitulo">Controla tus ingresos y tus gastos.</p>
+  <div class="resumen">
+    <div class="tarjeta">Ingresos<strong id="totalIngresos" class="verde">0,00 €</strong></div>
+    <div class="tarjeta">Gastos<strong id="totalGastos" class="rojo">0,00 €</strong></div>
+    <div class="tarjeta">Balance<strong id="balance">0,00 €</strong></div>
+  </div>
+  <div class="panel">
+    <h2>Registrar movimiento</h2>
+    <select id="tipoMovimiento">
+      <option value="ingreso">Ingreso</option>
+      <option value="gasto">Gasto</option>
+    </select>
+    <input id="conceptoMovimiento" placeholder="Concepto">
+    <input id="cantidadMovimiento" type="number" min="0.01" step="0.01" placeholder="Cantidad en euros">
+    <button class="accion" onclick="agregarMovimiento()">Guardar movimiento</button>
+  </div>
+  <div class="panel">
+    <h2>Movimientos</h2>
+    <div id="listaMovimientos"></div>
+  </div>
+</section>
+
+<section id="compra" class="seccion">
+  <h1>Lista de la compra</h1>
+  <p class="subtitulo">Ten siempre a mano lo que necesitas comprar.</p>
+  <div class="panel">
+    <input id="compraTexto" placeholder="Añadir artículo">
+    <button class="accion" onclick="agregarCompra()">Añadir artículo</button>
+  </div>
+  <div class="panel">
+    <h2>Mi lista</h2>
+    <div id="listaCompra"></div>
+  </div>
+</section>
+
+<section id="notas" class="seccion">
+  <h1>Mis notas</h1>
+  <p class="subtitulo">Guarda ideas, información y cosas importantes.</p>
+  <div class="panel">
+    <input id="notaTitulo" placeholder="Título de la nota">
+    <textarea id="notaTexto" placeholder="Escribe aquí tu nota..."></textarea>
+    <button class="accion" onclick="agregarNota()">Guardar nota</button>
+  </div>
+  <div class="panel">
+    <h2>Notas guardadas</h2>
+    <div id="listaNotas"></div>
+  </div>
+</section>
+
+<section id="documentos" class="seccion">
+  <h1>Mis documentos</h1>
+  <p class="subtitulo">Un espacio para tener tus documentos organizados.</p>
+  <div class="panel">
+    <h2>Próximamente</h2>
+    <p>Estamos preparando esta sección para que puedas guardar y organizar tus documentos de forma segura.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>VIDA FÁCIL · Todo en orden. Más tiempo para vivir.</footer>
+
+<script>
+const guardar = (clave, datos) => localStorage.setItem(clave, JSON.stringify(datos));
+
+const leer = (clave) => {
+  try { return JSON.parse(localStorage.getItem(clave)) || []; }
+  catch { return []; }
+};
+
+let tareas = leer("vidaTareas");
+let recordatorios = leer("vidaRecordatorios");
+let movimientos = leer("vidaMovimientos");
+let compras = leer("vidaCompras");
+let notas = leer("vidaNotas");
+
+function escapar(texto) {
+  return String(texto).replace(/[&<>"']/g, letra => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[letra]);
+}
+
+function mostrarVacio(id, mensaje) {
+  document.getElementById(id).innerHTML = `<p class="vacio">${mensaje}</p>`;
+}
+
+function cargarPerfil() {
+  const nombre = localStorage.getItem("vidaNombre") || "";
+  const correo = localStorage.getItem("vidaCorreo") || "";
+  const foto = localStorage.getItem("vidaFoto") || "";
+
+  document.getElementById("nombreInicio").textContent =
+    nombre ? "¡Hola, " + nombre + "!" : "¡Hola!";
+
+  document.getElementById("correoInicio").textContent =
+    correo || "Completa tu perfil para personalizar tu espacio.";
+
+  const imagen = document.getElementById("fotoInicio");
+
+  if (foto) {
+    imagen.src = foto;
+    imagen.style.display = "block";
+  } else {
+    imagen.removeAttribute("src");
+    imagen.style.display = "none";
+  }
+}
+
+function navegar(seccion) {
+  document.querySelectorAll(".seccion").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  document.getElementById(seccion).classList.add("active");
+  const boton = document.querySelector(`nav button[data-seccion="${seccion}"]`);
+  if (boton) boton.classList.add("active");
+  actualizarResumen();
+}
+
+document.querySelectorAll("nav button").forEach(boton => {
+  boton.addEventListener("click", () => navegar(boton.dataset.seccion));
+});
+
+function agregarTarea() {
+  const campo = document.getElementById("tareaTexto");
+  const texto = campo.value.trim();
+  if (!texto) return alert("Escribe una tarea.");
+  tareas.push({texto, hecha:false});
+  guardar("vidaTareas", tareas);
+  campo.value = "";
+  mostrarTareas();
+}
+
+function mostrarTareas() {
+  const lista = document.getElementById("listaTareas");
+  lista.innerHTML = "";
+  if (!tareas.length) return mostrarVacio("listaTareas", "Todavía no tienes tareas.");
+  tareas.forEach((t,i) => {
+    const fila = document.createElement("div");
+    fila.className = "item";
+    fila.innerHTML = `<label><input type="checkbox" ${t.hecha?"checked":""} onchange="cambiarTarea(${i},this.checked)"><span class="${t.hecha?"completado":""}">${escapar(t.texto)}</span></label><button class="eliminar" onclick="eliminarTarea(${i})">Eliminar</button>`;
+    lista.appendChild(fila);
+  });
+  actualizarResumen();
+}
+
+function cambiarTarea(i,valor) {
+  tareas[i].hecha = valor;
+  guardar("vidaTareas",tareas);
+  mostrarTareas();
+}
+
+function eliminarTarea(i) {
+  tareas.splice(i,1);
+  guardar("vidaTareas",tareas);
+  mostrarTareas();
+}
+
+function agregarRecordatorio() {
+  const texto = document.getElementById("recordatorioTexto").value.trim();
+  const fecha = document.getElementById("recordatorioFecha").value;
+  if (!texto || !fecha) return alert("Escribe el recordatorio y elige una fecha.");
+  recordatorios.push({texto,fecha});
+  guardar("vidaRecordatorios",recordatorios);
+  document.getElementById("recordatorioTexto").value = "";
+  document.getElementById("recordatorioFecha").value = "";
+  mostrarRecordatorios();
+}
+
+function mostrarRecordatorios() {
+  const lista = document.getElementById("listaRecordatorios");
+  lista.innerHTML = "";
+  if (!recordatorios.length) return mostrarVacio("listaRecordatorios","No tienes recordatorios.");
+  recordatorios.sort((a,b) => a.fecha.localeCompare(b.fecha));
+  recordatorios.forEach((r,i) => {
+    const fila = document.createElement("div");
+    fila.className = "item";
+    fila.innerHTML = `<span><strong>${escapar(r.texto)}</strong><br><small>${escapar(r.fecha)}</small></span><button class="eliminar" onclick="eliminarRecordatorio(${i})">Eliminar</button>`;
+    lista.appendChild(fila);
+  });
+  actualizarResumen();
+}
+
+function eliminarRecordatorio(i) {
+  recordatorios.splice(i,1);
+  guardar("vidaRecordatorios",recordatorios);
+  mostrarRecordatorios();
+}
+
+function agregarMovimiento() {
+  const tipo = document.getElementById("tipoMovimiento").value;
+  const concepto = document.getElementById("conceptoMovimiento").value.trim();
+  const cantidad = Number(document.getElementById("cantidadMovimiento").value);
+  if (!concepto || !Number.isFinite(cantidad) || cantidad <= 0)
+    return alert("Introduce un concepto y una cantidad válida.");
+  movimientos.push({tipo,concepto,cantidad});
+  guardar("vidaMovimientos",movimientos);
+  document.getElementById("conceptoMovimiento").value = "";
+  document.getElementById("cantidadMovimiento").value = "";
+  mostrarMovimientos();
+}
+
+function euros(valor) {
+  return valor.toLocaleString("es-ES",{style:"currency",currency:"EUR"});
+}
+
+function mostrarMovimientos() {
+  const lista = document.getElementById("listaMovimientos");
+  lista.innerHTML = "";
+  let ingresos = 0, gastos = 0;
+  movimientos.forEach((m,i) => {
+    if (m.tipo === "ingreso") ingresos += m.cantidad;
+    else gastos += m.cantidad;
+    const fila = document.createElement("div");
+    fila.className = "item";
+    fila.innerHTML = `<span>${escapar(m.concepto)} · <strong class="${m.tipo==="ingreso"?"verde":"rojo"}">${m.tipo==="ingreso"?"+":"-"}${euros(m.cantidad)}</strong></span><button class="eliminar" onclick="eliminarMovimiento(${i})">Eliminar</button>`;
+    lista.appendChild(fila);
+  });
+  if (!movimientos.length) mostrarVacio("listaMovimientos","Todavía no hay movimientos.");
+  document.getElementById("totalIngresos").textContent = euros(ingresos);
+  document.getElementById("totalGastos").textContent = euros(gastos);
+  document.getElementById("balance").textContent = euros(ingresos-gastos);
+  actualizarResumen();
+}
+
+function eliminarMovimiento(i) {
+  movimientos.splice(i,1);
+  guardar("vidaMovimientos",movimientos);
+  mostrarMovimientos();
+}
+
+function agregarCompra() {
+  const campo = document.getElementById("compraTexto");
+  const texto = campo.value.trim();
+  if (!texto) return alert("Escribe un artículo.");
+  compras.push({texto,comprado:false});
+  guardar("vidaCompras",compras);
+  campo.value = "";
+  mostrarCompra();
+}
+
+function mostrarCompra() {
+  const lista = document.getElementById("listaCompra");
+  lista.innerHTML = "";
+  if (!compras.length) return mostrarVacio("listaCompra","Tu lista está vacía.");
+  compras.forEach((c,i) => {
+    const fila = document.createElement("div");
+    fila.className = "item";
+    fila.innerHTML = `<label><input type="checkbox" ${c.comprado?"checked":""} onchange="cambiarCompra(${i},this.checked)"><span class="${c.comprado?"completado":""}">${escapar(c.texto)}</span></label><button class="eliminar" onclick="eliminarCompra(${i})">Eliminar</button>`;
+    lista.appendChild(fila);
+  });
+  actualizarResumen();
+}
+
+function cambiarCompra(i,valor) {
+  compras[i].comprado = valor;
+  guardar("vidaCompras",compras);
+  mostrarCompra();
+}
+
+function eliminarCompra(i) {
+  compras.splice(i,1);
+  guardar("vidaCompras",compras);
+  mostrarCompra();
+}
+
+function agregarNota() {
+  const titulo = document.getElementById("notaTitulo").value.trim();
+  const texto = document.getElementById("notaTexto").value.trim();
+  if (!titulo || !texto) return alert("Escribe un título y el contenido de la nota.");
+  notas.push({titulo,texto});
+  guardar("vidaNotas",notas);
+  document.getElementById("notaTitulo").value = "";
+  document.getElementById("notaTexto").value = "";
+  mostrarNotas();
+}
+
+function mostrarNotas() {
+  const lista = document.getElementById("listaNotas");
+  lista.innerHTML = "";
+  if (!notas.length) return mostrarVacio("listaNotas","Todavía no has guardado notas.");
+  notas.forEach((n,i) => {
+    const tarjeta = document.createElement("div");
+    tarjeta.className = "nota";
+    const titulo = document.createElement("h3");
+    titulo.textContent = n.titulo;
+    const contenido = document.createElement("p");
+    contenido.textContent = n.texto;
+    const boton = document.createElement("button");
+    boton.className = "eliminar";
+    boton.textContent = "Eliminar";
+    boton.onclick = () => eliminarNota(i);
+    tarjeta.append(titulo,contenido,boton);
+    lista.appendChild(tarjeta);
+  });
+}
+
+function eliminarNota(i) {
+  notas.splice(i,1);
+  guardar("vidaNotas",notas);
+  mostrarNotas();
+}
+
+function actualizarResumen() {
+  document.getElementById("resumenTareas").textContent = tareas.filter(t => !t.hecha).length;
+  document.getElementById("resumenRecordatorios").textContent = recordatorios.length;
+  const gastos = movimientos.filter(m => m.tipo==="gasto").reduce((s,m) => s+m.cantidad,0);
+  document.getElementById("resumenGastos").textContent = euros(gastos);
+  document.getElementById("resumenCompra").textContent = compras.filter(c => !c.comprado).length;
+}
+
+function iniciarAplicacion() {
+  cargarPerfil();
+  mostrarTareas();
+  mostrarRecordatorios();
+  mostrarMovimientos();
+  mostrarCompra();
+  mostrarNotas();
+  actualizarResumen();
+}
+
+iniciarAplicacion();
+</script>
+</body>
+</html>

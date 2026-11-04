@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear cuenta | VIDA FÁCIL</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 25px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, #10172e, #241b42, #11182e);
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 440px;
+      padding: 35px 28px;
+      border: 1px solid rgba(220, 185, 110, .35);
+      border-radius: 20px;
+      background: rgba(18, 25, 48, .96);
+      box-shadow: 0 15px 45px rgba(0,0,0,.35);
+    }
+
+    .logo {
+      text-align: center;
+      color: #e5c477;
+      font-size: 30px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .subtitulo {
+      text-align: center;
+      color: #c4c6d2;
+      margin-bottom: 28px;
+      font-size: 14px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-size: 14px;
+      color: #e4e5ed;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #414967;
+      border-radius: 9px;
+      background: #202944;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #e5c477;
+    }
+
+    .condiciones {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin: 20px 0;
+      color: #c4c6d2;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .condiciones input {
+      margin-top: 3px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .principal {
+      background: linear-gradient(90deg, #d5ad5c, #f0d895);
+      color: #17182a;
+      margin-top: 5px;
+    }
+
+    .google {
+      background: white;
+      color: #333;
+      margin-top: 14px;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .separador {
+      text-align: center;
+      color: #969bb0;
+      margin: 18px 0 4px;
+      font-size: 13px;
+    }
+
+    .mensaje {
+      display: none;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: #352b35;
+      color: #ffd5d5;
+    }
+
+    .enlaces {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 14px;
+      color: #c4c6d2;
+      line-height: 2;
+    }
+
+    a {
+      color: #e5c477;
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .eslogan {
+      text-align: center;
+      color: #969bb0;
+      font-size: 12px;
+      margin-top: 22px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="contenedor">
+    <div class="logo">VIDA FÁCIL</div>
+    <div class="subtitulo">Todo en orden. Más tiempo para vivir.</div>
+
+    <h2>Crear una cuenta</h2>
+
+    <form id="formularioRegistro">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" placeholder="Tu nombre" required>
+
+      <label for="correo">Correo electrónico</label>
+      <input id="correo" type="email" placeholder="tu@email.com" required>
+
+      <label for="contrasena">Contraseña</label>
+      <input id="contrasena" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+
+      <label for="repetir">Repetir contraseña</label>
+      <input id="repetir" type="password" placeholder="Repite tu contraseña" required>
+
+      <label class="condiciones">
+        <input id="aceptar" type="checkbox" required>
+        <span>Acepto las condiciones de uso y la política de privacidad.</span>
+      </label>
+
+      <button class="principal" id="botonRegistro" type="submit">
+        Crear mi cuenta
+      </button>
+    </form>
+
+    <div class="separador">O también puedes registrarte con</div>
+
+    <button class="google" id="botonGoogle" type="button">
+      Continuar con Google
+    </button>
+
+    <div class="mensaje" id="mensaje"></div>
+
+    <div class="enlaces">
+      ¿Ya tienes una cuenta? <a href="acceso.html">Iniciar sesión</a>
+      <br>
+      <a href="index.html">Volver al inicio</a>
+    </div>
+
+    <div class="eslogan">Tu vida más organizada, más fácil.</div>
+  </main>
+
+  <script type="module">
+    import { auth, proveedorGoogle } from "./firebase.js";
+
+    import {
+      createUserWithEmailAndPassword,
+      updateProfile,
+      signInWithPopup
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const formulario = document.getElementById("formularioRegistro");
+    const botonRegistro = document.getElementById("botonRegistro");
+    const botonGoogle = document.getElementById("botonGoogle");
+    const mensaje = document.getElementById("mensaje");
+
+    function mostrarMensaje(texto) {
+      mensaje.textContent = texto;
+      mensaje.style.display = "block";
+    }
+
+    function explicarError(error) {
+      const errores = {
+        "auth/email-already-in-use": "Este correo ya tiene una cuenta. Prueba a iniciar sesión.",
+        "auth/invalid-email": "El correo electrónico no es válido.",
+        "auth/weak-password": "La contraseña es demasiado débil. Utiliza al menos 6 caracteres.",
+        "auth/operation-not-allowed": "El registro por correo todavía no está habilitado en Firebase.",
+        "auth/popup-closed-by-user": "Has cerrado la ventana de Google antes de terminar.",
+        "auth/popup-blocked": "El navegador ha bloqueado la ventana de Google. Permite las ventanas emergentes.",
+        "auth/unauthorized-domain": "Este dominio todavía no está autorizado en Firebase.",
+        "auth/network-request-failed": "No hay conexión. Comprueba tu internet e inténtalo de nuevo."
+      };
+
+      return errores[error.code] || "No se ha podido crear la cuenta. Código: " + error.code;
+    }
+
+    formulario.addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      mensaje.style.display = "none";
+
+      const nombre = document.getElementById("nombre").value.trim();
+      const correo = document.getElementById("correo").value.trim();
+      const contrasena = document.getElementById("contrasena").value;
+      const repetir = document.getElementById("repetir").value;
+      const aceptar = document.getElementById("aceptar").checked;
+
+      if (contrasena !== repetir) {
+        mostrarMensaje("Las contraseñas no coinciden.");
+        return;
+      }
+
+      if (!aceptar) {
+        mostrarMensaje("Debes aceptar las condiciones para continuar.");
+        return;
+      }
+
+      botonRegistro.disabled = true;
+      botonRegistro.textContent = "Creando cuenta...";
+
+      try {
+        const resultado = await createUserWithEmailAndPassword(
+          auth,
+          correo,
+          contrasena
+        );
+
+        await updateProfile(resultado.user, {
+          displayName: nombre
+        });
+
+        localStorage.setItem("vidaNombre", nombre);
+        localStorage.setItem("vidaCorreo", resultado.user.email || correo);
+        localStorage.setItem("vidaFoto", resultado.user.photoURL || "");
+
+        mostrarMensaje("¡Cuenta creada correctamente! Entrando en VIDA FÁCIL...");
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1200);
+
+      } catch (error) {
+        mostrarMensaje(explicarError(error));
+        botonRegistro.disabled = false;
+        botonRegistro.textContent = "Crear mi cuenta";
+      }
+    });
+
+    botonGoogle.addEventListener("click", async () => {
+      mensaje.style.display = "none";
+      botonGoogle.disabled = true;
+      botonGoogle.textContent = "Conectando con Google...";
+
+      try {
+        const resultado = await signInWithPopup(auth, proveedorGoogle);
+        const usuario = resultado.user;
+
+        localStorage.setItem("vidaNombre", usuario.displayName || "Usuario");
+        localStorage.setItem("vidaCorreo", usuario.email || "");
+        localStorage.setItem("vidaFoto", usuario.photoURL || "");
+
+        window.location.href = "index.html";
+
+      } catch (error) {
+        mostrarMensaje(explicarError(error));
+        botonGoogle.disabled = false;
+        botonGoogle.textContent = "Continuar con Google";
+      }
+    });
+  </script>
+</body>
+</html>

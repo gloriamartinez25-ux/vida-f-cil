@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión - VIDA FÁCIL</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: white;
+      background: linear-gradient(135deg, #10152c, #241b42);
+    }
+    .contenedor {
+      width: 100%;
+      max-width: 430px;
+      padding: 35px 28px;
+      border: 1px solid #51446f;
+      border-radius: 20px;
+      background: #171b32;
+      box-shadow: 0 15px 45px #0006;
+    }
+    .logo {
+      text-align: center;
+      color: #e8c66a;
+      font-size: 29px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    h1 { text-align: center; font-size: 23px; }
+    .subtitulo {
+      text-align: center;
+      color: #b9b9cc;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #514c70;
+      border-radius: 9px;
+      background: #242943;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+    input:focus { border-color: #e8c66a; }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .principal {
+      background: #e8c66a;
+      color: #17152a;
+    }
+    .google {
+      margin-top: 12px;
+      background: white;
+      color: #222;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    #mensaje {
+      min-height: 22px;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .enlaces {
+      text-align: center;
+      margin-top: 22px;
+      color: #bbb;
+      font-size: 14px;
+      line-height: 2;
+    }
+    a { color: #e8c66a; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <main class="contenedor">
+    <div class="logo">VIDA FÁCIL</div>
+    <h1>Bienvenido de nuevo</h1>
+    <p class="subtitulo">Accede a tu espacio personal.</p>
+
+    <form id="formularioAcceso">
+      <label for="correo">Correo electrónico</label>
+      <input id="correo" type="email"
+        placeholder="Tu correo electrónico" required>
+
+      <label for="contrasena">Contraseña</label>
+      <input id="contrasena" type="password"
+        placeholder="Tu contraseña" required>
+
+      <button class="principal" id="botonAcceso" type="submit">
+        Iniciar sesión
+      </button>
+    </form>
+
+    <button class="google" id="botonGoogle" type="button">
+      Continuar con Google
+    </button>
+
+    <div id="mensaje" role="status"></div>
+
+    <div class="enlaces">
+      <a href="recuperar.html">¿Has olvidado tu contraseña?</a>
+      <br>
+      ¿No tienes cuenta? <a href="registro.html">Regístrate</a>
+      <br>
+      <a href="index.html">Volver al inicio</a>
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth, proveedorGoogle } from "./firebase.js";
+    import {
+      signInWithEmailAndPassword,
+      signInWithPopup
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const formulario = document.getElementById("formularioAcceso");
+    const mensaje = document.getElementById("mensaje");
+    const botonAcceso = document.getElementById("botonAcceso");
+    const botonGoogle = document.getElementById("botonGoogle");
+
+    function guardarPerfil(usuario) {
+      localStorage.setItem("vidaNombre", usuario.displayName || "");
+      localStorage.setItem("vidaCorreo", usuario.email || "");
+      localStorage.setItem("vidaFoto", usuario.photoURL || "");
+    }
+
+    function mostrarError(error) {
+      const errores = {
+        "auth/invalid-credential": "El correo o la contraseña son incorrectos.",
+        "auth/user-not-found": "No existe una cuenta con ese correo.",
+        "auth/wrong-password": "La contraseña es incorrecta.",
+        "auth/invalid-email": "El correo electrónico no es válido.",
+        "auth/too-many-requests": "Demasiados intentos. Espera un poco.",
+        "auth/popup-closed-by-user": "Has cerrado la ventana de Google.",
+        "auth/popup-blocked": "El navegador ha bloqueado la ventana de Google.",
+        "auth/unauthorized-domain": "Este dominio todavía no está autorizado en Firebase.",
+        "auth/network-request-failed": "Comprueba tu conexión a internet."
+      };
+
+      return errores[error.code] ||
+        "No se ha podido iniciar sesión. Inténtalo de nuevo.";
+    }
+
+    formulario.addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+
+      const correo = document.getElementById("correo").value.trim();
+      const contrasena = document.getElementById("contrasena").value;
+
+      botonAcceso.disabled = true;
+      mensaje.textContent = "Comprobando tus datos...";
+
+      try {
+        const resultado = await signInWithEmailAndPassword(
+          auth, correo, contrasena
+        );
+
+        guardarPerfil(resultado.user);
+        mensaje.textContent = "¡Bienvenido! Acceso correcto.";
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+
+      } catch (error) {
+        mensaje.textContent = mostrarError(error);
+        botonAcceso.disabled = false;
+      }
+    });
+
+    botonGoogle.addEventListener("click", async () => {
+      botonGoogle.disabled = true;
+      mensaje.textContent = "Conectando con Google...";
+
+      try {
+        const resultado = await signInWithPopup(auth, proveedorGoogle);
+        guardarPerfil(resultado.user);
+        mensaje.textContent = "¡Acceso correcto!";
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+
+      } catch (error) {
+        mensaje.textContent = mostrarError(error);
+        botonGoogle.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>

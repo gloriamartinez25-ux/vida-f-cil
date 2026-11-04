@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar contraseña - VIDA FÁCIL</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: white;
+      background: linear-gradient(135deg, #10152c, #241b42);
+    }
+    .contenedor {
+      width: 100%;
+      max-width: 430px;
+      padding: 35px 28px;
+      border: 1px solid #51446f;
+      border-radius: 20px;
+      background: #171b32;
+      box-shadow: 0 15px 45px #0006;
+    }
+    .logo {
+      text-align: center;
+      color: #e8c66a;
+      font-size: 29px;
+      font-weight: bold;
+    }
+    h1 { text-align: center; font-size: 23px; }
+    p {
+      text-align: center;
+      color: #b9b9cc;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    label {
+      display: block;
+      margin: 20px 0 7px;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #514c70;
+      border-radius: 9px;
+      background: #242943;
+      color: white;
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 9px;
+      background: #e8c66a;
+      color: #17152a;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; }
+    #mensaje {
+      min-height: 22px;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .enlaces {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 14px;
+      line-height: 2;
+    }
+    a { color: #e8c66a; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <main class="contenedor">
+    <div class="logo">VIDA FÁCIL</div>
+    <h1>Recuperar contraseña</h1>
+
+    <p>
+      Introduce tu correo electrónico y te enviaremos
+      las instrucciones para crear una nueva contraseña.
+    </p>
+
+    <form id="formularioRecuperar">
+      <label for="correo">Correo electrónico</label>
+      <input
+        id="correo"
+        type="email"
+        placeholder="Tu correo electrónico"
+        required
+      >
+
+      <button id="botonEnviar" type="submit">
+        Enviar instrucciones
+      </button>
+    </form>
+
+    <div id="mensaje" role="status"></div>
+
+    <div class="enlaces">
+      <a href="acceso.html">Volver a iniciar sesión</a>
+      <br>
+      <a href="index.html">Volver al inicio</a>
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth } from "./firebase.js";
+    import {
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const formulario = document.getElementById("formularioRecuperar");
+    const mensaje = document.getElementById("mensaje");
+    const boton = document.getElementById("botonEnviar");
+
+    formulario.addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+
+      const correo = document.getElementById("correo").value.trim();
+
+      boton.disabled = true;
+      mensaje.textContent = "Enviando instrucciones...";
+
+      try {
+        await sendPasswordResetEmail(auth, correo);
+
+        mensaje.textContent =
+          "Si existe una cuenta asociada a ese correo, recibirás instrucciones para recuperar tu contraseña. Revisa también el correo no deseado.";
+
+        boton.textContent = "Correo solicitado";
+
+      } catch (error) {
+        if (error.code === "auth/invalid-email") {
+          mensaje.textContent = "El correo electrónico no es válido.";
+        } else if (error.code === "auth/unauthorized-domain") {
+          mensaje.textContent =
+            "Este dominio todavía no está autorizado en Firebase.";
+        } else if (error.code === "auth/network-request-failed") {
+          mensaje.textContent = "Comprueba tu conexión a internet.";
+        } else {
+          mensaje.textContent =
+            "No se ha podido enviar la solicitud. Inténtalo de nuevo.";
+        }
+
+        boton.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
