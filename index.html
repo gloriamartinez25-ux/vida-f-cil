@@ -204,7 +204,11 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
     <div class="logo">VIDA FÁCIL</div>
     <p>Todo en orden. Más tiempo para vivir.</p>
   </div>
-  <a class="perfil-link" href="perfil.html">👤 Mi perfil</a>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a class="perfil-link" href="planes.html">💎 Planes y precios</a>
+    <a class="perfil-link" href="perfil.html">👤 Mi perfil</a>
+  </div>
 </header>
 
 <nav>
@@ -1454,7 +1458,6 @@ onAuthStateChanged(auth, async usuario => {
 
   usuarioActual = usuario;
 
-  // Actualiza el nombre, correo y foto del perfil en Inicio.
   actualizarPerfil(usuario);
 
   const estado = document.getElementById("estadoNube");
