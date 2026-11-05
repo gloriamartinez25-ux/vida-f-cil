@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -177,6 +177,14 @@ button.archivo-boton {
   color:white;
   border:0;
   padding:9px 13px;
+  border-radius:7px;
+  cursor:pointer;
+}
+button.editar {
+  background:#496b91;
+  color:white;
+  border:0;
+  padding:8px 11px;
   border-radius:7px;
   cursor:pointer;
 }
@@ -359,10 +367,16 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <script type="module">
 import {
   auth,
+  db,
   guardarDato,
   obtenerDatos,
   eliminarDato
 } from "./firebase.js";
+
+import {
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 import {
   onAuthStateChanged
@@ -477,8 +491,6 @@ async function eliminarArchivoLocal(id) {
 async function abrirArchivo(id, nombre) {
   if (!id) return;
 
-  // Abrimos la ventana durante el clic del usuario
-  // para evitar que el navegador bloquee la apertura.
   const ventana = window.open("about:blank", "_blank");
 
   try {
@@ -1108,6 +1120,151 @@ async function agregarDocumento() {
   }
 }
 
+// NUEVA FUNCIÓN: EDITAR UN DOCUMENTO
+
+async function editarDocumento(i) {
+  if (!aplicacionLista) return;
+
+  const documento = documentos[i];
+  if (!documento) return;
+
+  const nombre = prompt(
+    "Nombre del documento:",
+    documento.nombre || ""
+  );
+
+  if (nombre === null) return;
+
+  if (!nombre.trim()) {
+    alert("El nombre no puede estar vacío.");
+    return;
+  }
+
+  const categorias = [
+    "Personal",
+    "Trabajo",
+    "Vivienda",
+    "Facturas",
+    "Estudios",
+    "Otros"
+  ];
+
+  const categoriaActual = categorias.includes(documento.categoria)
+    ? documento.categoria
+    : "Otros";
+
+  const categoria = prompt(
+    "Categoría: Personal, Trabajo, Vivienda, Facturas, Estudios u Otros:",
+    categoriaActual
+  );
+
+  if (categoria === null) return;
+
+  const categoriaFinal = categorias.find(
+    c => c.toLowerCase() === categoria.trim().toLowerCase()
+  );
+
+  if (!categoriaFinal) {
+    alert("Escribe una categoría válida.");
+    return;
+  }
+
+  const fecha = prompt(
+    "Fecha (AAAA-MM-DD):",
+    documento.fecha || ""
+  );
+
+  if (fecha === null) return;
+
+  const descripcion = prompt(
+    "Descripción:",
+    documento.descripcion || ""
+  );
+
+  if (descripcion === null) return;
+
+  const enlace = prompt(
+    "Enlace opcional:",
+    documento.enlace || ""
+  );
+
+  if (enlace === null) return;
+
+  if (enlace.trim()) {
+    try {
+      const direccion = new URL(enlace.trim());
+
+      if (
+        direccion.protocol !== "https:" &&
+        direccion.protocol !== "http:"
+      ) {
+        throw new Error("Enlace no permitido");
+      }
+
+    } catch {
+      alert("El enlace no es válido. Debe empezar por https:// o http://");
+      return;
+    }
+  }
+
+  const datos = {
+    nombre: nombre.trim(),
+    categoria: categoriaFinal,
+    fecha: fecha.trim(),
+    descripcion: descripcion.trim(),
+    enlace: enlace.trim(),
+
+    // Conservamos el archivo adjunto original.
+    archivoId: documento.archivoId || null,
+    nombreArchivo: documento.nombreArchivo || "",
+    tipoArchivo: documento.tipoArchivo || "",
+    tamanoArchivo: documento.tamanoArchivo || 0
+  };
+
+  try {
+    if (documento.id) {
+      // Actualizamos el documento existente sin borrarlo.
+      const referencia = doc(
+        db,
+        "usuarios",
+        usuarioActual.uid,
+        "documentos",
+        documento.id
+      );
+
+      await updateDoc(referencia, datos);
+
+    } else {
+      // Compatibilidad con documentos antiguos sin identificador.
+      const referencia = await guardarDato(
+        usuarioActual.uid,
+        "documentos",
+        datos
+      );
+
+      documento.id = referencia.id;
+    }
+
+    documentos[i] = {
+      ...datos,
+      id: documento.id
+    };
+
+    guardarLocal();
+    mostrarTodo();
+
+    alert("¡Documento actualizado correctamente!");
+
+  } catch (error) {
+    console.error("Error actualizando documento:", error);
+
+    alert(
+      "No se ha podido actualizar el documento.\n\n" +
+      (error.code || error.message || "Error desconocido")
+    );
+  }
+}
+
 async function eliminarDocumento(i) {
   if (!aplicacionLista) return;
 
@@ -1215,6 +1372,13 @@ function mostrarDocumentos() {
       acciones.appendChild(enlace);
     }
 
+    // NUEVO BOTÓN EDITAR
+    const botonEditar = document.createElement("button");
+    botonEditar.className = "editar";
+    botonEditar.textContent = "Editar";
+    botonEditar.onclick = () => editarDocumento(documento.indice);
+    acciones.appendChild(botonEditar);
+
     const boton = document.createElement("button");
     boton.className = "eliminar";
     boton.textContent = "Eliminar";
@@ -1275,6 +1439,7 @@ Object.assign(window, {
   agregarNota,
   eliminarNota,
   agregarDocumento,
+  editarDocumento,
   eliminarDocumento,
   mostrarDocumentos
 });
@@ -1329,3 +1494,4 @@ onAuthStateChanged(auth, async usuario => {
 </script>
 </body>
 </html>
+```
