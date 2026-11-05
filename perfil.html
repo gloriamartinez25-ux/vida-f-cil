@@ -75,6 +75,49 @@
 
     .valor { font-size: 16px; }
 
+    .plan {
+      margin: 22px 0;
+      padding: 20px;
+      border: 1px solid #806b43;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #292943, #24213a);
+    }
+
+    .plan h2 {
+      margin: 0 0 12px;
+      text-align: center;
+      color: #e8c66a;
+      font-size: 19px;
+    }
+
+    .plan-nombre {
+      text-align: center;
+      font-size: 21px;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+
+    .plan-info {
+      text-align: center;
+      color: #c5c5d5;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .boton-plan {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin-top: 16px;
+      border-radius: 9px;
+      background: #e8c66a;
+      color: #17152a;
+      text-align: center;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
     .editor {
       margin-top: 25px;
       padding: 18px;
@@ -177,6 +220,26 @@
       <span class="etiqueta">ESTADO DE LA CUENTA</span>
       <span class="valor" id="estado">Comprobando...</span>
     </div>
+
+    <!-- MI PLAN -->
+    <section class="plan">
+
+      <h2>💎 MI PLAN</h2>
+
+      <div class="plan-nombre" id="nombrePlan">
+        Sin plan contratado
+      </div>
+
+      <p class="plan-info" id="infoPlan">
+        Todavía no tienes ningún plan contratado.
+        Puedes consultar las opciones disponibles.
+      </p>
+
+      <a href="planes.html" class="boton-plan">
+        VER PLANES Y PRECIOS
+      </a>
+
+    </section>
 
     <section class="editor">
 
