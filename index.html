@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -562,16 +562,37 @@ function euros(valor) {
   });
 }
 
-function actualizarPerfil(usuario) {
-  document.getElementById("nombreInicio").textContent =
-    usuario.displayName ? "¡Hola, " + usuario.displayName + "!" : "¡Hola!";
+// =====================================
+// PERFIL EN LA PÁGINA DE INICIO
+// =====================================
 
-  document.getElementById("correoInicio").textContent = usuario.email || "";
+function actualizarPerfil(usuario) {
+  const nombreGuardado =
+    localStorage.getItem("vidaNombre") ||
+    usuario.displayName ||
+    "Usuario de VIDA FÁCIL";
+
+  const correoGuardado =
+    localStorage.getItem("vidaCorreo") ||
+    usuario.email ||
+    "";
+
+  const fotoGuardada =
+    localStorage.getItem("vidaFoto") ||
+    usuario.photoURL ||
+    "";
+
+  document.getElementById("nombreInicio").textContent =
+    "¡Hola, " + nombreGuardado + "!";
+
+  document.getElementById("correoInicio").textContent =
+    correoGuardado;
 
   const imagen = document.getElementById("fotoInicio");
 
-  if (usuario.photoURL) {
-    imagen.src = usuario.photoURL;
+  if (fotoGuardada) {
+    imagen.src = fotoGuardada;
+    imagen.alt = "Fotografía de " + nombreGuardado;
     imagen.style.display = "block";
   } else {
     imagen.style.display = "none";
@@ -1120,7 +1141,7 @@ async function agregarDocumento() {
   }
 }
 
-// NUEVA FUNCIÓN: EDITAR UN DOCUMENTO
+// EDITAR DOCUMENTO
 
 async function editarDocumento(i) {
   if (!aplicacionLista) return;
@@ -1128,11 +1149,7 @@ async function editarDocumento(i) {
   const documento = documentos[i];
   if (!documento) return;
 
-  const nombre = prompt(
-    "Nombre del documento:",
-    documento.nombre || ""
-  );
-
+  const nombre = prompt("Nombre del documento:", documento.nombre || "");
   if (nombre === null) return;
 
   if (!nombre.trim()) {
@@ -1141,12 +1158,8 @@ async function editarDocumento(i) {
   }
 
   const categorias = [
-    "Personal",
-    "Trabajo",
-    "Vivienda",
-    "Facturas",
-    "Estudios",
-    "Otros"
+    "Personal", "Trabajo", "Vivienda",
+    "Facturas", "Estudios", "Otros"
   ];
 
   const categoriaActual = categorias.includes(documento.categoria)
@@ -1169,25 +1182,13 @@ async function editarDocumento(i) {
     return;
   }
 
-  const fecha = prompt(
-    "Fecha (AAAA-MM-DD):",
-    documento.fecha || ""
-  );
-
+  const fecha = prompt("Fecha (AAAA-MM-DD):", documento.fecha || "");
   if (fecha === null) return;
 
-  const descripcion = prompt(
-    "Descripción:",
-    documento.descripcion || ""
-  );
-
+  const descripcion = prompt("Descripción:", documento.descripcion || "");
   if (descripcion === null) return;
 
-  const enlace = prompt(
-    "Enlace opcional:",
-    documento.enlace || ""
-  );
-
+  const enlace = prompt("Enlace opcional:", documento.enlace || "");
   if (enlace === null) return;
 
   if (enlace.trim()) {
@@ -1213,8 +1214,6 @@ async function editarDocumento(i) {
     fecha: fecha.trim(),
     descripcion: descripcion.trim(),
     enlace: enlace.trim(),
-
-    // Conservamos el archivo adjunto original.
     archivoId: documento.archivoId || null,
     nombreArchivo: documento.nombreArchivo || "",
     tipoArchivo: documento.tipoArchivo || "",
@@ -1223,7 +1222,6 @@ async function editarDocumento(i) {
 
   try {
     if (documento.id) {
-      // Actualizamos el documento existente sin borrarlo.
       const referencia = doc(
         db,
         "usuarios",
@@ -1235,7 +1233,6 @@ async function editarDocumento(i) {
       await updateDoc(referencia, datos);
 
     } else {
-      // Compatibilidad con documentos antiguos sin identificador.
       const referencia = await guardarDato(
         usuarioActual.uid,
         "documentos",
@@ -1372,7 +1369,6 @@ function mostrarDocumentos() {
       acciones.appendChild(enlace);
     }
 
-    // NUEVO BOTÓN EDITAR
     const botonEditar = document.createElement("button");
     botonEditar.className = "editar";
     botonEditar.textContent = "Editar";
@@ -1457,6 +1453,8 @@ onAuthStateChanged(auth, async usuario => {
   if (aplicacionLista) return;
 
   usuarioActual = usuario;
+
+  // Actualiza el nombre, correo y foto del perfil en Inicio.
   actualizarPerfil(usuario);
 
   const estado = document.getElementById("estadoNube");
@@ -1494,4 +1492,3 @@ onAuthStateChanged(auth, async usuario => {
 </script>
 </body>
 </html>
-```
