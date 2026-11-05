@@ -2,151 +2,296 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Planes y precios | VIDA FÁCIL</title>
-  <style>
-    * { box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planes y precios | VIDA FÁCIL</title>
 
-    body {
-      margin: 0;
-      padding: 30px 16px;
-      font-family: Arial, sans-serif;
-      background: #101426;
-      color: #fff;
-    }
+<style>
+* {
+  box-sizing:border-box;
+}
 
-    .contenedor {
-      max-width: 1050px;
-      margin: auto;
-      text-align: center;
-    }
+body {
+  margin:0;
+  padding:30px 16px;
+  font-family:Arial,sans-serif;
+  background:#101426;
+  color:#fff;
+}
 
-    h1 { color: #e7c77b; font-size: 34px; }
-    .subtitulo { color: #c5c8d5; margin-bottom: 35px; }
+.contenedor {
+  max-width:1050px;
+  margin:auto;
+  text-align:center;
+}
 
-    .planes {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
+h1 {
+  color:#e7c77b;
+  font-size:34px;
+}
 
-    .plan {
-      background: #1b2239;
-      border: 1px solid #39415d;
-      border-radius: 18px;
-      padding: 25px 20px;
-    }
+.subtitulo {
+  color:#c5c8d5;
+  margin-bottom:35px;
+}
 
-    .destacado {
-      border: 2px solid #d9b45e;
-    }
+.planes {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+  margin-top:25px;
+}
 
-    h2 { color: #e7c77b; }
+.plan {
+  position:relative;
+  background:#1b2239;
+  border:1px solid #39415d;
+  border-radius:18px;
+  padding:28px 20px;
+  display:flex;
+  flex-direction:column;
+}
 
-    .precio {
-      font-size: 32px;
-      font-weight: bold;
-      margin: 20px 0;
-    }
+.destacado {
+  border:2px solid #d9b45e;
+  box-shadow:0 0 20px rgba(217,180,94,.12);
+}
 
-    .precio small { font-size: 14px; color: #c5c8d5; }
+.etiqueta {
+  background:#d9b45e;
+  color:#15192a;
+  padding:7px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+  display:inline-block;
+  margin:0 auto 12px;
+}
 
-    ul {
-      text-align: left;
-      line-height: 2;
-      padding-left: 20px;
-      color: #e1e3ec;
-    }
+h2 {
+  color:#e7c77b;
+}
 
-    button {
-      width: 100%;
-      padding: 13px;
-      border: 0;
-      border-radius: 10px;
-      background: #d9b45e;
-      color: #15192a;
-      font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
-    }
+.precio {
+  font-size:32px;
+  font-weight:bold;
+  margin:20px 0;
+}
 
-    .volver {
-      display: inline-block;
-      margin-top: 30px;
-      color: #e7c77b;
-      text-decoration: none;
-    }
+.precio small {
+  font-size:14px;
+  color:#c5c8d5;
+  font-weight:normal;
+}
 
-    .nota {
-      color: #b9bfd0;
-      font-size: 13px;
-      margin-top: 25px;
-    }
-  </style>
+ul {
+  text-align:left;
+  line-height:2;
+  padding-left:20px;
+  color:#e1e3ec;
+  flex:1;
+}
+
+button {
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:10px;
+  background:#d9b45e;
+  color:#15192a;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+  margin-top:15px;
+}
+
+button:hover {
+  background:#f0d38c;
+}
+
+.volver {
+  display:inline-block;
+  margin-top:30px;
+  color:#e7c77b;
+  text-decoration:none;
+}
+
+.nota {
+  color:#b9bfd0;
+  font-size:13px;
+  line-height:1.7;
+  margin-top:25px;
+}
+
+.informacion {
+  background:#1b2239;
+  border:1px solid #39415d;
+  border-radius:14px;
+  padding:20px;
+  margin-top:30px;
+  text-align:left;
+}
+
+.informacion h2 {
+  text-align:center;
+}
+
+.informacion p {
+  color:#c5c8d5;
+  line-height:1.7;
+}
+
+@media(max-width:600px) {
+  body {
+    padding:22px 12px;
+  }
+
+  h1 {
+    font-size:29px;
+  }
+}
+</style>
 </head>
+
 <body>
-  <main class="contenedor">
-    <h1>VIDA FÁCIL</h1>
-    <p class="subtitulo">Todo en orden. Más tiempo para vivir.</p>
 
-    <h2>Elige tu plan</h2>
+<main class="contenedor">
 
-    <section class="planes">
-      <article class="plan">
-        <h2>Básica</h2>
-        <div class="precio">0,99 € <small>pago único</small></div>
-        <ul>
-          <li>Tareas y recordatorios</li>
-          <li>Calendario</li>
-          <li>Finanzas personales</li>
-          <li>Lista de la compra</li>
-          <li>Notas y documentos</li>
-        </ul>
-        <button onclick="alert('La compra estará disponible próximamente.')">
-          Elegir Básica
-        </button>
-      </article>
+  <h1>VIDA FÁCIL</h1>
 
-      <article class="plan destacado">
-        <h2>Premium</h2>
-        <div class="precio">3,99 € <small>/ mes</small></div>
-        <ul>
-          <li>Todo lo de Básica</li>
-          <li>Estadísticas y gráficos</li>
-          <li>Más capacidad para documentos</li>
-          <li>Personalización avanzada</li>
-          <li>Funciones adicionales</li>
-        </ul>
-        <button onclick="alert('La suscripción estará disponible próximamente.')">
-          Elegir Premium
-        </button>
-      </article>
+  <p class="subtitulo">
+    Todo en orden. Más tiempo para vivir.
+  </p>
 
-      <article class="plan">
-        <h2>Familiar</h2>
-        <div class="precio">5,99 € <small>/ mes</small></div>
-        <ul>
-          <li>Todo lo de Premium</li>
-          <li>Hasta 5 miembros</li>
-          <li>Calendario compartido</li>
-          <li>Tareas familiares</li>
-          <li>Lista de compra compartida</li>
-          <li>Gastos del hogar</li>
-        </ul>
-        <button onclick="alert('La suscripción estará disponible próximamente.')">
-          Elegir Familiar
-        </button>
-      </article>
-    </section>
+  <h2>Elige tu plan</h2>
 
-    <p class="nota">
-      Prueba Premium gratuita de 7 días. Sin tarjeta para iniciar la prueba.
-      Al finalizar, volverás a Básica si no contratas Premium.
-      Los pagos se habilitarán próximamente.
+  <p class="subtitulo">
+    Empieza con lo esencial y amplía tu experiencia cuando quieras.
+  </p>
+
+  <section class="planes">
+
+    <!-- PLAN BÁSICO -->
+
+    <article class="plan">
+
+      <h2>Básica</h2>
+
+      <div class="precio">
+        0,99 € <small>pago único</small>
+      </div>
+
+      <ul>
+        <li>Tareas y recordatorios</li>
+        <li>Calendario personal</li>
+        <li>Finanzas personales</li>
+        <li>Lista de la compra</li>
+        <li>Notas y documentos</li>
+        <li>Acceso a tu cuenta personal</li>
+      </ul>
+
+      <button onclick="mostrarAviso('Básica')">
+        Elegir Básica
+      </button>
+
+    </article>
+
+    <!-- PLAN PREMIUM -->
+
+    <article class="plan destacado">
+
+      <span class="etiqueta">MÁS COMPLETO</span>
+
+      <h2>Premium</h2>
+
+      <div class="precio">
+        3,99 € <small>/ mes</small>
+      </div>
+
+      <ul>
+        <li>Todo lo incluido en Básica</li>
+        <li>Estadísticas y gráficos</li>
+        <li>Más capacidad para documentos</li>
+        <li>Personalización avanzada</li>
+        <li>Herramientas adicionales</li>
+        <li>Organización avanzada</li>
+      </ul>
+
+      <button onclick="mostrarAviso('Premium')">
+        Elegir Premium
+      </button>
+
+    </article>
+
+    <!-- PLAN FAMILIAR -->
+
+    <article class="plan">
+
+      <h2>Familiar</h2>
+
+      <div class="precio">
+        5,99 € <small>/ mes</small>
+      </div>
+
+      <ul>
+        <li>Todo lo incluido en Premium</li>
+        <li>Hasta 5 cuentas independientes</li>
+        <li>Espacio familiar compartido</li>
+        <li>Calendario compartido</li>
+        <li>Tareas familiares</li>
+        <li>Lista de compra compartida</li>
+        <li>Gastos del hogar</li>
+        <li>Gestión de miembros</li>
+      </ul>
+
+      <button onclick="mostrarAviso('Familiar')">
+        Elegir Familiar
+      </button>
+
+    </article>
+
+  </section>
+
+  <div class="informacion">
+
+    <h2>Prueba Premium gratuita</h2>
+
+    <p>
+      Disfruta de 7 días de Premium sin necesidad de introducir
+      una tarjeta para iniciar la prueba.
     </p>
 
-    <a class="volver" href="index.html">← Volver a VIDA FÁCIL</a>
-  </main>
+    <p>
+      Cuando termine la prueba, si no contratas Premium,
+      tu cuenta volverá al plan Básica y conservarás tus datos.
+    </p>
+
+    <p>
+      Puedes cambiar de plan sin perder la información
+      guardada en tu cuenta.
+    </p>
+
+  </div>
+
+  <p class="nota">
+    Los pagos y las suscripciones se habilitarán próximamente.
+    Los precios y condiciones se mostrarán antes de cualquier compra.
+  </p>
+
+  <a class="volver" href="index.html">
+    ← Volver a VIDA FÁCIL
+  </a>
+
+</main>
+
+<script>
+function mostrarAviso(plan) {
+  alert(
+    "Has seleccionado el plan " + plan +
+    ".\n\nEl sistema de contratación estará disponible próximamente."
+  );
+}
+</script>
+
 </body>
 </html>
