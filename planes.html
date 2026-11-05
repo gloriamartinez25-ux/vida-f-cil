@@ -8,146 +8,197 @@
 
 <style>
 * {
-  box-sizing:border-box;
+  box-sizing: border-box;
 }
 
 body {
-  margin:0;
-  padding:30px 16px;
-  font-family:Arial,sans-serif;
-  background:#101426;
-  color:#fff;
+  margin: 0;
+  padding: 30px 16px;
+  font-family: Arial, sans-serif;
+  background: #101426;
+  color: #fff;
 }
 
 .contenedor {
-  max-width:1050px;
-  margin:auto;
-  text-align:center;
+  max-width: 1050px;
+  margin: auto;
+  text-align: center;
 }
 
 h1 {
-  color:#e7c77b;
-  font-size:34px;
+  color: #e7c77b;
+  font-size: 34px;
 }
 
 .subtitulo {
-  color:#c5c8d5;
-  margin-bottom:35px;
+  color: #c5c8d5;
+  margin-bottom: 35px;
 }
 
 .planes {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:20px;
-  margin-top:25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
 }
 
 .plan {
-  position:relative;
-  background:#1b2239;
-  border:1px solid #39415d;
-  border-radius:18px;
-  padding:28px 20px;
-  display:flex;
-  flex-direction:column;
+  position: relative;
+  background: #1b2239;
+  border: 1px solid #39415d;
+  border-radius: 18px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .destacado {
-  border:2px solid #d9b45e;
-  box-shadow:0 0 20px rgba(217,180,94,.12);
+  border: 2px solid #d9b45e;
+  box-shadow: 0 0 20px rgba(217,180,94,.12);
 }
 
 .etiqueta {
-  background:#d9b45e;
-  color:#15192a;
-  padding:7px 12px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
-  display:inline-block;
-  margin:0 auto 12px;
+  background: #d9b45e;
+  color: #15192a;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+  margin: 0 auto 12px;
 }
 
 h2 {
-  color:#e7c77b;
+  color: #e7c77b;
 }
 
 .precio {
-  font-size:32px;
-  font-weight:bold;
-  margin:20px 0;
+  font-size: 32px;
+  font-weight: bold;
+  margin: 20px 0;
 }
 
 .precio small {
-  font-size:14px;
-  color:#c5c8d5;
-  font-weight:normal;
+  font-size: 14px;
+  color: #c5c8d5;
+  font-weight: normal;
 }
 
 ul {
-  text-align:left;
-  line-height:2;
-  padding-left:20px;
-  color:#e1e3ec;
-  flex:1;
+  text-align: left;
+  line-height: 2;
+  padding-left: 20px;
+  color: #e1e3ec;
+  flex: 1;
 }
 
 button {
-  width:100%;
-  padding:13px;
-  border:0;
-  border-radius:10px;
-  background:#d9b45e;
-  color:#15192a;
-  font-weight:bold;
-  font-size:15px;
-  cursor:pointer;
-  margin-top:15px;
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-radius: 10px;
+  background: #d9b45e;
+  color: #15192a;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 15px;
 }
 
 button:hover {
-  background:#f0d38c;
+  background: #f0d38c;
 }
 
 .volver {
-  display:inline-block;
-  margin-top:30px;
-  color:#e7c77b;
-  text-decoration:none;
+  display: inline-block;
+  margin-top: 30px;
+  color: #e7c77b;
+  text-decoration: none;
 }
 
 .nota {
-  color:#b9bfd0;
-  font-size:13px;
-  line-height:1.7;
-  margin-top:25px;
+  color: #b9bfd0;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 25px;
 }
 
 .informacion {
-  background:#1b2239;
-  border:1px solid #39415d;
-  border-radius:14px;
-  padding:20px;
-  margin-top:30px;
-  text-align:left;
+  background: #1b2239;
+  border: 1px solid #39415d;
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 30px;
+  text-align: left;
 }
 
 .informacion h2 {
-  text-align:center;
+  text-align: center;
 }
 
 .informacion p {
-  color:#c5c8d5;
-  line-height:1.7;
+  color: #c5c8d5;
+  line-height: 1.7;
 }
 
-@media(max-width:600px) {
+/* VENTANA DE CONFIRMACIÓN */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.78);
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.contenido-visible {
+  display: flex;
+}
+
+.modal-contenido {
+  width: 100%;
+  max-width: 430px;
+  padding: 28px;
+  border: 1px solid #d9b45e;
+  border-radius: 18px;
+  background: #1b2239;
+  text-align: center;
+  box-shadow: 0 15px 45px #0009;
+}
+
+.modal-contenido h2 {
+  margin-top: 0;
+  font-size: 24px;
+}
+
+.modal-plan {
+  color: #e7c77b;
+  font-size: 25px;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+.modal-texto {
+  color: #c5c8d5;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.boton-cerrar {
+  background: #343451;
+  color: white;
+}
+
+@media(max-width: 600px) {
   body {
-    padding:22px 12px;
+    padding: 22px 12px;
   }
 
   h1 {
-    font-size:29px;
+    font-size: 29px;
   }
 }
 </style>
@@ -175,7 +226,7 @@ button:hover {
 
     <article class="plan">
 
-      <h2>Básica</h2>
+      <h2>Básico</h2>
 
       <div class="precio">
         0,99 € <small>pago único</small>
@@ -190,8 +241,8 @@ button:hover {
         <li>Acceso a tu cuenta personal</li>
       </ul>
 
-      <button onclick="mostrarAviso('Básica')">
-        Elegir Básica
+      <button onclick="seleccionarPlan('Básico', '0,99 € - pago único')">
+        Elegir Básico
       </button>
 
     </article>
@@ -209,7 +260,7 @@ button:hover {
       </div>
 
       <ul>
-        <li>Todo lo incluido en Básica</li>
+        <li>Todo lo incluido en Básico</li>
         <li>Estadísticas y gráficos</li>
         <li>Más capacidad para documentos</li>
         <li>Personalización avanzada</li>
@@ -217,7 +268,7 @@ button:hover {
         <li>Organización avanzada</li>
       </ul>
 
-      <button onclick="mostrarAviso('Premium')">
+      <button onclick="seleccionarPlan('Premium', '3,99 € / mes')">
         Elegir Premium
       </button>
 
@@ -244,7 +295,7 @@ button:hover {
         <li>Gestión de miembros</li>
       </ul>
 
-      <button onclick="mostrarAviso('Familiar')">
+      <button onclick="seleccionarPlan('Familiar', '5,99 € / mes')">
         Elegir Familiar
       </button>
 
@@ -257,25 +308,25 @@ button:hover {
     <h2>Prueba Premium gratuita</h2>
 
     <p>
-      Disfruta de 7 días de Premium sin necesidad de introducir
-      una tarjeta para iniciar la prueba.
+      Estamos preparando una prueba gratuita de 7 días de Premium,
+      sin necesidad de introducir una tarjeta.
     </p>
 
     <p>
-      Cuando termine la prueba, si no contratas Premium,
-      tu cuenta volverá al plan Básica y conservarás tus datos.
+      Esta prueba todavía no está disponible. Cuando se active,
+      podrás conocer todas sus condiciones antes de comenzar.
     </p>
 
     <p>
-      Puedes cambiar de plan sin perder la información
-      guardada en tu cuenta.
+      Nuestro objetivo es que puedas cambiar de plan sin perder
+      la información guardada en tu cuenta.
     </p>
 
   </div>
 
   <p class="nota">
-    Los pagos y las suscripciones se habilitarán próximamente.
-    Los precios y condiciones se mostrarán antes de cualquier compra.
+    La contratación y los pagos todavía no están habilitados.
+    Seleccionar un plan no realiza ningún cobro ni modifica tu cuenta.
   </p>
 
   <a class="volver" href="index.html">
@@ -284,13 +335,75 @@ button:hover {
 
 </main>
 
+<!-- VENTANA DE CONFIRMACIÓN -->
+
+<div class="modal" id="modalPlan" role="dialog"
+     aria-modal="true" aria-labelledby="tituloModal">
+
+  <div class="modal-contenido">
+
+    <h2 id="tituloModal">Plan seleccionado</h2>
+
+    <div class="modal-plan" id="planElegido"></div>
+
+    <p class="modal-texto" id="precioElegido"></p>
+
+    <p class="modal-texto">
+      Has seleccionado este plan correctamente.
+      La contratación estará disponible próximamente.
+    </p>
+
+    <p class="modal-texto">
+      No se ha realizado ningún cobro ni se ha cambiado
+      el plan de tu cuenta.
+    </p>
+
+    <button class="boton-cerrar" onclick="cerrarModal()">
+      Entendido
+    </button>
+
+  </div>
+
+</div>
+
 <script>
-function mostrarAviso(plan) {
-  alert(
-    "Has seleccionado el plan " + plan +
-    ".\n\nEl sistema de contratación estará disponible próximamente."
-  );
+
+function seleccionarPlan(plan, precio) {
+
+  document.getElementById("planElegido").textContent = plan;
+
+  document.getElementById("precioElegido").textContent =
+    "Precio: " + precio;
+
+  document.getElementById("modalPlan")
+    .classList.add("contenido-visible");
+
 }
+
+function cerrarModal() {
+
+  document.getElementById("modalPlan")
+    .classList.remove("contenido-visible");
+
+}
+
+document.getElementById("modalPlan")
+  .addEventListener("click", function(evento) {
+
+    if (evento.target === this) {
+      cerrarModal();
+    }
+
+  });
+
+document.addEventListener("keydown", function(evento) {
+
+  if (evento.key === "Escape") {
+    cerrarModal();
+  }
+
+});
+
 </script>
 
 </body>
