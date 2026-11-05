@@ -5,8 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi perfil - VIDA FÁCIL</title>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -15,6 +17,7 @@
       color: white;
       background: linear-gradient(135deg, #10152c, #241b42);
     }
+
     .contenedor {
       max-width: 520px;
       margin: 30px auto;
@@ -24,13 +27,16 @@
       background: #171b32;
       box-shadow: 0 15px 45px #0006;
     }
+
     .logo {
       text-align: center;
       color: #e8c66a;
       font-size: 28px;
       font-weight: bold;
     }
+
     h1 { text-align: center; font-size: 23px; }
+
     .foto {
       width: 110px;
       height: 110px;
@@ -45,11 +51,13 @@
       color: #e8c66a;
       font-size: 38px;
     }
+
     .foto img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
     .dato {
       margin: 18px 0;
       padding: 14px;
@@ -57,13 +65,51 @@
       background: #242943;
       overflow-wrap: anywhere;
     }
+
     .etiqueta {
       display: block;
       color: #e8c66a;
       font-size: 12px;
       margin-bottom: 7px;
     }
+
     .valor { font-size: 16px; }
+
+    .editor {
+      margin-top: 25px;
+      padding: 18px;
+      border-radius: 12px;
+      background: #242943;
+    }
+
+    .editor h2 {
+      text-align: center;
+      font-size: 18px;
+      color: #e8c66a;
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-size: 13px;
+      color: #e8c66a;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #51446f;
+      border-radius: 8px;
+      background: #171b32;
+      color: white;
+      font-size: 15px;
+    }
+
+    input[type="file"] {
+      font-size: 13px;
+    }
+
     button {
       width: 100%;
       padding: 14px;
@@ -74,20 +120,24 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     .principal {
       background: #e8c66a;
       color: #17152a;
     }
+
     .secundario {
       background: #343451;
       color: white;
     }
+
     #mensaje {
       min-height: 22px;
       text-align: center;
       margin-top: 15px;
       font-size: 14px;
     }
+
     .enlace {
       display: block;
       text-align: center;
@@ -95,11 +145,19 @@
       color: #e8c66a;
       text-decoration: none;
     }
+
+    .ayuda {
+      color: #c5c5d5;
+      font-size: 12px;
+      line-height: 1.5;
+    }
   </style>
 </head>
+
 <body>
 
   <main class="contenedor">
+
     <div class="logo">VIDA FÁCIL</div>
     <h1>Mi perfil</h1>
 
@@ -120,7 +178,37 @@
       <span class="valor" id="estado">Comprobando...</span>
     </div>
 
-    <button class="principal" id="cerrarSesion">
+    <section class="editor">
+
+      <h2>Personalizar mi perfil</h2>
+
+      <label for="nuevoNombre">Mi nombre</label>
+      <input
+        type="text"
+        id="nuevoNombre"
+        maxlength="60"
+        placeholder="Escribe tu nombre"
+      >
+
+      <label for="nuevaFoto">Mi fotografía</label>
+      <input
+        type="file"
+        id="nuevaFoto"
+        accept="image/jpeg,image/png,image/webp"
+      >
+
+      <p class="ayuda">
+        Puedes elegir una imagen JPG, PNG o WEBP.
+        La fotografía se guardará en este dispositivo.
+      </p>
+
+      <button class="principal" id="guardarPerfil">
+        Guardar cambios
+      </button>
+
+    </section>
+
+    <button class="secundario" id="cerrarSesion">
       Cerrar sesión
     </button>
 
@@ -129,14 +217,19 @@
     </button>
 
     <div id="mensaje" role="status"></div>
+
     <a class="enlace" href="index.html">Ir al inicio</a>
+
   </main>
 
   <script type="module">
+
     import { auth } from "./firebase.js";
+
     import {
       onAuthStateChanged,
-      signOut
+      signOut,
+      updateProfile
     } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
     const nombre = document.getElementById("nombre");
@@ -145,49 +238,211 @@
     const estado = document.getElementById("estado");
     const mensaje = document.getElementById("mensaje");
 
+    const nuevoNombre = document.getElementById("nuevoNombre");
+    const nuevaFoto = document.getElementById("nuevaFoto");
+
+    let usuarioActual = null;
+    let fotoSeleccionada = null;
+
+    function mostrarFoto(url, nombreUsuario) {
+      foto.innerHTML = "";
+
+      if (url) {
+        const imagen = document.createElement("img");
+        imagen.src = url;
+        imagen.alt = "Foto de perfil";
+
+        imagen.onerror = () => {
+          foto.textContent = (nombreUsuario || "VF")
+            .trim().charAt(0).toUpperCase() || "V";
+        };
+
+        foto.appendChild(imagen);
+      } else {
+        foto.textContent = (nombreUsuario || "VF")
+          .trim().charAt(0).toUpperCase() || "V";
+      }
+    }
+
     onAuthStateChanged(auth, (usuario) => {
+
       if (!usuario) {
         window.location.href = "acceso.html";
         return;
       }
 
-      nombre.textContent = usuario.displayName || "Usuario de VIDA FÁCIL";
+      usuarioActual = usuario;
+
+      const nombreUsuario =
+        usuario.displayName || "Usuario de VIDA FÁCIL";
+
+      nombre.textContent = nombreUsuario;
       correo.textContent = usuario.email || "Sin correo";
+
       estado.textContent = usuario.emailVerified
         ? "Correo verificado"
         : "Cuenta activa";
 
-      localStorage.setItem("vidaNombre", usuario.displayName || "");
-      localStorage.setItem("vidaCorreo", usuario.email || "");
-      localStorage.setItem("vidaFoto", usuario.photoURL || "");
+      nuevoNombre.value = usuario.displayName || "";
 
-      if (usuario.photoURL) {
-        foto.innerHTML = "";
-        const imagen = document.createElement("img");
-        imagen.src = usuario.photoURL;
-        imagen.alt = "Foto de perfil";
-        foto.appendChild(imagen);
-      } else {
-        foto.textContent = (usuario.displayName || "VF")
-          .trim().charAt(0).toUpperCase();
+      const fotoGuardada = localStorage.getItem("vidaFoto");
+
+      mostrarFoto(
+        fotoGuardada || usuario.photoURL,
+        nombreUsuario
+      );
+
+      localStorage.setItem("vidaNombre", nombreUsuario);
+      localStorage.setItem("vidaCorreo", usuario.email || "");
+
+    });
+
+    nuevaFoto.addEventListener("change", () => {
+
+      const archivo = nuevaFoto.files[0];
+
+      fotoSeleccionada = null;
+
+      if (!archivo) return;
+
+      if (!["image/jpeg", "image/png", "image/webp"].includes(archivo.type)) {
+        mensaje.textContent = "Elige una imagen JPG, PNG o WEBP.";
+        nuevaFoto.value = "";
+        return;
       }
+
+      if (archivo.size > 5 * 1024 * 1024) {
+        mensaje.textContent = "La imagen no puede superar los 5 MB.";
+        nuevaFoto.value = "";
+        return;
+      }
+
+      const lector = new FileReader();
+
+      lector.onload = (evento) => {
+        const imagen = new Image();
+
+        imagen.onload = () => {
+          const lienzo = document.createElement("canvas");
+          const maximo = 400;
+
+          let ancho = imagen.width;
+          let alto = imagen.height;
+
+          if (ancho > alto && ancho > maximo) {
+            alto = Math.round(alto * maximo / ancho);
+            ancho = maximo;
+          } else if (alto > maximo) {
+            ancho = Math.round(ancho * maximo / alto);
+            alto = maximo;
+          }
+
+          lienzo.width = ancho;
+          lienzo.height = alto;
+
+          const contexto = lienzo.getContext("2d");
+          contexto.drawImage(imagen, 0, 0, ancho, alto);
+
+          fotoSeleccionada = lienzo.toDataURL("image/jpeg", 0.75);
+
+          mostrarFoto(
+            fotoSeleccionada,
+            nuevoNombre.value || "VF"
+          );
+
+          mensaje.textContent = "Fotografía seleccionada.";
+        };
+
+        imagen.onerror = () => {
+          mensaje.textContent = "No se ha podido abrir la imagen.";
+        };
+
+        imagen.src = evento.target.result;
+      };
+
+      lector.onerror = () => {
+        mensaje.textContent = "No se ha podido leer la imagen.";
+      };
+
+      lector.readAsDataURL(archivo);
+
+    });
+
+    document.getElementById("guardarPerfil").addEventListener("click", async () => {
+
+      if (!usuarioActual) return;
+
+      const nombreNuevo = nuevoNombre.value.trim();
+
+      if (!nombreNuevo) {
+        mensaje.textContent = "Escribe tu nombre antes de guardar.";
+        return;
+      }
+
+      try {
+
+        mensaje.textContent = "Guardando cambios...";
+
+        await updateProfile(usuarioActual, {
+          displayName: nombreNuevo
+        });
+
+        localStorage.setItem("vidaNombre", nombreNuevo);
+
+        if (fotoSeleccionada) {
+          try {
+            localStorage.setItem("vidaFoto", fotoSeleccionada);
+          } catch (error) {
+            mensaje.textContent =
+              "El nombre se guardó, pero la foto ocupa demasiado espacio. Prueba con otra imagen.";
+            return;
+          }
+        }
+
+        nombre.textContent = nombreNuevo;
+
+        mostrarFoto(
+          localStorage.getItem("vidaFoto") || usuarioActual.photoURL,
+          nombreNuevo
+        );
+
+        mensaje.textContent = "¡Perfil actualizado correctamente!";
+
+        fotoSeleccionada = null;
+        nuevaFoto.value = "";
+
+      } catch (error) {
+
+        console.error(error);
+
+        mensaje.textContent =
+          "No se han podido guardar los cambios. Inténtalo de nuevo.";
+
+      }
+
     });
 
     document.getElementById("cerrarSesion").addEventListener("click", async () => {
+
       try {
         await signOut(auth);
+
         localStorage.removeItem("vidaNombre");
         localStorage.removeItem("vidaCorreo");
         localStorage.removeItem("vidaFoto");
+
         window.location.href = "acceso.html";
+
       } catch (error) {
         mensaje.textContent = "No se ha podido cerrar la sesión.";
       }
+
     });
 
     document.getElementById("volver").addEventListener("click", () => {
       window.location.href = "index.html";
     });
+
   </script>
 
 </body>
