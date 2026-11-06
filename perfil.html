@@ -2,511 +2,649 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi perfil - VIDA FÁCIL</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi perfil - VIDA FÁCIL</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 25px 15px;
-      font-family: Arial, sans-serif;
-      color: white;
-      background: linear-gradient(135deg, #10152c, #241b42);
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 25px 15px;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: linear-gradient(135deg, #10152c, #241b42);
+}
 
-    .contenedor {
-      max-width: 520px;
-      margin: 30px auto;
-      padding: 30px;
-      border: 1px solid #51446f;
-      border-radius: 20px;
-      background: #171b32;
-      box-shadow: 0 15px 45px #0006;
-    }
+.contenedor {
+  max-width: 520px;
+  margin: 30px auto;
+  padding: 30px;
+  border: 1px solid #51446f;
+  border-radius: 20px;
+  background: #171b32;
+  box-shadow: 0 15px 45px #0006;
+}
 
-    .logo {
-      text-align: center;
-      color: #e8c66a;
-      font-size: 28px;
-      font-weight: bold;
-    }
+.logo {
+  text-align: center;
+  color: #e8c66a;
+  font-size: 28px;
+  font-weight: bold;
+}
 
-    h1 { text-align: center; font-size: 23px; }
+h1 {
+  text-align: center;
+  font-size: 23px;
+}
 
-    .foto {
-      width: 110px;
-      height: 110px;
-      margin: 20px auto;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: #292b49;
-      border: 3px solid #e8c66a;
-      color: #e8c66a;
-      font-size: 38px;
-    }
+.foto {
+  width: 110px;
+  height: 110px;
+  margin: 20px auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #292b49;
+  border: 3px solid #e8c66a;
+  color: #e8c66a;
+  font-size: 38px;
+}
 
-    .foto img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-    .dato {
-      margin: 18px 0;
-      padding: 14px;
-      border-radius: 9px;
-      background: #242943;
-      overflow-wrap: anywhere;
-    }
+.dato {
+  margin: 18px 0;
+  padding: 14px;
+  border-radius: 9px;
+  background: #242943;
+  overflow-wrap: anywhere;
+}
 
-    .etiqueta {
-      display: block;
-      color: #e8c66a;
-      font-size: 12px;
-      margin-bottom: 7px;
-    }
+.etiqueta {
+  display: block;
+  color: #e8c66a;
+  font-size: 12px;
+  margin-bottom: 7px;
+}
 
-    .valor { font-size: 16px; }
+.valor { font-size: 16px; }
 
-    .plan {
-      margin: 22px 0;
-      padding: 20px;
-      border: 1px solid #806b43;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #292943, #24213a);
-    }
+.plan {
+  margin: 22px 0;
+  padding: 20px;
+  border: 1px solid #806b43;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #292943, #24213a);
+}
 
-    .plan h2 {
-      margin: 0 0 12px;
-      text-align: center;
-      color: #e8c66a;
-      font-size: 19px;
-    }
+.plan h2 {
+  margin: 0 0 12px;
+  text-align: center;
+  color: #e8c66a;
+  font-size: 19px;
+}
 
-    .plan-nombre {
-      text-align: center;
-      font-size: 21px;
-      font-weight: bold;
-      margin: 12px 0;
-    }
+.plan-nombre {
+  text-align: center;
+  font-size: 21px;
+  font-weight: bold;
+  margin: 12px 0;
+}
 
-    .plan-info {
-      text-align: center;
-      color: #c5c5d5;
-      font-size: 13px;
-      line-height: 1.5;
-    }
+.plan-info {
+  text-align: center;
+  color: #c5c5d5;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
 
-    .boton-plan {
-      display: block;
-      width: 100%;
-      padding: 13px;
-      margin-top: 16px;
-      border-radius: 9px;
-      background: #e8c66a;
-      color: #17152a;
-      text-align: center;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: bold;
-    }
+.boton-plan {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  margin-top: 16px;
+  border-radius: 9px;
+  background: #e8c66a;
+  color: #17152a;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+}
 
-    .editor {
-      margin-top: 25px;
-      padding: 18px;
-      border-radius: 12px;
-      background: #242943;
-    }
+.editor {
+  margin-top: 25px;
+  padding: 18px;
+  border-radius: 12px;
+  background: #242943;
+}
 
-    .editor h2 {
-      text-align: center;
-      font-size: 18px;
-      color: #e8c66a;
-      margin-top: 0;
-    }
+.editor h2 {
+  text-align: center;
+  font-size: 18px;
+  color: #e8c66a;
+  margin-top: 0;
+}
 
-    label {
-      display: block;
-      margin: 15px 0 7px;
-      font-size: 13px;
-      color: #e8c66a;
-    }
+label {
+  display: block;
+  margin: 15px 0 7px;
+  font-size: 13px;
+  color: #e8c66a;
+}
 
-    input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #51446f;
-      border-radius: 8px;
-      background: #171b32;
-      color: white;
-      font-size: 15px;
-    }
+input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #51446f;
+  border-radius: 8px;
+  background: #171b32;
+  color: white;
+  font-size: 15px;
+}
 
-    input[type="file"] {
-      font-size: 13px;
-    }
+input[type="file"] {
+  font-size: 13px;
+}
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border: none;
-      border-radius: 9px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .principal {
-      background: #e8c66a;
-      color: #17152a;
-    }
+.principal {
+  background: #e8c66a;
+  color: #17152a;
+}
 
-    .secundario {
-      background: #343451;
-      color: white;
-    }
+.secundario {
+  background: #343451;
+  color: white;
+}
 
-    #mensaje {
-      min-height: 22px;
-      text-align: center;
-      margin-top: 15px;
-      font-size: 14px;
-    }
+#mensaje {
+  min-height: 22px;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
 
-    .enlace {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-      color: #e8c66a;
-      text-decoration: none;
-    }
+.enlace {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #e8c66a;
+  text-decoration: none;
+}
 
-    .ayuda {
-      color: #c5c5d5;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-  </style>
+.ayuda {
+  color: #c5c5d5;
+  font-size: 12px;
+  line-height: 1.5;
+}
+</style>
 </head>
 
 <body>
 
-  <main class="contenedor">
+<main class="contenedor">
 
-    <div class="logo">VIDA FÁCIL</div>
-    <h1>Mi perfil</h1>
+  <div class="logo">VIDA FÁCIL</div>
+  <h1>Mi perfil</h1>
 
-    <div class="foto" id="foto">VF</div>
+  <div class="foto" id="foto">VF</div>
 
-    <div class="dato">
-      <span class="etiqueta">NOMBRE</span>
-      <span class="valor" id="nombre">Cargando...</span>
+  <div class="dato">
+    <span class="etiqueta">NOMBRE</span>
+    <span class="valor" id="nombre">Cargando...</span>
+  </div>
+
+  <div class="dato">
+    <span class="etiqueta">CORREO ELECTRÓNICO</span>
+    <span class="valor" id="correo">Cargando...</span>
+  </div>
+
+  <div class="dato">
+    <span class="etiqueta">ESTADO DE LA CUENTA</span>
+    <span class="valor" id="estado">Comprobando...</span>
+  </div>
+
+  <!-- MI PLAN -->
+
+  <section class="plan">
+
+    <h2>💎 MI PLAN</h2>
+
+    <div class="plan-nombre" id="nombrePlan">
+      Consultando plan...
     </div>
 
-    <div class="dato">
-      <span class="etiqueta">CORREO ELECTRÓNICO</span>
-      <span class="valor" id="correo">Cargando...</span>
-    </div>
+    <p class="plan-info" id="infoPlan">
+      Estamos consultando tu selección.
+    </p>
 
-    <div class="dato">
-      <span class="etiqueta">ESTADO DE LA CUENTA</span>
-      <span class="valor" id="estado">Comprobando...</span>
-    </div>
+    <a href="planes.html" class="boton-plan">
+      VER PLANES Y PRECIOS
+    </a>
 
-    <!-- MI PLAN -->
-    <section class="plan">
+  </section>
 
-      <h2>💎 MI PLAN</h2>
+  <section class="editor">
 
-      <div class="plan-nombre" id="nombrePlan">
-        Sin plan contratado
-      </div>
+    <h2>Personalizar mi perfil</h2>
 
-      <p class="plan-info" id="infoPlan">
-        Todavía no tienes ningún plan contratado.
-        Puedes consultar las opciones disponibles.
-      </p>
+    <label for="nuevoNombre">Mi nombre</label>
 
-      <a href="planes.html" class="boton-plan">
-        VER PLANES Y PRECIOS
-      </a>
+    <input
+      type="text"
+      id="nuevoNombre"
+      maxlength="60"
+      placeholder="Escribe tu nombre"
+    >
 
-    </section>
+    <label for="nuevaFoto">Mi fotografía</label>
 
-    <section class="editor">
+    <input
+      type="file"
+      id="nuevaFoto"
+      accept="image/jpeg,image/png,image/webp"
+    >
 
-      <h2>Personalizar mi perfil</h2>
+    <p class="ayuda">
+      Puedes elegir una imagen JPG, PNG o WEBP.
+      La fotografía se guardará en este dispositivo.
+    </p>
 
-      <label for="nuevoNombre">Mi nombre</label>
-      <input
-        type="text"
-        id="nuevoNombre"
-        maxlength="60"
-        placeholder="Escribe tu nombre"
-      >
-
-      <label for="nuevaFoto">Mi fotografía</label>
-      <input
-        type="file"
-        id="nuevaFoto"
-        accept="image/jpeg,image/png,image/webp"
-      >
-
-      <p class="ayuda">
-        Puedes elegir una imagen JPG, PNG o WEBP.
-        La fotografía se guardará en este dispositivo.
-      </p>
-
-      <button class="principal" id="guardarPerfil">
-        Guardar cambios
-      </button>
-
-    </section>
-
-    <button class="secundario" id="cerrarSesion">
-      Cerrar sesión
+    <button class="principal" id="guardarPerfil">
+      Guardar cambios
     </button>
 
-    <button class="secundario" id="volver">
-      Volver a VIDA FÁCIL
-    </button>
+  </section>
 
-    <div id="mensaje" role="status"></div>
+  <button class="secundario" id="cerrarSesion">
+    Cerrar sesión
+  </button>
 
-    <a class="enlace" href="index.html">Ir al inicio</a>
+  <button class="secundario" id="volver">
+    Volver a VIDA FÁCIL
+  </button>
 
-  </main>
+  <div id="mensaje" role="status"></div>
 
-  <script type="module">
+  <a class="enlace" href="index.html">Ir al inicio</a>
 
-    import { auth } from "./firebase.js";
+</main>
 
-    import {
-      onAuthStateChanged,
-      signOut,
-      updateProfile
-    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+<script type="module">
 
-    const nombre = document.getElementById("nombre");
-    const correo = document.getElementById("correo");
-    const foto = document.getElementById("foto");
-    const estado = document.getElementById("estado");
-    const mensaje = document.getElementById("mensaje");
+import {
+  auth,
+  obtenerPlanSeleccionado
+} from "./firebase.js";
 
-    const nuevoNombre = document.getElementById("nuevoNombre");
-    const nuevaFoto = document.getElementById("nuevaFoto");
+import {
+  onAuthStateChanged,
+  signOut,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-    let usuarioActual = null;
-    let fotoSeleccionada = null;
+const nombre = document.getElementById("nombre");
+const correo = document.getElementById("correo");
+const foto = document.getElementById("foto");
+const estado = document.getElementById("estado");
+const mensaje = document.getElementById("mensaje");
 
-    function mostrarFoto(url, nombreUsuario) {
-      foto.innerHTML = "";
+const nuevoNombre = document.getElementById("nuevoNombre");
+const nuevaFoto = document.getElementById("nuevaFoto");
 
-      if (url) {
-        const imagen = document.createElement("img");
-        imagen.src = url;
-        imagen.alt = "Foto de perfil";
+const nombrePlan = document.getElementById("nombrePlan");
+const infoPlan = document.getElementById("infoPlan");
 
-        imagen.onerror = () => {
-          foto.textContent = (nombreUsuario || "VF")
-            .trim().charAt(0).toUpperCase() || "V";
-        };
+let usuarioActual = null;
+let fotoSeleccionada = null;
 
-        foto.appendChild(imagen);
-      } else {
-        foto.textContent = (nombreUsuario || "VF")
-          .trim().charAt(0).toUpperCase() || "V";
-      }
+const planes = {
+  Basico: {
+    nombre: "Básico",
+    precio: "0,99 € - pago único"
+  },
+  Básico: {
+    nombre: "Básico",
+    precio: "0,99 € - pago único"
+  },
+  Premium: {
+    nombre: "Premium",
+    precio: "3,99 € / mes"
+  },
+  Familiar: {
+    nombre: "Familiar",
+    precio: "5,99 € / mes"
+  }
+};
+
+function mostrarFoto(url, nombreUsuario) {
+
+  foto.innerHTML = "";
+
+  if (url) {
+
+    const imagen = document.createElement("img");
+    imagen.src = url;
+    imagen.alt = "Foto de perfil";
+
+    imagen.onerror = () => {
+      foto.textContent =
+        (nombreUsuario || "VF").trim().charAt(0).toUpperCase() || "V";
+    };
+
+    foto.appendChild(imagen);
+
+  } else {
+
+    foto.textContent =
+      (nombreUsuario || "VF").trim().charAt(0).toUpperCase() || "V";
+
+  }
+}
+
+// CONSULTAR EL PLAN GUARDADO EN FIREBASE
+
+async function cargarPlan(usuario) {
+
+  nombrePlan.textContent = "Consultando plan...";
+  infoPlan.textContent = "Estamos consultando tu selección.";
+
+  try {
+
+    const datos = await obtenerPlanSeleccionado(usuario.uid);
+
+    if (!datos) {
+
+      nombrePlan.textContent = "Sin plan seleccionado";
+
+      infoPlan.textContent =
+        "Todavía no has seleccionado ningún plan.\n" +
+        "Puedes consultar las opciones disponibles.";
+
+      return;
     }
 
-    onAuthStateChanged(auth, (usuario) => {
+    const clave =
+      datos.plan ||
+      datos.nombre ||
+      datos.planSeleccionado ||
+      "";
 
-      if (!usuario) {
-        window.location.href = "acceso.html";
-        return;
+    const plan = planes[String(clave)];
+
+    if (!plan) {
+
+      nombrePlan.textContent = "Selección guardada";
+
+      infoPlan.textContent =
+        "Hemos encontrado una selección en tu cuenta.\n" +
+        "Consulta los planes para ver las opciones disponibles.";
+
+      return;
+    }
+
+    const precio = datos.precio || plan.precio;
+
+    nombrePlan.textContent = plan.nombre;
+
+    infoPlan.textContent =
+      "Precio: " + precio + "\n\n" +
+      "Estado: Seleccionado, pendiente de contratación.\n\n" +
+      "Este plan todavía no está contratado ni activado. " +
+      "No se ha realizado ningún cobro.";
+
+  } catch (error) {
+
+    console.error("Error al consultar el plan:", error);
+
+    nombrePlan.textContent = "No se pudo consultar el plan";
+
+    infoPlan.textContent =
+      "No hemos podido recuperar tu selección. " +
+      "Comprueba tu conexión e inténtalo de nuevo.";
+
+  }
+
+}
+
+// COMPROBAR SESIÓN Y CARGAR PERFIL
+
+onAuthStateChanged(auth, async (usuario) => {
+
+  if (!usuario) {
+    window.location.href = "acceso.html";
+    return;
+  }
+
+  usuarioActual = usuario;
+
+  const nombreUsuario =
+    usuario.displayName || "Usuario de VIDA FÁCIL";
+
+  nombre.textContent = nombreUsuario;
+  correo.textContent = usuario.email || "Sin correo";
+
+  estado.textContent = usuario.emailVerified
+    ? "Correo verificado"
+    : "Cuenta activa";
+
+  nuevoNombre.value = usuario.displayName || "";
+
+  const fotoGuardada = localStorage.getItem("vidaFoto");
+
+  mostrarFoto(
+    fotoGuardada || usuario.photoURL,
+    nombreUsuario
+  );
+
+  localStorage.setItem("vidaNombre", nombreUsuario);
+  localStorage.setItem("vidaCorreo", usuario.email || "");
+
+  await cargarPlan(usuario);
+
+});
+
+// SELECCIONAR FOTOGRAFÍA
+
+nuevaFoto.addEventListener("change", () => {
+
+  const archivo = nuevaFoto.files[0];
+
+  fotoSeleccionada = null;
+
+  if (!archivo) return;
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(archivo.type)) {
+
+    mensaje.textContent = "Elige una imagen JPG, PNG o WEBP.";
+    nuevaFoto.value = "";
+    return;
+
+  }
+
+  if (archivo.size > 5 * 1024 * 1024) {
+
+    mensaje.textContent = "La imagen no puede superar los 5 MB.";
+    nuevaFoto.value = "";
+    return;
+
+  }
+
+  const lector = new FileReader();
+
+  lector.onload = (evento) => {
+
+    const imagen = new Image();
+
+    imagen.onload = () => {
+
+      const lienzo = document.createElement("canvas");
+      const maximo = 400;
+
+      let ancho = imagen.width;
+      let alto = imagen.height;
+
+      if (ancho > alto && ancho > maximo) {
+
+        alto = Math.round(alto * maximo / ancho);
+        ancho = maximo;
+
+      } else if (alto > maximo) {
+
+        ancho = Math.round(ancho * maximo / alto);
+        alto = maximo;
+
       }
 
-      usuarioActual = usuario;
+      lienzo.width = ancho;
+      lienzo.height = alto;
 
-      const nombreUsuario =
-        usuario.displayName || "Usuario de VIDA FÁCIL";
+      const contexto = lienzo.getContext("2d");
 
-      nombre.textContent = nombreUsuario;
-      correo.textContent = usuario.email || "Sin correo";
+      contexto.drawImage(imagen, 0, 0, ancho, alto);
 
-      estado.textContent = usuario.emailVerified
-        ? "Correo verificado"
-        : "Cuenta activa";
-
-      nuevoNombre.value = usuario.displayName || "";
-
-      const fotoGuardada = localStorage.getItem("vidaFoto");
+      fotoSeleccionada = lienzo.toDataURL("image/jpeg", 0.75);
 
       mostrarFoto(
-        fotoGuardada || usuario.photoURL,
-        nombreUsuario
+        fotoSeleccionada,
+        nuevoNombre.value || "VF"
       );
 
-      localStorage.setItem("vidaNombre", nombreUsuario);
-      localStorage.setItem("vidaCorreo", usuario.email || "");
+      mensaje.textContent = "Fotografía seleccionada.";
 
+    };
+
+    imagen.onerror = () => {
+      mensaje.textContent = "No se ha podido abrir la imagen.";
+    };
+
+    imagen.src = evento.target.result;
+
+  };
+
+  lector.onerror = () => {
+    mensaje.textContent = "No se ha podido leer la imagen.";
+  };
+
+  lector.readAsDataURL(archivo);
+
+});
+
+// GUARDAR CAMBIOS DEL PERFIL
+
+document.getElementById("guardarPerfil").addEventListener("click", async () => {
+
+  if (!usuarioActual) return;
+
+  const nombreNuevo = nuevoNombre.value.trim();
+
+  if (!nombreNuevo) {
+    mensaje.textContent = "Escribe tu nombre antes de guardar.";
+    return;
+  }
+
+  try {
+
+    mensaje.textContent = "Guardando cambios...";
+
+    await updateProfile(usuarioActual, {
+      displayName: nombreNuevo
     });
 
-    nuevaFoto.addEventListener("change", () => {
+    localStorage.setItem("vidaNombre", nombreNuevo);
 
-      const archivo = nuevaFoto.files[0];
-
-      fotoSeleccionada = null;
-
-      if (!archivo) return;
-
-      if (!["image/jpeg", "image/png", "image/webp"].includes(archivo.type)) {
-        mensaje.textContent = "Elige una imagen JPG, PNG o WEBP.";
-        nuevaFoto.value = "";
-        return;
-      }
-
-      if (archivo.size > 5 * 1024 * 1024) {
-        mensaje.textContent = "La imagen no puede superar los 5 MB.";
-        nuevaFoto.value = "";
-        return;
-      }
-
-      const lector = new FileReader();
-
-      lector.onload = (evento) => {
-        const imagen = new Image();
-
-        imagen.onload = () => {
-          const lienzo = document.createElement("canvas");
-          const maximo = 400;
-
-          let ancho = imagen.width;
-          let alto = imagen.height;
-
-          if (ancho > alto && ancho > maximo) {
-            alto = Math.round(alto * maximo / ancho);
-            ancho = maximo;
-          } else if (alto > maximo) {
-            ancho = Math.round(ancho * maximo / alto);
-            alto = maximo;
-          }
-
-          lienzo.width = ancho;
-          lienzo.height = alto;
-
-          const contexto = lienzo.getContext("2d");
-          contexto.drawImage(imagen, 0, 0, ancho, alto);
-
-          fotoSeleccionada = lienzo.toDataURL("image/jpeg", 0.75);
-
-          mostrarFoto(
-            fotoSeleccionada,
-            nuevoNombre.value || "VF"
-          );
-
-          mensaje.textContent = "Fotografía seleccionada.";
-        };
-
-        imagen.onerror = () => {
-          mensaje.textContent = "No se ha podido abrir la imagen.";
-        };
-
-        imagen.src = evento.target.result;
-      };
-
-      lector.onerror = () => {
-        mensaje.textContent = "No se ha podido leer la imagen.";
-      };
-
-      lector.readAsDataURL(archivo);
-
-    });
-
-    document.getElementById("guardarPerfil").addEventListener("click", async () => {
-
-      if (!usuarioActual) return;
-
-      const nombreNuevo = nuevoNombre.value.trim();
-
-      if (!nombreNuevo) {
-        mensaje.textContent = "Escribe tu nombre antes de guardar.";
-        return;
-      }
+    if (fotoSeleccionada) {
 
       try {
 
-        mensaje.textContent = "Guardando cambios...";
-
-        await updateProfile(usuarioActual, {
-          displayName: nombreNuevo
-        });
-
-        localStorage.setItem("vidaNombre", nombreNuevo);
-
-        if (fotoSeleccionada) {
-          try {
-            localStorage.setItem("vidaFoto", fotoSeleccionada);
-          } catch (error) {
-            mensaje.textContent =
-              "El nombre se guardó, pero la foto ocupa demasiado espacio. Prueba con otra imagen.";
-            return;
-          }
-        }
-
-        nombre.textContent = nombreNuevo;
-
-        mostrarFoto(
-          localStorage.getItem("vidaFoto") || usuarioActual.photoURL,
-          nombreNuevo
-        );
-
-        mensaje.textContent = "¡Perfil actualizado correctamente!";
-
-        fotoSeleccionada = null;
-        nuevaFoto.value = "";
+        localStorage.setItem("vidaFoto", fotoSeleccionada);
 
       } catch (error) {
-
-        console.error(error);
 
         mensaje.textContent =
-          "No se han podido guardar los cambios. Inténtalo de nuevo.";
+          "El nombre se guardó, pero la foto ocupa demasiado espacio. Prueba con otra imagen.";
+
+        return;
 
       }
 
-    });
+    }
 
-    document.getElementById("cerrarSesion").addEventListener("click", async () => {
+    nombre.textContent = nombreNuevo;
 
-      try {
-        await signOut(auth);
+    mostrarFoto(
+      localStorage.getItem("vidaFoto") || usuarioActual.photoURL,
+      nombreNuevo
+    );
 
-        localStorage.removeItem("vidaNombre");
-        localStorage.removeItem("vidaCorreo");
-        localStorage.removeItem("vidaFoto");
+    mensaje.textContent = "¡Perfil actualizado correctamente!";
 
-        window.location.href = "acceso.html";
+    fotoSeleccionada = null;
+    nuevaFoto.value = "";
 
-      } catch (error) {
-        mensaje.textContent = "No se ha podido cerrar la sesión.";
-      }
+  } catch (error) {
 
-    });
+    console.error(error);
 
-    document.getElementById("volver").addEventListener("click", () => {
-      window.location.href = "index.html";
-    });
+    mensaje.textContent =
+      "No se han podido guardar los cambios. Inténtalo de nuevo.";
 
-  </script>
+  }
+
+});
+
+// CERRAR SESIÓN
+
+document.getElementById("cerrarSesion").addEventListener("click", async () => {
+
+  try {
+
+    await signOut(auth);
+
+    localStorage.removeItem("vidaNombre");
+    localStorage.removeItem("vidaCorreo");
+    localStorage.removeItem("vidaFoto");
+
+    window.location.href = "acceso.html";
+
+  } catch (error) {
+
+    mensaje.textContent = "No se ha podido cerrar la sesión.";
+
+  }
+
+});
+
+// VOLVER AL INICIO
+
+document.getElementById("volver").addEventListener("click", () => {
+
+  window.location.href = "index.html";
+
+});
+
+</script>
 
 </body>
 </html>
