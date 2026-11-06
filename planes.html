@@ -20,7 +20,7 @@ body {
 }
 
 .contenedor {
-  max-width: 1050px;
+  max-width: 1100px;
   margin: auto;
   text-align: center;
 }
@@ -32,14 +32,16 @@ h1 {
 
 .subtitulo {
   color: #c5c8d5;
-  margin-bottom: 35px;
+  margin-bottom: 30px;
+  line-height: 1.6;
 }
 
 .planes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   margin-top: 25px;
+  align-items: stretch;
 }
 
 .plan {
@@ -75,7 +77,7 @@ h2 {
 .precio {
   font-size: 32px;
   font-weight: bold;
-  margin: 20px 0;
+  margin: 20px 0 5px;
 }
 
 .precio small {
@@ -84,12 +86,30 @@ h2 {
   font-weight: normal;
 }
 
+.almacenamiento {
+  color: #e7c77b;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
 ul {
   text-align: left;
-  line-height: 2;
+  line-height: 1.8;
   padding-left: 20px;
   color: #e1e3ec;
   flex: 1;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+
+.descripcion {
+  color: #c5c8d5;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 8px 0;
 }
 
 button {
@@ -121,6 +141,10 @@ button:disabled {
   text-decoration: none;
 }
 
+.volver:hover {
+  text-decoration: underline;
+}
+
 .nota {
   color: #b9bfd0;
   font-size: 13px;
@@ -132,7 +156,7 @@ button:disabled {
   background: #1b2239;
   border: 1px solid #39415d;
   border-radius: 14px;
-  padding: 20px;
+  padding: 22px;
   margin-top: 30px;
   text-align: left;
 }
@@ -144,6 +168,20 @@ button:disabled {
 .informacion p {
   color: #c5c8d5;
   line-height: 1.7;
+}
+
+.informacion ul {
+  line-height: 1.8;
+}
+
+.etiqueta-plan {
+  display: inline-block;
+  background: #343451;
+  color: #e7c77b;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  margin: 8px auto;
 }
 
 .modal {
@@ -199,6 +237,18 @@ button:disabled {
   color: white;
 }
 
+.aviso {
+  background: #252b43;
+  border-left: 4px solid #d9b45e;
+  border-radius: 8px;
+  padding: 14px;
+  color: #d8dbea;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 20px;
+  text-align: left;
+}
+
 @media(max-width: 600px) {
   body {
     padding: 22px 12px;
@@ -206,6 +256,10 @@ button:disabled {
 
   h1 {
     font-size: 29px;
+  }
+
+  .plan {
+    padding: 24px 17px;
   }
 }
 </style>
@@ -229,28 +283,48 @@ button:disabled {
 
   <section class="planes">
 
+    <!-- PLAN BÁSICO -->
+
     <article class="plan">
 
-      <h2>Básico</h2>
+      <h2>Básica</h2>
 
       <div class="precio">
         0,99 € <small>pago único</small>
       </div>
 
+      <span class="etiqueta-plan">
+        Para siempre
+      </span>
+
+      <div class="almacenamiento">
+        250 MB de almacenamiento
+      </div>
+
       <ul>
-        <li>Tareas y recordatorios</li>
-        <li>Calendario personal</li>
-        <li>Finanzas personales</li>
-        <li>Lista de la compra</li>
-        <li>Notas y documentos</li>
-        <li>Acceso a tu cuenta personal</li>
+        <li>Gestión de tareas.</li>
+        <li>Calendario personal.</li>
+        <li>Recordatorios.</li>
+        <li>Finanzas personales.</li>
+        <li>Lista de la compra.</li>
+        <li>Notas personales.</li>
+        <li>Documentos y archivos adjuntos.</li>
+        <li>Copias de seguridad manuales.</li>
+        <li>Acceso a tu cuenta personal.</li>
       </ul>
 
+      <p class="descripcion">
+        Todas las funciones actuales de VIDA FÁCIL
+        para organizar tu vida diaria.
+      </p>
+
       <button onclick="seleccionarPlan('Basico')">
-        Elegir Básico
+        Elegir Básica
       </button>
 
     </article>
+
+    <!-- PLAN PREMIUM -->
 
     <article class="plan destacado">
 
@@ -262,20 +336,39 @@ button:disabled {
         3,99 € <small>/ mes</small>
       </div>
 
+      <span class="etiqueta-plan">
+        7 días de prueba gratuita
+      </span>
+
+      <div class="almacenamiento">
+        2 GB de almacenamiento
+      </div>
+
       <ul>
-        <li>Todo lo incluido en Básico</li>
-        <li>Estadísticas y gráficos</li>
-        <li>Más capacidad para documentos</li>
-        <li>Personalización avanzada</li>
-        <li>Herramientas adicionales</li>
-        <li>Organización avanzada</li>
+        <li>Todo lo incluido en Básica.</li>
+        <li>Estadísticas y gráficos avanzados.</li>
+        <li>Presupuestos mensuales.</li>
+        <li>Objetivos de ahorro.</li>
+        <li>Tareas recurrentes avanzadas.</li>
+        <li>Recordatorios avanzados.</li>
+        <li>Personalización de colores y apariencia.</li>
+        <li>Copias de seguridad automáticas.</li>
+        <li>Organización avanzada de documentos.</li>
+        <li>Mayor capacidad para archivos.</li>
       </ul>
+
+      <p class="descripcion">
+        Más herramientas para controlar tu tiempo,
+        tus gastos y tu organización.
+      </p>
 
       <button onclick="seleccionarPlan('Premium')">
         Elegir Premium
       </button>
 
     </article>
+
+    <!-- PLAN FAMILIAR -->
 
     <article class="plan">
 
@@ -285,16 +378,33 @@ button:disabled {
         5,99 € <small>/ mes</small>
       </div>
 
+      <span class="etiqueta-plan">
+        Hasta 5 miembros
+      </span>
+
+      <div class="almacenamiento">
+        5 GB compartidos
+      </div>
+
       <ul>
-        <li>Todo lo incluido en Premium</li>
-        <li>Hasta 5 cuentas independientes</li>
-        <li>Espacio familiar compartido</li>
-        <li>Calendario compartido</li>
-        <li>Tareas familiares</li>
-        <li>Lista de compra compartida</li>
-        <li>Gastos del hogar</li>
-        <li>Gestión de miembros</li>
+        <li>Todo lo incluido en Premium.</li>
+        <li>Hasta 5 cuentas independientes.</li>
+        <li>Espacio familiar compartido.</li>
+        <li>Calendario familiar compartido.</li>
+        <li>Tareas del hogar compartidas.</li>
+        <li>Lista de la compra compartida.</li>
+        <li>Control de gastos comunes.</li>
+        <li>Documentos familiares compartidos.</li>
+        <li>Datos personales privados.</li>
+        <li>Invitaciones mediante código.</li>
+        <li>Gestión de los miembros por el titular.</li>
       </ul>
+
+      <p class="descripcion">
+        Organiza tu hogar con tu familia.
+        Cada miembro tendrá su propia cuenta
+        y decidirá qué información comparte.
+      </p>
 
       <button onclick="seleccionarPlan('Familiar')">
         Elegir Familiar
@@ -304,31 +414,113 @@ button:disabled {
 
   </section>
 
+  <!-- PRUEBA PREMIUM -->
+
   <div class="informacion">
 
     <h2>Prueba Premium gratuita</h2>
 
     <p>
-      Estamos preparando una prueba gratuita de 7 días de Premium,
-      sin necesidad de introducir una tarjeta.
+      Premium incluirá 7 días de prueba gratuita
+      sin necesidad de introducir una tarjeta bancaria.
     </p>
 
     <p>
-      Esta prueba todavía no está disponible. Cuando se active,
-      podrás conocer todas sus condiciones antes de comenzar.
+      Durante la prueba podrás conocer las herramientas
+      avanzadas de VIDA FÁCIL.
     </p>
 
     <p>
-      Nuestro objetivo es que puedas cambiar de plan sin perder
-      la información guardada en tu cuenta.
+      Cuando termine la prueba, si no contratas Premium,
+      tu cuenta volverá al plan Básico y conservarás
+      tus datos.
+    </p>
+
+    <p>
+      La prueba gratuita todavía no está activada.
+      Te mostraremos todas las condiciones antes
+      de que puedas comenzar.
     </p>
 
   </div>
 
+  <!-- FUNCIONAMIENTO FAMILIAR -->
+
+  <div class="informacion">
+
+    <h2>¿Cómo funciona el plan Familiar?</h2>
+
+    <p>
+      El titular de la suscripción podrá invitar
+      hasta a cuatro personas mediante un código
+      de invitación.
+    </p>
+
+    <p>
+      Cada miembro tendrá su propia cuenta y podrá
+      entrar con sus credenciales personales.
+    </p>
+
+    <p>
+      Cada persona decidirá qué información mantiene
+      privada y qué información comparte con la familia.
+    </p>
+
+    <ul>
+      <li>
+        <strong>Información privada:</strong>
+        notas personales, documentos privados y gastos personales.
+      </li>
+      <li>
+        <strong>Información compartida:</strong>
+        calendario familiar, tareas, compras y gastos comunes.
+      </li>
+      <li>
+        <strong>Titular:</strong>
+        podrá gestionar las invitaciones y los miembros.
+      </li>
+    </ul>
+
+  </div>
+
+  <!-- ALMACENAMIENTO -->
+
+  <div class="informacion">
+
+    <h2>Espacio para tus documentos</h2>
+
+    <p>
+      Cada plan tendrá una capacidad de almacenamiento
+      determinada para documentos y archivos adjuntos.
+    </p>
+
+    <ul>
+      <li>Básica: 250 MB.</li>
+      <li>Premium: 2 GB.</li>
+      <li>Familiar: 5 GB compartidos entre sus miembros.</li>
+    </ul>
+
+    <p>
+      Los límites se aplicarán cuando esté habilitado
+      el almacenamiento en la nube.
+    </p>
+
+  </div>
+
+  <div class="aviso">
+    <strong>Información importante:</strong>
+    Los precios y características describen los planes
+    previstos de VIDA FÁCIL. La contratación, los cobros,
+    las pruebas gratuitas, los límites de almacenamiento
+    en la nube y las funciones familiares todavía
+    no están habilitados.
+    Seleccionar un plan no realiza ningún cobro ni activa
+    automáticamente sus ventajas.
+  </div>
+
   <p class="nota">
-    La contratación y los pagos todavía no están habilitados.
-    Seleccionar un plan no realiza ningún cobro ni modifica
-    las funciones disponibles en tu cuenta.
+    Queremos que puedas cambiar de plan sin perder
+    la información guardada en tu cuenta.
   </p>
 
   <a class="volver" href="index.html">
@@ -336,6 +528,8 @@ button:disabled {
   </a>
 
 </main>
+
+<!-- MODAL -->
 
 <div class="modal" id="modalPlan" role="dialog"
      aria-modal="true" aria-labelledby="tituloModal">
@@ -364,35 +558,48 @@ button:disabled {
 <script type="module">
 
 import { auth, guardarPlanSeleccionado } from "./firebase.js";
-import { onAuthStateChanged } from
-  "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const planes = {
+
   Basico: {
-    nombre: "Básico",
-    precio: "0,99 € - pago único"
+    nombre: "Básica",
+    precio: "0,99 € - pago único",
+    almacenamiento: "250 MB"
   },
 
   Premium: {
     nombre: "Premium",
-    precio: "3,99 € / mes"
+    precio: "3,99 € / mes",
+    almacenamiento: "2 GB"
   },
 
   Familiar: {
     nombre: "Familiar",
-    precio: "5,99 € / mes"
+    precio: "5,99 € / mes",
+    almacenamiento: "5 GB compartidos"
   }
+
 };
 
 let guardando = false;
 
 function esperarUsuario() {
+
   return new Promise((resolve) => {
+
     const cancelar = onAuthStateChanged(auth, (usuario) => {
+
       cancelar();
       resolve(usuario);
+
     });
+
   });
+
 }
 
 window.seleccionarPlan = async function(clave) {
@@ -402,8 +609,10 @@ window.seleccionarPlan = async function(clave) {
   const plan = planes[clave];
 
   if (!plan) {
+
     alert("No se ha podido identificar el plan.");
     return;
+
   }
 
   const modal = document.getElementById("modalPlan");
@@ -413,8 +622,13 @@ window.seleccionarPlan = async function(clave) {
   const botonCerrar = document.getElementById("botonCerrar");
 
   nombre.textContent = plan.nombre;
-  precio.textContent = "Precio: " + plan.precio;
+
+  precio.textContent =
+    "Precio: " + plan.precio +
+    " · Almacenamiento previsto: " + plan.almacenamiento;
+
   mensaje.textContent = "Guardando tu selección...";
+
   botonCerrar.disabled = true;
 
   modal.classList.add("contenido-visible");
@@ -426,9 +640,15 @@ window.seleccionarPlan = async function(clave) {
     const usuario = await esperarUsuario();
 
     if (!usuario) {
-      alert("Para seleccionar un plan, primero debes iniciar sesión.");
+
+      alert(
+        "Para seleccionar un plan, primero debes iniciar sesión."
+      );
+
       window.location.href = "acceso.html";
+
       return;
+
     }
 
     await guardarPlanSeleccionado(usuario.uid, clave);
@@ -448,6 +668,7 @@ window.seleccionarPlan = async function(clave) {
   } finally {
 
     guardando = false;
+
     botonCerrar.disabled = false;
 
   }
@@ -455,15 +676,19 @@ window.seleccionarPlan = async function(clave) {
 };
 
 window.cerrarModal = function() {
+
   document.getElementById("modalPlan")
     .classList.remove("contenido-visible");
+
 };
 
 document.getElementById("modalPlan")
   .addEventListener("click", function(evento) {
 
     if (evento.target === this && !guardando) {
+
       window.cerrarModal();
+
     }
 
   });
@@ -471,7 +696,9 @@ document.getElementById("modalPlan")
 document.addEventListener("keydown", function(evento) {
 
   if (evento.key === "Escape" && !guardando) {
+
     window.cerrarModal();
+
   }
 
 });
