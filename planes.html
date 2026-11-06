@@ -109,6 +109,11 @@ button:hover {
   background: #f0d38c;
 }
 
+button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
 .volver {
   display: inline-block;
   margin-top: 30px;
@@ -140,8 +145,6 @@ button:hover {
   color: #c5c8d5;
   line-height: 1.7;
 }
-
-/* VENTANA DE CONFIRMACIÓN */
 
 .modal {
   display: none;
@@ -187,6 +190,10 @@ button:hover {
   line-height: 1.7;
 }
 
+#mensajeModal {
+  margin-top: 15px;
+}
+
 .boton-cerrar {
   background: #343451;
   color: white;
@@ -222,8 +229,6 @@ button:hover {
 
   <section class="planes">
 
-    <!-- PLAN BÁSICO -->
-
     <article class="plan">
 
       <h2>Básico</h2>
@@ -241,13 +246,11 @@ button:hover {
         <li>Acceso a tu cuenta personal</li>
       </ul>
 
-      <button onclick="seleccionarPlan('Básico', '0,99 € - pago único')">
+      <button onclick="seleccionarPlan('Basico')">
         Elegir Básico
       </button>
 
     </article>
-
-    <!-- PLAN PREMIUM -->
 
     <article class="plan destacado">
 
@@ -268,13 +271,11 @@ button:hover {
         <li>Organización avanzada</li>
       </ul>
 
-      <button onclick="seleccionarPlan('Premium', '3,99 € / mes')">
+      <button onclick="seleccionarPlan('Premium')">
         Elegir Premium
       </button>
 
     </article>
-
-    <!-- PLAN FAMILIAR -->
 
     <article class="plan">
 
@@ -295,7 +296,7 @@ button:hover {
         <li>Gestión de miembros</li>
       </ul>
 
-      <button onclick="seleccionarPlan('Familiar', '5,99 € / mes')">
+      <button onclick="seleccionarPlan('Familiar')">
         Elegir Familiar
       </button>
 
@@ -326,7 +327,8 @@ button:hover {
 
   <p class="nota">
     La contratación y los pagos todavía no están habilitados.
-    Seleccionar un plan no realiza ningún cobro ni modifica tu cuenta.
+    Seleccionar un plan no realiza ningún cobro ni modifica
+    las funciones disponibles en tu cuenta.
   </p>
 
   <a class="volver" href="index.html">
@@ -334,8 +336,6 @@ button:hover {
   </a>
 
 </main>
-
-<!-- VENTANA DE CONFIRMACIÓN -->
 
 <div class="modal" id="modalPlan" role="dialog"
      aria-modal="true" aria-labelledby="tituloModal">
@@ -348,17 +348,12 @@ button:hover {
 
     <p class="modal-texto" id="precioElegido"></p>
 
-    <p class="modal-texto">
-      Has seleccionado este plan correctamente.
-      La contratación estará disponible próximamente.
+    <p class="modal-texto" id="mensajeModal">
+      Guardando tu selección...
     </p>
 
-    <p class="modal-texto">
-      No se ha realizado ningún cobro ni se ha cambiado
-      el plan de tu cuenta.
-    </p>
-
-    <button class="boton-cerrar" onclick="cerrarModal()">
+    <button class="boton-cerrar" id="botonCerrar"
+            onclick="cerrarModal()" disabled>
       Entendido
     </button>
 
@@ -366,40 +361,117 @@ button:hover {
 
 </div>
 
-<script>
+<script type="module">
 
-function seleccionarPlan(plan, precio) {
+import { auth, guardarPlanSeleccionado } from "./firebase.js";
+import { onAuthStateChanged } from
+  "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-  document.getElementById("planElegido").textContent = plan;
+const planes = {
+  Basico: {
+    nombre: "Básico",
+    precio: "0,99 € - pago único"
+  },
 
-  document.getElementById("precioElegido").textContent =
-    "Precio: " + precio;
+  Premium: {
+    nombre: "Premium",
+    precio: "3,99 € / mes"
+  },
 
-  document.getElementById("modalPlan")
-    .classList.add("contenido-visible");
+  Familiar: {
+    nombre: "Familiar",
+    precio: "5,99 € / mes"
+  }
+};
 
+let guardando = false;
+
+function esperarUsuario() {
+  return new Promise((resolve) => {
+    const cancelar = onAuthStateChanged(auth, (usuario) => {
+      cancelar();
+      resolve(usuario);
+    });
+  });
 }
 
-function cerrarModal() {
+window.seleccionarPlan = async function(clave) {
 
+  if (guardando) return;
+
+  const plan = planes[clave];
+
+  if (!plan) {
+    alert("No se ha podido identificar el plan.");
+    return;
+  }
+
+  const modal = document.getElementById("modalPlan");
+  const nombre = document.getElementById("planElegido");
+  const precio = document.getElementById("precioElegido");
+  const mensaje = document.getElementById("mensajeModal");
+  const botonCerrar = document.getElementById("botonCerrar");
+
+  nombre.textContent = plan.nombre;
+  precio.textContent = "Precio: " + plan.precio;
+  mensaje.textContent = "Guardando tu selección...";
+  botonCerrar.disabled = true;
+
+  modal.classList.add("contenido-visible");
+
+  guardando = true;
+
+  try {
+
+    const usuario = await esperarUsuario();
+
+    if (!usuario) {
+      alert("Para seleccionar un plan, primero debes iniciar sesión.");
+      window.location.href = "acceso.html";
+      return;
+    }
+
+    await guardarPlanSeleccionado(usuario.uid, clave);
+
+    mensaje.textContent =
+      "Tu selección se ha guardado correctamente en tu cuenta. " +
+      "Recuerda que todavía no has contratado ni activado este plan.";
+
+  } catch (error) {
+
+    console.error("Error al guardar el plan:", error);
+
+    mensaje.textContent =
+      "No se ha podido guardar tu selección. " +
+      "Comprueba tu conexión e inténtalo de nuevo.";
+
+  } finally {
+
+    guardando = false;
+    botonCerrar.disabled = false;
+
+  }
+
+};
+
+window.cerrarModal = function() {
   document.getElementById("modalPlan")
     .classList.remove("contenido-visible");
-
-}
+};
 
 document.getElementById("modalPlan")
   .addEventListener("click", function(evento) {
 
-    if (evento.target === this) {
-      cerrarModal();
+    if (evento.target === this && !guardando) {
+      window.cerrarModal();
     }
 
   });
 
 document.addEventListener("keydown", function(evento) {
 
-  if (evento.key === "Escape") {
-    cerrarModal();
+  if (evento.key === "Escape" && !guardando) {
+    window.cerrarModal();
   }
 
 });
