@@ -149,6 +149,15 @@ button.eliminar {
 .perfil-inicio h2 {margin:0 0 8px}
 .estado {color:var(--verde);font-size:13px}
 .estado.error {color:var(--rojo)}
+.plan-inicio {
+  background:var(--panel);
+  border:1px solid #343951;
+  border-radius:15px;
+  padding:18px 20px;
+  margin:15px 0;
+}
+.plan-inicio h2 {margin-top:0}
+.plan-estado {color:var(--verde);font-size:13px}
 .documento {
   background:var(--panel2);
   border:1px solid #3a415d;
@@ -186,27 +195,6 @@ button.editar {
   padding:8px 11px;
   border-radius:7px;
   cursor:pointer;
-}
-.plan-inicio {
-  background:linear-gradient(135deg,#252b43,#1b2034);
-  border:1px solid var(--oro);
-  border-radius:15px;
-  padding:18px 20px;
-  margin:15px 0;
-}
-.plan-inicio h2 {margin:0 0 12px}
-.plan-inicio p {margin:7px 0;color:var(--suave)}
-.plan-inicio strong {color:var(--oro)}
-.plan-estado {font-size:13px;color:var(--verde)}
-.plan-enlace {
-  display:inline-block;
-  margin-top:10px;
-  color:#171717;
-  background:var(--oro);
-  text-decoration:none;
-  padding:10px 14px;
-  border-radius:8px;
-  font-weight:bold;
 }
 footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 @media(max-width:600px) {
@@ -257,10 +245,10 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 
   <div class="plan-inicio">
     <h2>💎 Mi plan</h2>
-    <p>Plan seleccionado: <strong id="planNombre">Consultando...</strong></p>
-    <p>Precio: <strong id="planPrecio">—</strong></p>
-    <p id="planEstado" class="plan-estado">Consultando tu plan...</p>
-    <a class="plan-enlace" href="planes.html">Ver planes y precios</a>
+    <p id="planNombre">Consultando tu plan...</p>
+    <p id="planPrecio" class="subtitulo"></p>
+    <p id="planEstado" class="plan-estado"></p>
+    <a class="perfil-link" href="planes.html">Ver planes y precios</a>
   </div>
 
   <p id="estadoNube" class="estado">Conectando con tu espacio personal...</p>
@@ -375,3 +363,1189 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
       accept="image/jpeg,image/png,image/webp,application/pdf"
     >
     <p class="subtitulo">Formatos: JPG, PNG, WEBP y PDF. Máximo 10 MB por archivo.</p>
+
+    <label for="documentoEnlace">Enlace al documento (opcional):</label>
+    <input id="documentoEnlace" type="url" placeholder="https://...">
+
+    <button class="accion" onclick="agregarDocumento()">Guardar documento</button>
+
+    <p class="subtitulo">
+      Los datos se guardan en Firebase y el archivo adjunto se guarda
+      en este dispositivo y navegador.
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>Mis documentos guardados</h2>
+    <input id="buscarDocumento" type="search" placeholder="Buscar por nombre o categoría..." oninput="mostrarDocumentos()">
+    <div id="listaDocumentos"></div>
+  </div>
+</section>
+
+</main>
+<footer>VIDA FÁCIL · Todo en orden. Más tiempo para vivir.</footer>
+
+<script type="module">
+import {
+  auth,
+  db,
+  guardarDato,
+  obtenerDatos,
+  eliminarDato,
+  obtenerPlanSeleccionado
+} from "./firebase.js";
+
+import {
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+let usuarioActual = null;
+let aplicacionLista = false;
+let tareas = [];
+let recordatorios = [];
+let movimientos = [];
+let compras = [];
+let notas = [];
+let documentos = [];
+
+// =====================================
+// ALMACENAMIENTO LOCAL DE ARCHIVOS
+// =====================================
+
+function abrirBaseArchivos() {
+  return new Promise((resolve, reject) => {
+    const solicitud = indexedDB.open("vidaFacilArchivos", 1);
+
+    solicitud.onupgradeneeded = () => {
+      const base = solicitud.result;
+
+      if (!base.objectStoreNames.contains("archivos")) {
+        base.createObjectStore("archivos", {keyPath:"id"});
+      }
+    };
+
+    solicitud.onsuccess = () => resolve(solicitud.result);
+    solicitud.onerror = () => reject(solicitud.error);
+  });
+}
+
+async function guardarArchivoLocal(archivo) {
+  const base = await abrirBaseArchivos();
+
+  const id = crypto.randomUUID
+    ? crypto.randomUUID()
+    : "archivo-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+
+  return new Promise((resolve, reject) => {
+    const transaccion = base.transaction("archivos", "readwrite");
+    const almacen = transaccion.objectStore("archivos");
+
+    almacen.put({
+      id,
+      nombre: archivo.name,
+      tipo: archivo.type,
+      contenido: archivo
+    });
+
+    transaccion.oncomplete = () => {
+      base.close();
+      resolve(id);
+    };
+
+    transaccion.onerror = () => {
+      base.close();
+      reject(transaccion.error);
+    };
+
+    transaccion.onabort = () => {
+      base.close();
+      reject(transaccion.error || new Error("No se pudo guardar el archivo."));
+    };
+  });
+}
+
+async function obtenerArchivoLocal(id) {
+  const base = await abrirBaseArchivos();
+
+  return new Promise((resolve, reject) => {
+    const transaccion = base.transaction("archivos", "readonly");
+    const solicitud = transaccion.objectStore("archivos").get(id);
+
+    solicitud.onsuccess = () => {
+      const resultado = solicitud.result || null;
+      base.close();
+      resolve(resultado);
+    };
+
+    solicitud.onerror = () => {
+      base.close();
+      reject(solicitud.error);
+    };
+  });
+}
+
+async function eliminarArchivoLocal(id) {
+  if (!id) return;
+
+  const base = await abrirBaseArchivos();
+
+  return new Promise((resolve, reject) => {
+    const transaccion = base.transaction("archivos", "readwrite");
+    transaccion.objectStore("archivos").delete(id);
+
+    transaccion.oncomplete = () => {
+      base.close();
+      resolve();
+    };
+
+    transaccion.onerror = () => {
+      base.close();
+      reject(transaccion.error);
+    };
+  });
+}
+
+async function abrirArchivo(id, nombre) {
+  if (!id) return;
+
+  const ventana = window.open("about:blank", "_blank");
+
+  try {
+    const registro = await obtenerArchivoLocal(id);
+
+    if (!registro || !registro.contenido) {
+      if (ventana) ventana.close();
+      alert("No se encuentra el archivo en este dispositivo.");
+      return;
+    }
+
+    const url = URL.createObjectURL(registro.contenido);
+
+    if (ventana) {
+      ventana.location.href = url;
+    } else {
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = nombre || registro.nombre || "documento";
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+    }
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+  } catch (error) {
+    if (ventana) ventana.close();
+    console.error(error);
+    alert("No se ha podido abrir el archivo.");
+  }
+}
+
+// =====================================
+// FUNCIONES GENERALES
+// =====================================
+
+function leerLocal(clave) {
+  try {
+    const valor = JSON.parse(localStorage.getItem(clave));
+    return Array.isArray(valor) ? valor : [];
+  } catch {
+    return [];
+  }
+}
+
+function guardarLocal() {
+  localStorage.setItem("vidaTareas", JSON.stringify(tareas));
+  localStorage.setItem("vidaRecordatorios", JSON.stringify(recordatorios));
+  localStorage.setItem("vidaMovimientos", JSON.stringify(movimientos));
+  localStorage.setItem("vidaCompras", JSON.stringify(compras));
+  localStorage.setItem("vidaNotas", JSON.stringify(notas));
+  localStorage.setItem("vidaDocumentos", JSON.stringify(documentos));
+}
+
+function escapar(texto) {
+  return String(texto ?? "").replace(/[&<>"']/g, letra => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[letra]);
+}
+
+function mostrarVacio(id, mensaje) {
+  document.getElementById(id).innerHTML = `<p class="vacio">${mensaje}</p>`;
+}
+
+function euros(valor) {
+  return Number(valor || 0).toLocaleString("es-ES", {
+    style:"currency",currency:"EUR"
+  });
+}
+
+// =====================================
+// PERFIL EN LA PÁGINA DE INICIO
+// =====================================
+
+function actualizarPerfil(usuario) {
+  const nombreGuardado =
+    localStorage.getItem("vidaNombre") ||
+    usuario.displayName ||
+    "Usuario de VIDA FÁCIL";
+
+  const correoGuardado =
+    localStorage.getItem("vidaCorreo") ||
+    usuario.email ||
+    "";
+
+  const fotoGuardada =
+    localStorage.getItem("vidaFoto") ||
+    usuario.photoURL ||
+    "";
+
+  document.getElementById("nombreInicio").textContent =
+    "¡Hola, " + nombreGuardado + "!";
+
+  document.getElementById("correoInicio").textContent =
+    correoGuardado;
+
+  const imagen = document.getElementById("fotoInicio");
+
+  if (fotoGuardada) {
+    imagen.src = fotoGuardada;
+    imagen.alt = "Fotografía de " + nombreGuardado;
+    imagen.style.display = "block";
+  } else {
+    imagen.style.display = "none";
+    imagen.removeAttribute("src");
+  }
+}
+
+// =====================================
+// PLAN SELECCIONADO
+// =====================================
+
+async function actualizarPlanInicio(usuario) {
+  const nombre = document.getElementById("planNombre");
+  const precio = document.getElementById("planPrecio");
+  const estado = document.getElementById("planEstado");
+
+  try {
+    const plan = await obtenerPlanSeleccionado(usuario.uid);
+
+    if (!plan) {
+      nombre.textContent = "Todavía no has seleccionado ningún plan.";
+      precio.textContent = "";
+      estado.textContent = "";
+      return;
+    }
+
+    nombre.textContent = plan.nombre || "Plan seleccionado";
+    precio.textContent = plan.precio || "";
+
+    if (plan.estado === "seleccionado_sin_contratar") {
+      estado.textContent = "Seleccionado, pendiente de contratación.";
+    } else {
+      estado.textContent = plan.estado || "";
+    }
+  } catch (error) {
+    console.error("Error consultando el plan:", error);
+    nombre.textContent = "No se ha podido consultar tu plan.";
+    precio.textContent = "";
+    estado.textContent = "";
+  }
+}
+
+// =====================================
+// MIGRACIÓN Y CARGA DE DATOS
+// =====================================
+
+async function migrarDatosAntiguos() {
+  const marca = "vidaMigracionCompletada";
+
+  if (localStorage.getItem(marca) === "si") return;
+
+  const antiguos = {
+    tareas: leerLocal("vidaTareas"),
+    recordatorios: leerLocal("vidaRecordatorios"),
+    movimientos: leerLocal("vidaMovimientos"),
+    compras: leerLocal("vidaCompras"),
+    notas: leerLocal("vidaNotas"),
+    documentos: leerLocal("vidaDocumentos")
+  };
+
+  for (const apartado of Object.keys(antiguos)) {
+    const existentes = await obtenerDatos(usuarioActual.uid, apartado);
+
+    if (existentes.length === 0) {
+      for (const elemento of antiguos[apartado]) {
+        const {id, ...datos} = elemento;
+        await guardarDato(usuarioActual.uid, apartado, datos);
+      }
+    }
+  }
+
+  localStorage.setItem(marca, "si");
+}
+
+async function cargarDatosNube() {
+  tareas = await obtenerDatos(usuarioActual.uid, "tareas");
+  recordatorios = await obtenerDatos(usuarioActual.uid, "recordatorios");
+  movimientos = await obtenerDatos(usuarioActual.uid, "movimientos");
+  compras = await obtenerDatos(usuarioActual.uid, "compras");
+  notas = await obtenerDatos(usuarioActual.uid, "notas");
+  documentos = await obtenerDatos(usuarioActual.uid, "documentos");
+
+  guardarLocal();
+}
+
+async function guardarNuevo(apartado, lista, datos) {
+  try {
+    const referencia = await guardarDato(usuarioActual.uid, apartado, datos);
+
+    lista.push({...datos, id:referencia.id});
+    guardarLocal();
+    mostrarTodo();
+
+    return true;
+
+  } catch (error) {
+    console.error("Error guardando en Firebase:", error);
+    alert("No se ha podido guardar en la nube.\n\n" +
+      (error.code || error.message || "Error desconocido"));
+
+    return false;
+  }
+}
+
+async function guardarCambio(apartado, lista, indice, datos) {
+  try {
+    const anterior = lista[indice];
+
+    if (anterior.id) {
+      await eliminarDato(usuarioActual.uid, apartado, anterior.id);
+    }
+
+    const referencia = await guardarDato(usuarioActual.uid, apartado, datos);
+
+    lista[indice] = {...datos, id:referencia.id};
+
+    guardarLocal();
+    mostrarTodo();
+
+  } catch (error) {
+    console.error("Error actualizando en Firebase:", error);
+    alert("No se ha podido actualizar el dato.\n\n" +
+      (error.code || error.message || "Error desconocido"));
+  }
+}
+
+async function borrarDato(apartado, lista, indice) {
+  try {
+    const elemento = lista[indice];
+
+    if (elemento.id) {
+      await eliminarDato(usuarioActual.uid, apartado, elemento.id);
+    }
+
+    lista.splice(indice, 1);
+
+    guardarLocal();
+    mostrarTodo();
+
+  } catch (error) {
+    console.error("Error eliminando en Firebase:", error);
+    alert("No se ha podido eliminar el dato.\n\n" +
+      (error.code || error.message || "Error desconocido"));
+  }
+}
+
+// =====================================
+// NAVEGACIÓN
+// =====================================
+
+function navegar(seccion) {
+  document.querySelectorAll(".seccion").forEach(s =>
+    s.classList.remove("active")
+  );
+
+  document.querySelectorAll("nav button").forEach(b =>
+    b.classList.remove("active")
+  );
+
+  document.getElementById(seccion).classList.add("active");
+
+  const boton = document.querySelector(
+    `nav button[data-seccion="${seccion}"]`
+  );
+
+  if (boton) boton.classList.add("active");
+
+  actualizarResumen();
+}
+
+document.querySelectorAll("nav button").forEach(boton => {
+  boton.addEventListener("click", () => navegar(boton.dataset.seccion));
+});
+
+// =====================================
+// TAREAS
+// =====================================
+
+async function agregarTarea() {
+  if (!aplicacionLista) return;
+
+  const campo = document.getElementById("tareaTexto");
+  const texto = campo.value.trim();
+
+  if (!texto) return alert("Escribe una tarea.");
+
+  const guardado = await guardarNuevo("tareas", tareas, {
+    texto,
+    hecha:false
+  });
+
+  if (guardado) campo.value = "";
+}
+
+function cambiarTarea(i, valor) {
+  if (aplicacionLista) {
+    guardarCambio("tareas", tareas, i, {
+      texto:tareas[i].texto,
+      hecha:valor
+    });
+  }
+}
+
+function eliminarTarea(i) {
+  if (aplicacionLista) borrarDato("tareas", tareas, i);
+}
+
+function mostrarTareas() {
+  const lista = document.getElementById("listaTareas");
+  lista.innerHTML = "";
+
+  if (!tareas.length) {
+    return mostrarVacio("listaTareas", "Todavía no tienes tareas.");
+  }
+
+  tareas.forEach((t,i) => {
+    const fila = document.createElement("div");
+    fila.className = "item";
+
+    fila.innerHTML = `
+      <label>
+        <input type="checkbox" ${t.hecha ? "checked" : ""}
+          onchange="cambiarTarea(${i},this.checked)">
+        <span class="${t.hecha ? "completado" : ""}">${escapar(t.texto)}</span>
+      </label>
+      <button class="eliminar" onclick="eliminarTarea(${i})">Eliminar</button>
+    `;
+
+    lista.appendChild(fila);
+  });
+}
+
+// =====================================
+// RECORDATORIOS
+// =====================================
+
+async function agregarRecordatorio() {
+  if (!aplicacionLista) return;
+
+  const texto = document.getElementById("recordatorioTexto").value.trim();
+  const fecha = document.getElementById("recordatorioFecha").value;
+
+  if (!texto || !fecha) {
+    return alert("Escribe el recordatorio y elige una fecha.");
+  }
+
+  const guardado = await guardarNuevo("recordatorios", recordatorios, {
+    texto,
+    fecha
+  });
+
+  if (guardado) {
+    document.getElementById("recordatorioTexto").value = "";
+    document.getElementById("recordatorioFecha").value = "";
+  }
+}
+
+function eliminarRecordatorio(i) {
+  if (aplicacionLista) borrarDato("recordatorios", recordatorios, i);
+}
+
+function mostrarRecordatorios() {
+  const lista = document.getElementById("listaRecordatorios");
+  lista.innerHTML = "";
+
+  const ordenados = [...recordatorios].sort((a,b) =>
+    (a.fecha || "").localeCompare(b.fecha || "")
+  );
+
+  if (!ordenados.length) {
+    return mostrarVacio("listaRecordatorios", "No tienes recordatorios.");
+  }
+
+  ordenados.forEach(r => {
+    const indice = recordatorios.findIndex(x => x.id === r.id);
+
+    const fila = document.createElement("div");
+    fila.className = "item";
+
+    const contenido = document.createElement("span");
+    contenido.innerHTML =
+      `<strong>${escapar(r.texto)}</strong><br><small>${escapar(r.fecha)}</small>`;
+
+    const boton = document.createElement("button");
+    boton.className = "eliminar";
+    boton.textContent = "Eliminar";
+    boton.onclick = () => eliminarRecordatorio(indice);
+
+    fila.append(contenido, boton);
+    lista.appendChild(fila);
+  });
+}
+
+// =====================================
+// FINANZAS
+// =====================================
+
+async function agregarMovimiento() {
+  if (!aplicacionLista) return;
+
+  const tipo = document.getElementById("tipoMovimiento").value;
+  const concepto = document.getElementById("conceptoMovimiento").value.trim();
+  const cantidad = Number(document.getElementById("cantidadMovimiento").value);
+
+  if (!concepto || !Number.isFinite(cantidad) || cantidad <= 0) {
+    return alert("Introduce un concepto y una cantidad válida.");
+  }
+
+  const guardado = await guardarNuevo("movimientos", movimientos, {
+    tipo,
+    concepto,
+    cantidad
+  });
+
+  if (guardado) {
+    document.getElementById("conceptoMovimiento").value = "";
+    document.getElementById("cantidadMovimiento").value = "";
+  }
+}
+
+function eliminarMovimiento(i) {
+  if (aplicacionLista) borrarDato("movimientos", movimientos, i);
+}
+
+function mostrarMovimientos() {
+  const lista = document.getElementById("listaMovimientos");
+  lista.innerHTML = "";
+
+  let ingresos = 0;
+  let gastos = 0;
+
+  movimientos.forEach((m,i) => {
+    if (m.tipo === "ingreso") ingresos += Number(m.cantidad);
+    else gastos += Number(m.cantidad);
+
+    const fila = document.createElement("div");
+    fila.className = "item";
+
+    fila.innerHTML = `
+      <span>${escapar(m.concepto)} ·
+        <strong class="${m.tipo === "ingreso" ? "verde" : "rojo"}">
+          ${m.tipo === "ingreso" ? "+" : "-"}${euros(m.cantidad)}
+        </strong>
+      </span>
+      <button class="eliminar" onclick="eliminarMovimiento(${i})">Eliminar</button>
+    `;
+
+    lista.appendChild(fila);
+  });
+
+  if (!movimientos.length) {
+    mostrarVacio("listaMovimientos", "Todavía no hay movimientos.");
+  }
+
+  document.getElementById("totalIngresos").textContent = euros(ingresos);
+  document.getElementById("totalGastos").textContent = euros(gastos);
+  document.getElementById("balance").textContent = euros(ingresos - gastos);
+}
+
+// =====================================
+// LISTA DE LA COMPRA
+// =====================================
+
+async function agregarCompra() {
+  if (!aplicacionLista) return;
+
+  const campo = document.getElementById("compraTexto");
+  const texto = campo.value.trim();
+
+  if (!texto) return alert("Escribe un artículo.");
+
+  const guardado = await guardarNuevo("compras", compras, {
+    texto,
+    comprado:false
+  });
+
+  if (guardado) campo.value = "";
+}
+
+function cambiarCompra(i, valor) {
+  if (aplicacionLista) {
+    guardarCambio("compras", compras, i, {
+      texto:compras[i].texto,
+      comprado:valor
+    });
+  }
+}
+
+function eliminarCompra(i) {
+  if (aplicacionLista) borrarDato("compras", compras, i);
+}
+
+function mostrarCompra() {
+  const lista = document.getElementById("listaCompra");
+  lista.innerHTML = "";
+
+  if (!compras.length) {
+    return mostrarVacio("listaCompra", "Tu lista está vacía.");
+  }
+
+  compras.forEach((c,i) => {
+    const fila = document.createElement("div");
+    fila.className = "item";
+
+    fila.innerHTML = `
+      <label>
+        <input type="checkbox" ${c.comprado ? "checked" : ""}
+          onchange="cambiarCompra(${i},this.checked)">
+        <span class="${c.comprado ? "completado" : ""}">${escapar(c.texto)}</span>
+      </label>
+      <button class="eliminar" onclick="eliminarCompra(${i})">Eliminar</button>
+    `;
+
+    lista.appendChild(fila);
+  });
+}
+
+// =====================================
+// NOTAS
+// =====================================
+
+async function agregarNota() {
+  if (!aplicacionLista) return;
+
+  const titulo = document.getElementById("notaTitulo").value.trim();
+  const texto = document.getElementById("notaTexto").value.trim();
+
+  if (!titulo || !texto) {
+    return alert("Escribe un título y el contenido de la nota.");
+  }
+
+  const guardado = await guardarNuevo("notas", notas, {titulo, texto});
+
+  if (guardado) {
+    document.getElementById("notaTitulo").value = "";
+    document.getElementById("notaTexto").value = "";
+  }
+}
+
+function eliminarNota(i) {
+  if (aplicacionLista) borrarDato("notas", notas, i);
+}
+
+function mostrarNotas() {
+  const lista = document.getElementById("listaNotas");
+  lista.innerHTML = "";
+
+  if (!notas.length) {
+    return mostrarVacio("listaNotas", "Todavía no has guardado notas.");
+  }
+
+  notas.forEach((n,i) => {
+    const tarjeta = document.createElement("div");
+    tarjeta.className = "nota";
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = n.titulo;
+
+    const contenido = document.createElement("p");
+    contenido.textContent = n.texto;
+
+    const boton = document.createElement("button");
+    boton.className = "eliminar";
+    boton.textContent = "Eliminar";
+    boton.onclick = () => eliminarNota(i);
+
+    tarjeta.append(titulo, contenido, boton);
+    lista.appendChild(tarjeta);
+  });
+}
+
+// =====================================
+// DOCUMENTOS Y ARCHIVOS ADJUNTOS
+// =====================================
+
+async function agregarDocumento() {
+  if (!aplicacionLista) return;
+
+  const nombre = document.getElementById("documentoNombre").value.trim();
+  const categoria = document.getElementById("documentoCategoria").value;
+  const fecha = document.getElementById("documentoFecha").value;
+  const descripcion = document.getElementById("documentoDescripcion").value.trim();
+  const enlace = document.getElementById("documentoEnlace").value.trim();
+  const campoArchivo = document.getElementById("documentoArchivo");
+  const archivo = campoArchivo.files[0];
+
+  if (!nombre) {
+    alert("Escribe el nombre del documento.");
+    return;
+  }
+
+  if (archivo) {
+    const tiposPermitidos = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/pdf"
+    ];
+
+    if (!tiposPermitidos.includes(archivo.type)) {
+      alert("Solo puedes adjuntar fotografías JPG, PNG, WEBP o documentos PDF.");
+      return;
+    }
+
+    if (archivo.size > 10 * 1024 * 1024) {
+      alert("El archivo supera el límite de 10 MB.");
+      return;
+    }
+  }
+
+  if (enlace) {
+    try {
+      const direccion = new URL(enlace);
+
+      if (direccion.protocol !== "https:" && direccion.protocol !== "http:") {
+        throw new Error("Enlace no permitido");
+      }
+
+    } catch {
+      alert("Introduce un enlace válido que empiece por https:// o http://");
+      return;
+    }
+  }
+
+  let archivoId = null;
+
+  try {
+    if (archivo) {
+      archivoId = await guardarArchivoLocal(archivo);
+    }
+
+    const datos = {
+      nombre,
+      categoria,
+      fecha,
+      descripcion,
+      enlace,
+      archivoId,
+      nombreArchivo: archivo ? archivo.name : "",
+      tipoArchivo: archivo ? archivo.type : "",
+      tamanoArchivo: archivo ? archivo.size : 0
+    };
+
+    const referencia = await guardarDato(
+      usuarioActual.uid,
+      "documentos",
+      datos
+    );
+
+    documentos.push({
+      ...datos,
+      id:referencia.id
+    });
+
+    guardarLocal();
+    mostrarTodo();
+
+    document.getElementById("documentoNombre").value = "";
+    document.getElementById("documentoFecha").value = "";
+    document.getElementById("documentoDescripcion").value = "";
+    document.getElementById("documentoEnlace").value = "";
+    campoArchivo.value = "";
+
+    alert("¡Documento guardado correctamente!");
+
+  } catch (error) {
+    console.error("Error guardando documento:", error);
+
+    if (archivoId) {
+      try {
+        await eliminarArchivoLocal(archivoId);
+      } catch (errorLocal) {
+        console.error("No se pudo retirar el archivo local:", errorLocal);
+      }
+    }
+
+    alert(
+      "No se ha podido guardar el documento.\n\n" +
+      (error.code || error.message || "Error desconocido")
+    );
+  }
+}
+
+// EDITAR DOCUMENTO
+
+async function editarDocumento(i) {
+  if (!aplicacionLista) return;
+
+  const documento = documentos[i];
+  if (!documento) return;
+
+  const nombre = prompt("Nombre del documento:", documento.nombre || "");
+  if (nombre === null) return;
+
+  if (!nombre.trim()) {
+    alert("El nombre no puede estar vacío.");
+    return;
+  }
+
+  const categorias = [
+    "Personal", "Trabajo", "Vivienda",
+    "Facturas", "Estudios", "Otros"
+  ];
+
+  const categoriaActual = categorias.includes(documento.categoria)
+    ? documento.categoria
+    : "Otros";
+
+  const categoria = prompt(
+    "Categoría: Personal, Trabajo, Vivienda, Facturas, Estudios u Otros:",
+    categoriaActual
+  );
+
+  if (categoria === null) return;
+
+  const categoriaFinal = categorias.find(
+    c => c.toLowerCase() === categoria.trim().toLowerCase()
+  );
+
+  if (!categoriaFinal) {
+    alert("Escribe una categoría válida.");
+    return;
+  }
+
+  const fecha = prompt("Fecha (AAAA-MM-DD):", documento.fecha || "");
+  if (fecha === null) return;
+
+  const descripcion = prompt("Descripción:", documento.descripcion || "");
+  if (descripcion === null) return;
+
+  const enlace = prompt("Enlace opcional:", documento.enlace || "");
+  if (enlace === null) return;
+
+  if (enlace.trim()) {
+    try {
+      const direccion = new URL(enlace.trim());
+
+      if (
+        direccion.protocol !== "https:" &&
+        direccion.protocol !== "http:"
+      ) {
+        throw new Error("Enlace no permitido");
+      }
+
+    } catch {
+      alert("El enlace no es válido. Debe empezar por https:// o http://");
+      return;
+    }
+  }
+
+  const datos = {
+    nombre: nombre.trim(),
+    categoria: categoriaFinal,
+    fecha: fecha.trim(),
+    descripcion: descripcion.trim(),
+    enlace: enlace.trim(),
+    archivoId: documento.archivoId || null,
+    nombreArchivo: documento.nombreArchivo || "",
+    tipoArchivo: documento.tipoArchivo || "",
+    tamanoArchivo: documento.tamanoArchivo || 0
+  };
+
+  try {
+    if (documento.id) {
+      const referencia = doc(
+        db,
+        "usuarios",
+        usuarioActual.uid,
+        "documentos",
+        documento.id
+      );
+
+      await updateDoc(referencia, datos);
+
+    } else {
+      const referencia = await guardarDato(
+        usuarioActual.uid,
+        "documentos",
+        datos
+      );
+
+      documento.id = referencia.id;
+    }
+
+    documentos[i] = {
+      ...datos,
+      id: documento.id
+    };
+
+    guardarLocal();
+    mostrarTodo();
+
+    alert("¡Documento actualizado correctamente!");
+
+  } catch (error) {
+    console.error("Error actualizando documento:", error);
+
+    alert(
+      "No se ha podido actualizar el documento.\n\n" +
+      (error.code || error.message || "Error desconocido")
+    );
+  }
+}
+
+async function eliminarDocumento(i) {
+  if (!aplicacionLista) return;
+
+  const documento = documentos[i];
+  if (!documento) return;
+
+  if (!confirm("¿Quieres eliminar este documento y su archivo adjunto?")) {
+    return;
+  }
+
+  try {
+    if (documento.id) {
+      await eliminarDato(usuarioActual.uid, "documentos", documento.id);
+    }
+
+    if (documento.archivoId) {
+      await eliminarArchivoLocal(documento.archivoId);
+    }
+
+    documentos.splice(i, 1);
+    guardarLocal();
+    mostrarTodo();
+
+  } catch (error) {
+    console.error("Error eliminando documento:", error);
+    alert("No se ha podido eliminar el documento.\n\n" +
+      (error.code || error.message || "Error desconocido"));
+  }
+}
+
+function mostrarDocumentos() {
+  const lista = document.getElementById("listaDocumentos");
+  const buscador = document.getElementById("buscarDocumento");
+  const busqueda = buscador.value.trim().toLocaleLowerCase("es");
+
+  lista.innerHTML = "";
+
+  const filtrados = documentos
+    .map((documento, indice) => ({...documento, indice}))
+    .filter(documento =>
+      String(documento.nombre || "").toLocaleLowerCase("es").includes(busqueda) ||
+      String(documento.categoria || "").toLocaleLowerCase("es").includes(busqueda)
+    );
+
+  if (!filtrados.length) {
+    return mostrarVacio(
+      "listaDocumentos",
+      busqueda ? "No se encontraron documentos." : "Todavía no has guardado documentos."
+    );
+  }
+
+  filtrados.forEach(documento => {
+    const tarjeta = document.createElement("div");
+    tarjeta.className = "documento";
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = documento.nombre || "Documento sin nombre";
+
+    const categoria = document.createElement("p");
+    categoria.textContent = "Categoría: " + (documento.categoria || "Otros");
+
+    tarjeta.append(titulo, categoria);
+
+    if (documento.fecha) {
+      const fecha = document.createElement("p");
+      fecha.textContent = "Fecha: " + documento.fecha;
+      tarjeta.appendChild(fecha);
+    }
+
+    if (documento.descripcion) {
+      const descripcion = document.createElement("p");
+      descripcion.textContent = documento.descripcion;
+      tarjeta.appendChild(descripcion);
+    }
+
+    if (documento.archivoId) {
+      const informacion = document.createElement("p");
+      informacion.className = "archivo-info";
+      informacion.textContent =
+        "📎 Archivo adjunto: " + (documento.nombreArchivo || "Archivo");
+      tarjeta.appendChild(informacion);
+
+      const botonArchivo = document.createElement("button");
+      botonArchivo.className = "archivo-boton";
+      botonArchivo.textContent = "Abrir archivo adjunto";
+
+      botonArchivo.onclick = () =>
+        abrirArchivo(documento.archivoId, documento.nombreArchivo);
+
+      const accionesArchivo = document.createElement("div");
+      accionesArchivo.className = "documento-acciones";
+      accionesArchivo.appendChild(botonArchivo);
+      tarjeta.appendChild(accionesArchivo);
+    }
+
+    const acciones = document.createElement("div");
+    acciones.className = "documento-acciones";
+
+    if (documento.enlace) {
+      const enlace = document.createElement("a");
+      enlace.href = documento.enlace;
+      enlace.target = "_blank";
+      enlace.rel = "noopener noreferrer";
+      enlace.textContent = "Abrir enlace";
+      acciones.appendChild(enlace);
+    }
+
+    const botonEditar = document.createElement("button");
+    botonEditar.className = "editar";
+    botonEditar.textContent = "Editar";
+    botonEditar.onclick = () => editarDocumento(documento.indice);
+    acciones.appendChild(botonEditar);
+
+    const boton = document.createElement("button");
+    boton.className = "eliminar";
+    boton.textContent = "Eliminar";
+    boton.onclick = () => eliminarDocumento(documento.indice);
+
+    acciones.appendChild(boton);
+    tarjeta.appendChild(acciones);
+    lista.appendChild(tarjeta);
+  });
+}
+
+// =====================================
+// RESUMEN Y ACTUALIZACIÓN
+// =====================================
+
+function actualizarResumen() {
+  document.getElementById("resumenTareas").textContent =
+    tareas.filter(t => !t.hecha).length;
+
+  document.getElementById("resumenRecordatorios").textContent =
+    recordatorios.length;
+
+  const gastos = movimientos
+    .filter(m => m.tipo === "gasto")
+    .reduce((s,m) => s + Number(m.cantidad), 0);
+
+  document.getElementById("resumenGastos").textContent = euros(gastos);
+
+  document.getElementById("resumenCompra").textContent =
+    compras.filter(c => !c.comprado).length;
+}
+
+function mostrarTodo() {
+  mostrarTareas();
+  mostrarRecordatorios();
+  mostrarMovimientos();
+  mostrarCompra();
+  mostrarNotas();
+  mostrarDocumentos();
+  actualizarResumen();
+}
+
+// =====================================
+// FUNCIONES DISPONIBLES EN LA PÁGINA
+// =====================================
+
+Object.assign(window, {
+  agregarTarea,
+  cambiarTarea,
+  eliminarTarea,
+  agregarRecordatorio,
+  eliminarRecordatorio,
+  agregarMovimiento,
+  eliminarMovimiento,
+  agregarCompra,
+  cambiarCompra,
+  eliminarCompra,
+  agregarNota,
+  eliminarNota,
+  agregarDocumento,
+  editarDocumento,
+  eliminarDocumento,
+  mostrarDocumentos
+});
+
+// =====================================
+// INICIO DE SESIÓN Y CONEXIÓN
+// =====================================
+
+onAuthStateChanged(auth, async usuario => {
+  if (!usuario) {
+    window.location.href = "acceso.html";
+    return;
+  }
+
+  if (aplicacionLista) return;
+
+  usuarioActual = usuario;
+
+  actualizarPerfil(usuario);
+  await actualizarPlanInicio(usuario);
+
+  const estado = document.getElementById("estadoNube");
+
+  estado.classList.remove("error");
+  estado.textContent = "Conectando con tu espacio personal...";
+
+  try {
+    await migrarDatosAntiguos();
+    await cargarDatosNube();
+
+    aplicacionLista = true;
+
+    mostrarTodo();
+
+    estado.textContent = "✓ Tus datos están conectados con Firebase.";
+
+  } catch (error) {
+    console.error("Error al conectar con Firebase:", error);
+
+    estado.classList.add("error");
+
+    estado.textContent =
+      "Error de conexión: " +
+      (error.code || error.message || "Error desconocido");
+
+    alert(
+      "No se han podido cargar tus datos de la nube.\n\nCódigo: " +
+      (error.code || "sin código") +
+      "\nDetalle: " +
+      (error.message || "Error desconocido")
+    );
+  }
+});
+</script>
+</body>
+</html>
