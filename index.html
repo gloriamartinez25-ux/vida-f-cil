@@ -147,17 +147,15 @@ button.eliminar {
   background:var(--panel2);
 }
 .perfil-inicio h2 {margin:0 0 8px}
-.estado {color:var(--verde);font-size:13px}
-.estado.error {color:var(--rojo)}
 .plan-inicio {
-  background:var(--panel);
-  border:1px solid #343951;
-  border-radius:15px;
-  padding:18px 20px;
-  margin:15px 0;
+  border:1px solid var(--oro);
+  background:linear-gradient(135deg,#252b43,#1b2034);
 }
 .plan-inicio h2 {margin-top:0}
-.plan-estado {color:var(--verde);font-size:13px}
+.plan-inicio strong {color:var(--oro)}
+.plan-inicio .plan-estado {color:var(--verde);font-size:13px}
+.estado {color:var(--verde);font-size:13px}
+.estado.error {color:var(--rojo)}
 .documento {
   background:var(--panel2);
   border:1px solid #3a415d;
@@ -242,21 +240,31 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
       <a class="perfil-link" href="perfil.html">Editar mi perfil</a>
     </div>
   </div>
-
-  <div class="plan-inicio">
+  <div class="panel plan-inicio">
     <h2>💎 Mi plan</h2>
-    <p id="planNombre">Consultando tu plan...</p>
+    <p id="planNombre"><strong>Consultando tu plan...</strong></p>
     <p id="planPrecio" class="subtitulo"></p>
     <p id="planEstado" class="plan-estado"></p>
     <a class="perfil-link" href="planes.html">Ver planes y precios</a>
   </div>
-
   <p id="estadoNube" class="estado">Conectando con tu espacio personal...</p>
   <div class="resumen">
     <div class="tarjeta">Tareas pendientes<strong id="resumenTareas">0</strong></div>
     <div class="tarjeta">Recordatorios<strong id="resumenRecordatorios">0</strong></div>
     <div class="tarjeta">Gastos registrados<strong id="resumenGastos">0,00 €</strong></div>
     <div class="tarjeta">Artículos de compra<strong id="resumenCompra">0</strong></div>
+  </div>
+
+  <div class="panel">
+    <h2>🛡️ Copias de seguridad</h2>
+    <p>Guarda una copia de tus tareas, recordatorios, finanzas, compras, notas y documentos, incluidas las fotografías y los PDF adjuntos.</p>
+    <div class="documento-acciones">
+      <button class="accion" onclick="crearCopiaSeguridad()">Crear copia de seguridad</button>
+      <button class="archivo-boton" onclick="document.getElementById('archivoCopiaSeguridad').click()">Restaurar una copia</button>
+      <input id="archivoCopiaSeguridad" type="file" accept=".json,application/json" style="display:none">
+    </div>
+    <p class="subtitulo">La copia se descarga en tu ordenador. Los archivos adjuntos se incluyen si están disponibles en este navegador. Para restaurarla, inicia sesión con la misma cuenta de VIDA FÁCIL.</p>
+    <p id="estadoCopiaSeguridad" class="estado" aria-live="polite"></p>
   </div>
   <div class="panel">
     <h2>Tu espacio personal</h2>
@@ -588,6 +596,41 @@ function euros(valor) {
 // PERFIL EN LA PÁGINA DE INICIO
 // =====================================
 
+async function actualizarPlanInicio(usuario) {
+  const nombre = document.getElementById("planNombre");
+  const precio = document.getElementById("planPrecio");
+  const estado = document.getElementById("planEstado");
+
+  nombre.textContent = "Consultando tu plan...";
+  precio.textContent = "";
+  estado.textContent = "";
+
+  try {
+    const plan = await obtenerPlanSeleccionado(usuario.uid);
+
+    if (!plan) {
+      nombre.textContent = "Todavía no has seleccionado ningún plan.";
+      precio.textContent = "Puedes consultar las opciones disponibles.";
+      estado.textContent = "";
+      return;
+    }
+
+    nombre.textContent = "Plan " + (plan.nombre || "seleccionado");
+    precio.textContent = plan.precio || "";
+
+    if (plan.estado === "seleccionado_sin_contratar") {
+      estado.textContent = "Seleccionado, pendiente de contratación.";
+    } else {
+      estado.textContent = "Selección guardada.";
+    }
+  } catch (error) {
+    console.error("Error consultando el plan:", error);
+    nombre.textContent = "No se ha podido consultar tu plan.";
+    precio.textContent = "";
+    estado.textContent = "Puedes revisarlo desde Planes y precios.";
+  }
+}
+
 function actualizarPerfil(usuario) {
   const nombreGuardado =
     localStorage.getItem("vidaNombre") ||
@@ -619,41 +662,6 @@ function actualizarPerfil(usuario) {
   } else {
     imagen.style.display = "none";
     imagen.removeAttribute("src");
-  }
-}
-
-// =====================================
-// PLAN SELECCIONADO
-// =====================================
-
-async function actualizarPlanInicio(usuario) {
-  const nombre = document.getElementById("planNombre");
-  const precio = document.getElementById("planPrecio");
-  const estado = document.getElementById("planEstado");
-
-  try {
-    const plan = await obtenerPlanSeleccionado(usuario.uid);
-
-    if (!plan) {
-      nombre.textContent = "Todavía no has seleccionado ningún plan.";
-      precio.textContent = "";
-      estado.textContent = "";
-      return;
-    }
-
-    nombre.textContent = plan.nombre || "Plan seleccionado";
-    precio.textContent = plan.precio || "";
-
-    if (plan.estado === "seleccionado_sin_contratar") {
-      estado.textContent = "Seleccionado, pendiente de contratación.";
-    } else {
-      estado.textContent = plan.estado || "";
-    }
-  } catch (error) {
-    console.error("Error consultando el plan:", error);
-    nombre.textContent = "No se ha podido consultar tu plan.";
-    precio.textContent = "";
-    estado.textContent = "";
   }
 }
 
@@ -1443,6 +1451,274 @@ function mostrarDocumentos() {
   });
 }
 
+
+// =====================================
+// COPIAS DE SEGURIDAD Y RESTAURACIÓN
+// =====================================
+
+function convertirArchivoABase64(archivo) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onload = () => resolve(lector.result);
+    lector.onerror = () => reject(lector.error || new Error("No se pudo leer un archivo adjunto."));
+    lector.readAsDataURL(archivo);
+  });
+}
+
+function convertirBase64AArchivo(dataUrl, nombre, tipo) {
+  const partes = String(dataUrl || "").split(",");
+  if (partes.length !== 2) {
+    throw new Error("La copia contiene un archivo adjunto dañado.");
+  }
+
+  const binario = atob(partes[1]);
+  const bytes = new Uint8Array(binario.length);
+
+  for (let i = 0; i < binario.length; i++) {
+    bytes[i] = binario.charCodeAt(i);
+  }
+
+  const mime = tipo || partes[0].match(/data:([^;]+)/)?.[1] || "application/octet-stream";
+  return new File([bytes], nombre || "archivo-adjunto", {type:mime});
+}
+
+async function crearCopiaSeguridad() {
+  if (!aplicacionLista || !usuarioActual) {
+    alert("Espera a que VIDA FÁCIL termine de cargar tus datos.");
+    return;
+  }
+
+  const estado = document.getElementById("estadoCopiaSeguridad");
+  estado.classList.remove("error");
+  estado.textContent = "Preparando la copia de seguridad...";
+
+  try {
+    const listas = {
+      tareas,
+      recordatorios,
+      movimientos,
+      compras,
+      notas,
+      documentos
+    };
+
+    const archivos = [];
+    const faltantes = [];
+    const idsIncluidos = new Set();
+
+    for (const documento of documentos) {
+      if (!documento.archivoId || idsIncluidos.has(documento.archivoId)) continue;
+      idsIncluidos.add(documento.archivoId);
+
+      const registro = await obtenerArchivoLocal(documento.archivoId);
+
+      if (!registro || !registro.contenido) {
+        faltantes.push(documento.nombreArchivo || documento.nombre || "Archivo sin nombre");
+        continue;
+      }
+
+      const contenido = await convertirArchivoABase64(registro.contenido);
+
+      archivos.push({
+        id: documento.archivoId,
+        nombre: registro.nombre || documento.nombreArchivo || "archivo-adjunto",
+        tipo: registro.tipo || documento.tipoArchivo || "application/octet-stream",
+        contenido
+      });
+    }
+
+    const copia = {
+      formato: "VIDA_FACIL_COPIA_SEGURIDAD",
+      version: 1,
+      copiaId: (crypto.randomUUID ? crypto.randomUUID() : "copia-" + Date.now() + "-" + Math.random().toString(16).slice(2)),
+      fechaCreacion: new Date().toISOString(),
+      usuario: {
+        uid: usuarioActual.uid,
+        correo: usuarioActual.email || ""
+      },
+      datos: listas,
+      perfil: {
+        vidaNombre: localStorage.getItem("vidaNombre") || "",
+        vidaCorreo: localStorage.getItem("vidaCorreo") || "",
+        vidaFoto: localStorage.getItem("vidaFoto") || ""
+      },
+      archivos
+    };
+
+    const contenido = JSON.stringify(copia);
+    const blob = new Blob([contenido], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+    const fecha = new Date().toISOString().slice(0,10);
+
+    enlace.href = url;
+    enlace.download = "vida-facil-copia-" + fecha + ".json";
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+    if (faltantes.length) {
+      estado.classList.add("error");
+      estado.textContent = "Copia descargada, pero no se encontraron " + faltantes.length + " archivo(s) adjunto(s): " + faltantes.join(", ");
+    } else {
+      estado.textContent = "✓ Copia de seguridad descargada correctamente. Se han incluido " + archivos.length + " archivo(s) adjunto(s).";
+    }
+
+  } catch (error) {
+    console.error("Error creando copia:", error);
+    estado.classList.add("error");
+    estado.textContent = "No se pudo crear la copia: " + (error.message || "Error desconocido");
+    alert("No se ha podido crear la copia de seguridad.\n\n" + (error.message || "Error desconocido"));
+  }
+}
+
+async function restaurarCopiaSeguridad(evento) {
+  const campo = evento.target;
+  const archivoCopia = campo.files && campo.files[0];
+
+  if (!archivoCopia) return;
+
+  const estado = document.getElementById("estadoCopiaSeguridad");
+  estado.classList.remove("error");
+
+  try {
+    if (!aplicacionLista || !usuarioActual) {
+      throw new Error("Espera a que VIDA FÁCIL termine de cargar tus datos.");
+    }
+
+    if (archivoCopia.size > 100 * 1024 * 1024) {
+      throw new Error("La copia supera los 100 MB. No se puede restaurar desde esta pantalla.");
+    }
+
+    estado.textContent = "Leyendo la copia de seguridad...";
+    const texto = await archivoCopia.text();
+    const copia = JSON.parse(texto);
+
+    if (
+      copia.formato !== "VIDA_FACIL_COPIA_SEGURIDAD" ||
+      copia.version !== 1 ||
+      !copia.datos ||
+      !Array.isArray(copia.archivos)
+    ) {
+      throw new Error("El archivo seleccionado no es una copia válida de VIDA FÁCIL.");
+    }
+
+    if (!copia.usuario || copia.usuario.uid !== usuarioActual.uid) {
+      throw new Error("Esta copia pertenece a otra cuenta. Inicia sesión con la cuenta con la que se creó.");
+    }
+
+    const apartados = ["tareas", "recordatorios", "movimientos", "compras", "notas", "documentos"];
+
+    for (const apartado of apartados) {
+      if (!Array.isArray(copia.datos[apartado])) {
+        throw new Error("La copia está incompleta: falta el apartado " + apartado + ".");
+      }
+    }
+
+    const copiasAnteriores = await obtenerDatos(usuarioActual.uid, "copiasRestauradas");
+    if (copiasAnteriores.some(x => x.copiaId === copia.copiaId)) {
+      throw new Error("Esta copia ya se restauró anteriormente en tu cuenta. No se han añadido datos duplicados.");
+    }
+
+    const totalDatos = apartados.reduce((total, apartado) => total + copia.datos[apartado].length, 0);
+    const confirmar = confirm(
+      "Se van a añadir " + totalDatos + " elementos y " + copia.archivos.length +
+      " archivos adjuntos a tu cuenta.\n\nNo se borrará nada de lo que ya tienes.\n\n¿Quieres continuar?"
+    );
+
+    if (!confirmar) {
+      estado.textContent = "Restauración cancelada. No se ha cambiado ningún dato.";
+      return;
+    }
+
+    estado.textContent = "Restaurando archivos adjuntos...";
+    const mapaArchivos = new Map();
+
+    for (const elemento of copia.archivos) {
+      if (!elemento || !elemento.id || !elemento.contenido) continue;
+
+      const archivoRestaurado = convertirBase64AArchivo(
+        elemento.contenido,
+        elemento.nombre,
+        elemento.tipo
+      );
+
+      const nuevoId = await guardarArchivoLocal(archivoRestaurado);
+      mapaArchivos.set(elemento.id, nuevoId);
+    }
+
+    const listasActualizadas = {
+      tareas: [...tareas],
+      recordatorios: [...recordatorios],
+      movimientos: [...movimientos],
+      compras: [...compras],
+      notas: [...notas],
+      documentos: [...documentos]
+    };
+
+    let importados = 0;
+
+    for (const apartado of apartados) {
+      estado.textContent = "Restaurando " + apartado + "...";
+
+      for (const elemento of copia.datos[apartado]) {
+        const {id, ...datosOriginales} = elemento || {};
+        const datos = {...datosOriginales};
+
+        if (apartado === "documentos" && datos.archivoId) {
+          datos.archivoId = mapaArchivos.get(datos.archivoId) || null;
+
+          if (!datos.archivoId) {
+            datos.nombreArchivo = datos.nombreArchivo || "";
+            datos.tipoArchivo = "";
+            datos.tamanoArchivo = 0;
+          }
+        }
+
+        const referencia = await guardarDato(usuarioActual.uid, apartado, datos);
+        listasActualizadas[apartado].push({...datos, id:referencia.id});
+        importados++;
+      }
+    }
+
+    await guardarDato(usuarioActual.uid, "copiasRestauradas", {
+      copiaId: copia.copiaId,
+      fechaRestauracion: new Date().toISOString(),
+      elementosImportados: importados
+    });
+
+    tareas = listasActualizadas.tareas;
+    recordatorios = listasActualizadas.recordatorios;
+    movimientos = listasActualizadas.movimientos;
+    compras = listasActualizadas.compras;
+    notas = listasActualizadas.notas;
+    documentos = listasActualizadas.documentos;
+
+    if (copia.perfil) {
+      if (typeof copia.perfil.vidaNombre === "string") localStorage.setItem("vidaNombre", copia.perfil.vidaNombre);
+      if (typeof copia.perfil.vidaCorreo === "string") localStorage.setItem("vidaCorreo", copia.perfil.vidaCorreo);
+      if (typeof copia.perfil.vidaFoto === "string") localStorage.setItem("vidaFoto", copia.perfil.vidaFoto);
+      actualizarPerfil(usuarioActual);
+    }
+
+    guardarLocal();
+    mostrarTodo();
+
+    estado.textContent = "✓ Restauración completada. Se han añadido " + importados + " elementos y " + mapaArchivos.size + " archivos adjuntos.";
+    alert("¡Copia restaurada correctamente!\n\nNo se ha borrado ningún dato que ya tuvieras.");
+
+  } catch (error) {
+    console.error("Error restaurando copia:", error);
+    estado.classList.add("error");
+    estado.textContent = "No se pudo restaurar la copia: " + (error.message || "Error desconocido");
+    alert("No se ha podido restaurar la copia.\n\n" + (error.message || "Error desconocido"));
+  } finally {
+    campo.value = "";
+  }
+}
+
 // =====================================
 // RESUMEN Y ACTUALIZACIÓN
 // =====================================
@@ -1494,12 +1770,18 @@ Object.assign(window, {
   agregarDocumento,
   editarDocumento,
   eliminarDocumento,
-  mostrarDocumentos
+  mostrarDocumentos,
+  crearCopiaSeguridad
 });
 
 // =====================================
 // INICIO DE SESIÓN Y CONEXIÓN
 // =====================================
+
+document.getElementById("archivoCopiaSeguridad").addEventListener(
+  "change",
+  restaurarCopiaSeguridad
+);
 
 onAuthStateChanged(auth, async usuario => {
   if (!usuario) {
