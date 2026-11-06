@@ -232,6 +232,7 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="inicio" class="seccion active">
   <h1>¡Bienvenido a VIDA FÁCIL!</h1>
   <p class="subtitulo">Organiza tu día y ten todo bajo control.</p>
+
   <div class="panel perfil-inicio">
     <img id="fotoInicio" class="foto-perfil" alt="Fotografía de perfil">
     <div>
@@ -240,6 +241,7 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
       <a class="perfil-link" href="perfil.html">Editar mi perfil</a>
     </div>
   </div>
+
   <div class="panel plan-inicio">
     <h2>💎 Mi plan</h2>
     <p id="planNombre"><strong>Consultando tu plan...</strong></p>
@@ -247,7 +249,9 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
     <p id="planEstado" class="plan-estado"></p>
     <a class="perfil-link" href="planes.html">Ver planes y precios</a>
   </div>
+
   <p id="estadoNube" class="estado">Conectando con tu espacio personal...</p>
+
   <div class="resumen">
     <div class="tarjeta">Tareas pendientes<strong id="resumenTareas">0</strong></div>
     <div class="tarjeta">Recordatorios<strong id="resumenRecordatorios">0</strong></div>
@@ -258,14 +262,17 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
   <div class="panel">
     <h2>🛡️ Copias de seguridad</h2>
     <p>Guarda una copia de tus tareas, recordatorios, finanzas, compras, notas y documentos, incluidas las fotografías y los PDF adjuntos.</p>
+
     <div class="documento-acciones">
       <button class="accion" onclick="crearCopiaSeguridad()">Crear copia de seguridad</button>
       <button class="archivo-boton" onclick="document.getElementById('archivoCopiaSeguridad').click()">Restaurar una copia</button>
       <input id="archivoCopiaSeguridad" type="file" accept=".json,application/json" style="display:none">
     </div>
+
     <p class="subtitulo">La copia se descarga en tu ordenador. Los archivos adjuntos se incluyen si están disponibles en este navegador. Para restaurarla, inicia sesión con la misma cuenta de VIDA FÁCIL.</p>
     <p id="estadoCopiaSeguridad" class="estado" aria-live="polite"></p>
   </div>
+
   <div class="panel">
     <h2>Tu espacio personal</h2>
     <p>VIDA FÁCIL te ayuda a organizar tus tareas, controlar tus gastos y recordar lo importante.</p>
@@ -275,17 +282,23 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="tareas" class="seccion">
   <h1>Mis tareas</h1>
   <p class="subtitulo">Organiza todo lo que tienes pendiente.</p>
+
   <div class="panel">
     <h2>Añadir una tarea</h2>
     <input id="tareaTexto" placeholder="¿Qué tienes que hacer?">
     <button class="accion" onclick="agregarTarea()">Añadir tarea</button>
   </div>
-  <div class="panel"><h2>Mi lista de tareas</h2><div id="listaTareas"></div></div>
+
+  <div class="panel">
+    <h2>Mi lista de tareas</h2>
+    <div id="listaTareas"></div>
+  </div>
 </section>
 
 <section id="calendario" class="seccion">
   <h1>Calendario y recordatorios</h1>
   <p class="subtitulo">No vuelvas a olvidar una fecha importante.</p>
+
   <div class="panel">
     <h2>Crear recordatorio</h2>
     <input id="recordatorioTexto" placeholder="Nombre del recordatorio">
@@ -293,17 +306,23 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
     <input id="recordatorioFecha" type="date">
     <button class="accion" onclick="agregarRecordatorio()">Guardar recordatorio</button>
   </div>
-  <div class="panel"><h2>Mis recordatorios</h2><div id="listaRecordatorios"></div></div>
+
+  <div class="panel">
+    <h2>Mis recordatorios</h2>
+    <div id="listaRecordatorios"></div>
+  </div>
 </section>
 
 <section id="finanzas" class="seccion">
   <h1>Mis finanzas</h1>
   <p class="subtitulo">Controla tus ingresos y tus gastos.</p>
+
   <div class="resumen">
     <div class="tarjeta">Ingresos<strong id="totalIngresos" class="verde">0,00 €</strong></div>
     <div class="tarjeta">Gastos<strong id="totalGastos" class="rojo">0,00 €</strong></div>
     <div class="tarjeta">Balance<strong id="balance">0,00 €</strong></div>
   </div>
+
   <div class="panel">
     <h2>Registrar movimiento</h2>
     <select id="tipoMovimiento">
@@ -314,28 +333,42 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
     <input id="cantidadMovimiento" type="number" min="0.01" step="0.01" placeholder="Cantidad en euros">
     <button class="accion" onclick="agregarMovimiento()">Guardar movimiento</button>
   </div>
-  <div class="panel"><h2>Movimientos</h2><div id="listaMovimientos"></div></div>
+
+  <div class="panel">
+    <h2>Movimientos</h2>
+    <div id="listaMovimientos"></div>
+  </div>
 </section>
 
 <section id="compra" class="seccion">
   <h1>Lista de la compra</h1>
   <p class="subtitulo">Ten siempre a mano lo que necesitas comprar.</p>
+
   <div class="panel">
     <input id="compraTexto" placeholder="Añadir artículo">
     <button class="accion" onclick="agregarCompra()">Añadir artículo</button>
   </div>
-  <div class="panel"><h2>Mi lista</h2><div id="listaCompra"></div></div>
+
+  <div class="panel">
+    <h2>Mi lista</h2>
+    <div id="listaCompra"></div>
+  </div>
 </section>
 
 <section id="notas" class="seccion">
   <h1>Mis notas</h1>
   <p class="subtitulo">Guarda ideas, información y cosas importantes.</p>
+
   <div class="panel">
     <input id="notaTitulo" placeholder="Título de la nota">
     <textarea id="notaTexto" placeholder="Escribe aquí tu nota..."></textarea>
     <button class="accion" onclick="agregarNota()">Guardar nota</button>
   </div>
-  <div class="panel"><h2>Notas guardadas</h2><div id="listaNotas"></div></div>
+
+  <div class="panel">
+    <h2>Notas guardadas</h2>
+    <div id="listaNotas"></div>
+  </div>
 </section>
 
 <section id="documentos" class="seccion">
@@ -370,6 +403,7 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
       type="file"
       accept="image/jpeg,image/png,image/webp,application/pdf"
     >
+
     <p class="subtitulo">Formatos: JPG, PNG, WEBP y PDF. Máximo 10 MB por archivo.</p>
 
     <label for="documentoEnlace">Enlace al documento (opcional):</label>
@@ -391,9 +425,11 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 </section>
 
 </main>
+
 <footer>VIDA FÁCIL · Todo en orden. Más tiempo para vivir.</footer>
 
 <script type="module">
+
 import {
   auth,
   db,
@@ -414,6 +450,7 @@ import {
 
 let usuarioActual = null;
 let aplicacionLista = false;
+
 let tareas = [];
 let recordatorios = [];
 let movimientos = [];
@@ -475,6 +512,78 @@ async function guardarArchivoLocal(archivo) {
       reject(transaccion.error || new Error("No se pudo guardar el archivo."));
     };
   });
+}
+
+// Guardar un archivo con un identificador fijo.
+// Así no se crean archivos duplicados al repetir una restauración.
+
+async function guardarArchivoLocalConId(archivo, id) {
+  const base = await abrirBaseArchivos();
+
+  return new Promise((resolve, reject) => {
+    const transaccion = base.transaction("archivos", "readwrite");
+    const almacen = transaccion.objectStore("archivos");
+    const consulta = almacen.get(id);
+
+    consulta.onsuccess = () => {
+      if (consulta.result) return;
+
+      almacen.put({
+        id,
+        nombre: archivo.name,
+        tipo: archivo.type,
+        contenido: archivo
+      });
+    };
+
+    transaccion.oncomplete = () => {
+      base.close();
+      resolve(id);
+    };
+
+    transaccion.onerror = () => {
+      base.close();
+      reject(transaccion.error);
+    };
+
+    transaccion.onabort = () => {
+      base.close();
+      reject(transaccion.error || new Error("No se pudo guardar el archivo."));
+    };
+  });
+}
+
+// Preparar objetos para comparar sus datos sin tener en cuenta
+// los identificadores ni las marcas internas de restauración.
+
+function ordenarObjetoParaComparar(objeto) {
+  if (Array.isArray(objeto)) {
+    return objeto.map(ordenarObjetoParaComparar);
+  }
+
+  if (objeto && typeof objeto === "object") {
+    const resultado = {};
+
+    Object.keys(objeto)
+      .filter(clave =>
+        clave !== "id" &&
+        clave !== "_vidaCopiaId" &&
+        clave !== "_vidaElementoClave"
+      )
+      .sort()
+      .forEach(clave => {
+        resultado[clave] = ordenarObjetoParaComparar(objeto[clave]);
+      });
+
+    return resultado;
+  }
+
+  return objeto;
+}
+
+function sonDatosIguales(a, b) {
+  return JSON.stringify(ordenarObjetoParaComparar(a)) ===
+         JSON.stringify(ordenarObjetoParaComparar(b));
 }
 
 async function obtenerArchivoLocal(id) {
@@ -588,7 +697,8 @@ function mostrarVacio(id, mensaje) {
 
 function euros(valor) {
   return Number(valor || 0).toLocaleString("es-ES", {
-    style:"currency",currency:"EUR"
+    style:"currency",
+    currency:"EUR"
   });
 }
 
@@ -623,6 +733,7 @@ async function actualizarPlanInicio(usuario) {
     } else {
       estado.textContent = "Selección guardada.";
     }
+
   } catch (error) {
     console.error("Error consultando el plan:", error);
     nombre.textContent = "No se ha podido consultar tu plan.";
@@ -1206,7 +1317,9 @@ async function agregarDocumento() {
   }
 }
 
+// =====================================
 // EDITAR DOCUMENTO
+// =====================================
 
 async function editarDocumento(i) {
   if (!aplicacionLista) return;
@@ -1327,6 +1440,10 @@ async function editarDocumento(i) {
   }
 }
 
+// =====================================
+// ELIMINAR DOCUMENTO
+// =====================================
+
 async function eliminarDocumento(i) {
   if (!aplicacionLista) return;
 
@@ -1356,6 +1473,10 @@ async function eliminarDocumento(i) {
       (error.code || error.message || "Error desconocido"));
   }
 }
+
+// =====================================
+// MOSTRAR DOCUMENTOS
+// =====================================
 
 function mostrarDocumentos() {
   const lista = document.getElementById("listaDocumentos");
@@ -1407,6 +1528,7 @@ function mostrarDocumentos() {
       informacion.className = "archivo-info";
       informacion.textContent =
         "📎 Archivo adjunto: " + (documento.nombreArchivo || "Archivo");
+
       tarjeta.appendChild(informacion);
 
       const botonArchivo = document.createElement("button");
@@ -1451,22 +1573,26 @@ function mostrarDocumentos() {
   });
 }
 
-
 // =====================================
-// COPIAS DE SEGURIDAD Y RESTAURACIÓN
+// COPIAS DE SEGURIDAD
 // =====================================
 
 function convertirArchivoABase64(archivo) {
   return new Promise((resolve, reject) => {
     const lector = new FileReader();
+
     lector.onload = () => resolve(lector.result);
-    lector.onerror = () => reject(lector.error || new Error("No se pudo leer un archivo adjunto."));
+
+    lector.onerror = () =>
+      reject(lector.error || new Error("No se pudo leer un archivo adjunto."));
+
     lector.readAsDataURL(archivo);
   });
 }
 
 function convertirBase64AArchivo(dataUrl, nombre, tipo) {
   const partes = String(dataUrl || "").split(",");
+
   if (partes.length !== 2) {
     throw new Error("La copia contiene un archivo adjunto dañado.");
   }
@@ -1478,8 +1604,16 @@ function convertirBase64AArchivo(dataUrl, nombre, tipo) {
     bytes[i] = binario.charCodeAt(i);
   }
 
-  const mime = tipo || partes[0].match(/data:([^;]+)/)?.[1] || "application/octet-stream";
-  return new File([bytes], nombre || "archivo-adjunto", {type:mime});
+  const mime =
+    tipo ||
+    partes[0].match(/data:([^;]+)/)?.[1] ||
+    "application/octet-stream";
+
+  return new File(
+    [bytes],
+    nombre || "archivo-adjunto",
+    {type:mime}
+  );
 }
 
 async function crearCopiaSeguridad() {
@@ -1489,6 +1623,7 @@ async function crearCopiaSeguridad() {
   }
 
   const estado = document.getElementById("estadoCopiaSeguridad");
+
   estado.classList.remove("error");
   estado.textContent = "Preparando la copia de seguridad...";
 
@@ -1507,13 +1642,20 @@ async function crearCopiaSeguridad() {
     const idsIncluidos = new Set();
 
     for (const documento of documentos) {
-      if (!documento.archivoId || idsIncluidos.has(documento.archivoId)) continue;
+      if (!documento.archivoId || idsIncluidos.has(documento.archivoId)) {
+        continue;
+      }
+
       idsIncluidos.add(documento.archivoId);
 
       const registro = await obtenerArchivoLocal(documento.archivoId);
 
       if (!registro || !registro.contenido) {
-        faltantes.push(documento.nombreArchivo || documento.nombre || "Archivo sin nombre");
+        faltantes.push(
+          documento.nombreArchivo ||
+          documento.nombre ||
+          "Archivo sin nombre"
+        );
         continue;
       }
 
@@ -1530,18 +1672,28 @@ async function crearCopiaSeguridad() {
     const copia = {
       formato: "VIDA_FACIL_COPIA_SEGURIDAD",
       version: 1,
-      copiaId: (crypto.randomUUID ? crypto.randomUUID() : "copia-" + Date.now() + "-" + Math.random().toString(16).slice(2)),
+
+      copiaId: (
+        crypto.randomUUID
+          ? crypto.randomUUID()
+          : "copia-" + Date.now() + "-" + Math.random().toString(16).slice(2)
+      ),
+
       fechaCreacion: new Date().toISOString(),
+
       usuario: {
         uid: usuarioActual.uid,
         correo: usuarioActual.email || ""
       },
+
       datos: listas,
+
       perfil: {
         vidaNombre: localStorage.getItem("vidaNombre") || "",
         vidaCorreo: localStorage.getItem("vidaCorreo") || "",
         vidaFoto: localStorage.getItem("vidaFoto") || ""
       },
+
       archivos
     };
 
@@ -1553,6 +1705,7 @@ async function crearCopiaSeguridad() {
 
     enlace.href = url;
     enlace.download = "vida-facil-copia-" + fecha + ".json";
+
     document.body.appendChild(enlace);
     enlace.click();
     enlace.remove();
@@ -1561,18 +1714,39 @@ async function crearCopiaSeguridad() {
 
     if (faltantes.length) {
       estado.classList.add("error");
-      estado.textContent = "Copia descargada, pero no se encontraron " + faltantes.length + " archivo(s) adjunto(s): " + faltantes.join(", ");
+
+      estado.textContent =
+        "Copia descargada, pero no se encontraron " +
+        faltantes.length +
+        " archivo(s) adjunto(s): " +
+        faltantes.join(", ");
+
     } else {
-      estado.textContent = "✓ Copia de seguridad descargada correctamente. Se han incluido " + archivos.length + " archivo(s) adjunto(s).";
+      estado.textContent =
+        "✓ Copia de seguridad descargada correctamente. Se han incluido " +
+        archivos.length +
+        " archivo(s) adjunto(s).";
     }
 
   } catch (error) {
     console.error("Error creando copia:", error);
+
     estado.classList.add("error");
-    estado.textContent = "No se pudo crear la copia: " + (error.message || "Error desconocido");
-    alert("No se ha podido crear la copia de seguridad.\n\n" + (error.message || "Error desconocido"));
+
+    estado.textContent =
+      "No se pudo crear la copia: " +
+      (error.message || "Error desconocido");
+
+    alert(
+      "No se ha podido crear la copia de seguridad.\n\n" +
+      (error.message || "Error desconocido")
+    );
   }
 }
+
+// =====================================
+// RESTAURAR COPIA DE SEGURIDAD
+// =====================================
 
 async function restaurarCopiaSeguridad(evento) {
   const campo = evento.target;
@@ -1581,6 +1755,7 @@ async function restaurarCopiaSeguridad(evento) {
   if (!archivoCopia) return;
 
   const estado = document.getElementById("estadoCopiaSeguridad");
+
   estado.classList.remove("error");
 
   try {
@@ -1589,55 +1764,114 @@ async function restaurarCopiaSeguridad(evento) {
     }
 
     if (archivoCopia.size > 100 * 1024 * 1024) {
-      throw new Error("La copia supera los 100 MB. No se puede restaurar desde esta pantalla.");
+      throw new Error("La copia supera los 100 MB.");
     }
 
     estado.textContent = "Leyendo la copia de seguridad...";
-    const texto = await archivoCopia.text();
-    const copia = JSON.parse(texto);
+
+    const copia = JSON.parse(await archivoCopia.text());
 
     if (
       copia.formato !== "VIDA_FACIL_COPIA_SEGURIDAD" ||
       copia.version !== 1 ||
       !copia.datos ||
-      !Array.isArray(copia.archivos)
+      !Array.isArray(copia.archivos) ||
+      !copia.copiaId
     ) {
-      throw new Error("El archivo seleccionado no es una copia válida de VIDA FÁCIL.");
+      throw new Error(
+        "El archivo seleccionado no es una copia válida de VIDA FÁCIL."
+      );
     }
 
     if (!copia.usuario || copia.usuario.uid !== usuarioActual.uid) {
-      throw new Error("Esta copia pertenece a otra cuenta. Inicia sesión con la cuenta con la que se creó.");
+      throw new Error(
+        "Esta copia pertenece a otra cuenta."
+      );
     }
 
-    const apartados = ["tareas", "recordatorios", "movimientos", "compras", "notas", "documentos"];
+    const apartados = [
+      "tareas",
+      "recordatorios",
+      "movimientos",
+      "compras",
+      "notas",
+      "documentos"
+    ];
 
     for (const apartado of apartados) {
       if (!Array.isArray(copia.datos[apartado])) {
-        throw new Error("La copia está incompleta: falta el apartado " + apartado + ".");
+        throw new Error(
+          "La copia está incompleta: falta " + apartado + "."
+        );
       }
     }
 
-    const copiasAnteriores = await obtenerDatos(usuarioActual.uid, "copiasRestauradas");
-    if (copiasAnteriores.some(x => x.copiaId === copia.copiaId)) {
-      throw new Error("Esta copia ya se restauró anteriormente en tu cuenta. No se han añadido datos duplicados.");
+    const copiasAnteriores = await obtenerDatos(
+      usuarioActual.uid,
+      "copiasRestauradas"
+    );
+
+    if (
+      copiasAnteriores.some(x => x.copiaId === copia.copiaId)
+    ) {
+      throw new Error(
+        "Esta copia ya se restauró completamente. No se han añadido datos."
+      );
     }
 
-    const totalDatos = apartados.reduce((total, apartado) => total + copia.datos[apartado].length, 0);
+    const totalDatos = apartados.reduce(
+      (total, apartado) => total + copia.datos[apartado].length,
+      0
+    );
+
     const confirmar = confirm(
-      "Se van a añadir " + totalDatos + " elementos y " + copia.archivos.length +
-      " archivos adjuntos a tu cuenta.\n\nNo se borrará nada de lo que ya tienes.\n\n¿Quieres continuar?"
+      "Se comprobarán " +
+      totalDatos +
+      " elementos y " +
+      copia.archivos.length +
+      " archivos adjuntos.\n\n" +
+      "Los elementos que ya existan no se volverán a añadir.\n\n" +
+      "No se borrará ningún dato actual.\n\n¿Quieres continuar?"
     );
 
     if (!confirmar) {
-      estado.textContent = "Restauración cancelada. No se ha cambiado ningún dato.";
+      estado.textContent =
+        "Restauración cancelada. No se han cambiado datos.";
+
       return;
     }
 
-    estado.textContent = "Restaurando archivos adjuntos...";
+    // Obtener los datos reales que ya están guardados en Firebase.
+
+    estado.textContent = "Comprobando los datos existentes...";
+
+    const listasActualizadas = {};
+
+    for (const apartado of apartados) {
+      listasActualizadas[apartado] = await obtenerDatos(
+        usuarioActual.uid,
+        apartado
+      );
+    }
+
+    // Restaurar archivos con identificadores estables.
+
+    estado.textContent = "Comprobando archivos adjuntos...";
+
     const mapaArchivos = new Map();
 
     for (const elemento of copia.archivos) {
-      if (!elemento || !elemento.id || !elemento.contenido) continue;
+      if (!elemento || !elemento.id || !elemento.contenido) {
+        continue;
+      }
+
+      const archivoId =
+        "restaurado_" +
+        usuarioActual.uid +
+        "_" +
+        copia.copiaId +
+        "_" +
+        elemento.id;
 
       const archivoRestaurado = convertirBase64AArchivo(
         elemento.contenido,
@@ -1645,49 +1879,109 @@ async function restaurarCopiaSeguridad(evento) {
         elemento.tipo
       );
 
-      const nuevoId = await guardarArchivoLocal(archivoRestaurado);
-      mapaArchivos.set(elemento.id, nuevoId);
+      await guardarArchivoLocalConId(
+        archivoRestaurado,
+        archivoId
+      );
+
+      mapaArchivos.set(elemento.id, archivoId);
     }
 
-    const listasActualizadas = {
-      tareas: [...tareas],
-      recordatorios: [...recordatorios],
-      movimientos: [...movimientos],
-      compras: [...compras],
-      notas: [...notas],
-      documentos: [...documentos]
-    };
-
     let importados = 0;
+    let omitidos = 0;
+
+    // Importar los datos evitando duplicados.
 
     for (const apartado of apartados) {
       estado.textContent = "Restaurando " + apartado + "...";
 
-      for (const elemento of copia.datos[apartado]) {
-        const {id, ...datosOriginales} = elemento || {};
+      const listaActual = listasActualizadas[apartado];
+
+      for (
+        let indice = 0;
+        indice < copia.datos[apartado].length;
+        indice++
+      ) {
+        const elemento = copia.datos[apartado][indice] || {};
+
+        const claveElemento =
+          apartado + "_" + (elemento.id || indice);
+
+        // Comprobar si este elemento ya se importó en un intento anterior.
+
+        const yaImportado = listaActual.some(x =>
+          x._vidaCopiaId === copia.copiaId &&
+          x._vidaElementoClave === claveElemento
+        );
+
+        if (yaImportado) {
+          omitidos++;
+          continue;
+        }
+
+        const {id, ...datosOriginales} = elemento;
+
+        // Comprobar si ya existía un elemento con los mismos datos.
+
+        const yaExistente = listaActual.some(x =>
+          sonDatosIguales(x, datosOriginales)
+        );
+
+        if (yaExistente) {
+          omitidos++;
+          continue;
+        }
+
         const datos = {...datosOriginales};
 
-        if (apartado === "documentos" && datos.archivoId) {
-          datos.archivoId = mapaArchivos.get(datos.archivoId) || null;
+        // Reconectar los archivos adjuntos restaurados.
 
-          if (!datos.archivoId) {
-            datos.nombreArchivo = datos.nombreArchivo || "";
+        if (apartado === "documentos" && datos.archivoId) {
+          const nuevoArchivoId = mapaArchivos.get(datos.archivoId);
+
+          datos.archivoId = nuevoArchivoId || null;
+
+          if (!nuevoArchivoId) {
             datos.tipoArchivo = "";
             datos.tamanoArchivo = 0;
           }
         }
 
-        const referencia = await guardarDato(usuarioActual.uid, apartado, datos);
-        listasActualizadas[apartado].push({...datos, id:referencia.id});
+        // Marcas internas para reconocer los elementos
+        // si la restauración se interrumpe y se repite.
+
+        datos._vidaCopiaId = copia.copiaId;
+        datos._vidaElementoClave = claveElemento;
+
+        const referencia = await guardarDato(
+          usuarioActual.uid,
+          apartado,
+          datos
+        );
+
+        listaActual.push({
+          ...datos,
+          id: referencia.id
+        });
+
         importados++;
       }
     }
 
-    await guardarDato(usuarioActual.uid, "copiasRestauradas", {
-      copiaId: copia.copiaId,
-      fechaRestauracion: new Date().toISOString(),
-      elementosImportados: importados
-    });
+    // Registrar la copia cuando toda la restauración haya terminado.
+
+    await guardarDato(
+      usuarioActual.uid,
+      "copiasRestauradas",
+      {
+        copiaId: copia.copiaId,
+        fechaRestauracion: new Date().toISOString(),
+        elementosImportados: importados,
+        elementosOmitidos: omitidos
+      }
+    );
+
+    // Actualizar las listas que utiliza la aplicación.
 
     tareas = listasActualizadas.tareas;
     recordatorios = listasActualizadas.recordatorios;
@@ -1696,24 +1990,67 @@ async function restaurarCopiaSeguridad(evento) {
     notas = listasActualizadas.notas;
     documentos = listasActualizadas.documentos;
 
+    // Recuperar los datos del perfil incluidos en la copia.
+
     if (copia.perfil) {
-      if (typeof copia.perfil.vidaNombre === "string") localStorage.setItem("vidaNombre", copia.perfil.vidaNombre);
-      if (typeof copia.perfil.vidaCorreo === "string") localStorage.setItem("vidaCorreo", copia.perfil.vidaCorreo);
-      if (typeof copia.perfil.vidaFoto === "string") localStorage.setItem("vidaFoto", copia.perfil.vidaFoto);
+      if (typeof copia.perfil.vidaNombre === "string") {
+        localStorage.setItem(
+          "vidaNombre",
+          copia.perfil.vidaNombre
+        );
+      }
+
+      if (typeof copia.perfil.vidaCorreo === "string") {
+        localStorage.setItem(
+          "vidaCorreo",
+          copia.perfil.vidaCorreo
+        );
+      }
+
+      if (typeof copia.perfil.vidaFoto === "string") {
+        localStorage.setItem(
+          "vidaFoto",
+          copia.perfil.vidaFoto
+        );
+      }
+
       actualizarPerfil(usuarioActual);
     }
 
     guardarLocal();
     mostrarTodo();
 
-    estado.textContent = "✓ Restauración completada. Se han añadido " + importados + " elementos y " + mapaArchivos.size + " archivos adjuntos.";
-    alert("¡Copia restaurada correctamente!\n\nNo se ha borrado ningún dato que ya tuvieras.");
+    estado.textContent =
+      "✓ Restauración completada. " +
+      importados +
+      " elementos añadidos y " +
+      omitidos +
+      " elementos ya existentes omitidos.";
+
+    alert(
+      "¡Restauración completada!\n\n" +
+      "Elementos añadidos: " + importados + "\n" +
+      "Elementos ya existentes: " + omitidos + "\n" +
+      "Archivos adjuntos comprobados: " + mapaArchivos.size + "\n\n" +
+      "No se ha borrado ningún dato."
+    );
 
   } catch (error) {
     console.error("Error restaurando copia:", error);
+
     estado.classList.add("error");
-    estado.textContent = "No se pudo restaurar la copia: " + (error.message || "Error desconocido");
-    alert("No se ha podido restaurar la copia.\n\n" + (error.message || "Error desconocido"));
+
+    estado.textContent =
+      "No se pudo completar la restauración: " +
+      (error.message || "Error desconocido");
+
+    alert(
+      "No se ha podido completar la restauración.\n\n" +
+      (error.message || "Error desconocido") +
+      "\n\nPuedes volver a intentarlo con la misma copia. " +
+      "Los elementos ya importados se comprobarán antes de añadirlos."
+    );
+
   } finally {
     campo.value = "";
   }
@@ -1809,7 +2146,8 @@ onAuthStateChanged(auth, async usuario => {
 
     mostrarTodo();
 
-    estado.textContent = "✓ Tus datos están conectados con Firebase.";
+    estado.textContent =
+      "✓ Tus datos están conectados con Firebase.";
 
   } catch (error) {
     console.error("Error al conectar con Firebase:", error);
@@ -1828,6 +2166,7 @@ onAuthStateChanged(auth, async usuario => {
     );
   }
 });
+
 </script>
 </body>
 </html>
