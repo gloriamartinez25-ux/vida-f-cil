@@ -15,7 +15,9 @@ import {
   doc,
   query,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  setDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -36,6 +38,11 @@ export const db = getFirestore(app);
 
 // Guarda un dato dentro de la carpeta del usuario conectado.
 export async function guardarDato(usuarioId, apartado, datos) {
+
+  if (auth.currentUser?.uid !== usuarioId) {
+    throw new Error("Usuario no autorizado.");
+  }
+
   const referencia = collection(db, "usuarios", usuarioId, apartado);
 
   return await addDoc(referencia, {
@@ -46,6 +53,11 @@ export async function guardarDato(usuarioId, apartado, datos) {
 
 // Recupera los datos de un apartado del usuario.
 export async function obtenerDatos(usuarioId, apartado) {
+
+  if (auth.currentUser?.uid !== usuarioId) {
+    throw new Error("Usuario no autorizado.");
+  }
+
   const referencia = collection(db, "usuarios", usuarioId, apartado);
   const consulta = query(referencia, orderBy("fechaCreacion", "desc"));
   const resultado = await getDocs(consulta);
@@ -58,9 +70,85 @@ export async function obtenerDatos(usuarioId, apartado) {
 
 // Elimina un dato del usuario conectado.
 export async function eliminarDato(usuarioId, apartado, datoId) {
+
+  if (auth.currentUser?.uid !== usuarioId) {
+    throw new Error("Usuario no autorizado.");
+  }
+
   const referencia = doc(db, "usuarios", usuarioId, apartado, datoId);
 
   return await deleteDoc(referencia);
+}
+
+// Guarda el plan que el usuario ha seleccionado.
+// Esto NO significa que lo haya contratado.
+export async function guardarPlanSeleccionado(usuarioId, plan) {
+
+  if (auth.currentUser?.uid !== usuarioId) {
+    throw new Error("Usuario no autorizado.");
+  }
+
+  const planesDisponibles = {
+    Basico: {
+      nombre: "Básico",
+      precio: "0,99 € - pago único"
+    },
+    Premium: {
+      nombre: "Premium",
+      precio: "3,99 € / mes"
+    },
+    Familiar: {
+      nombre: "Familiar",
+      precio: "5,99 € / mes"
+    }
+  };
+
+  const planElegido = planesDisponibles[plan];
+
+  if (!planElegido) {
+    throw new Error("El plan seleccionado no existe.");
+  }
+
+  const referencia = doc(
+    db,
+    "usuarios",
+    usuarioId,
+    "preferencias",
+    "plan"
+  );
+
+  await setDoc(referencia, {
+    nombre: planElegido.nombre,
+    precio: planElegido.precio,
+    estado: "seleccionado_sin_contratar",
+    fechaSeleccion: serverTimestamp()
+  });
+
+  return true;
+}
+
+// Recupera el plan seleccionado por el usuario.
+export async function obtenerPlanSeleccionado(usuarioId) {
+
+  if (auth.currentUser?.uid !== usuarioId) {
+    throw new Error("Usuario no autorizado.");
+  }
+
+  const referencia = doc(
+    db,
+    "usuarios",
+    usuarioId,
+    "preferencias",
+    "plan"
+  );
+
+  const resultado = await getDoc(referencia);
+
+  if (!resultado.exists()) {
+    return null;
+  }
+
+  return resultado.data();
 }
 
 export default app;
