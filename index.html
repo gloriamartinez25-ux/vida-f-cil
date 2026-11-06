@@ -174,10 +174,7 @@ button.eliminar {
   flex-wrap:wrap;
   margin-top:12px;
 }
-.archivo-info {
-  color:var(--verde);
-  font-size:13px;
-}
+.archivo-info {color:var(--verde);font-size:13px}
 button.archivo-boton {
   background:var(--morado);
   color:white;
@@ -194,11 +191,106 @@ button.editar {
   border-radius:7px;
   cursor:pointer;
 }
+
+/* ESTADÍSTICAS */
+
+.grafico-contenedor {
+  background:var(--panel2);
+  border-radius:12px;
+  padding:18px;
+  margin:15px 0;
+}
+.grafico-leyenda {
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+  color:var(--suave);
+  font-size:13px;
+}
+.punto-leyenda {
+  display:inline-block;
+  width:11px;
+  height:11px;
+  border-radius:3px;
+  margin-right:5px;
+}
+.barras-meses {
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+  align-items:end;
+  min-height:190px;
+}
+.mes-columna {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:end;
+  min-width:0;
+  height:190px;
+}
+.barras {
+  display:flex;
+  align-items:end;
+  justify-content:center;
+  gap:5px;
+  height:150px;
+  width:100%;
+  border-bottom:1px solid #596079;
+}
+.barra {
+  width:35%;
+  min-height:2px;
+  border-radius:5px 5px 0 0;
+  position:relative;
+}
+.barra.ingreso {background:var(--verde)}
+.barra.gasto {background:var(--rojo)}
+.etiqueta-mes {
+  color:var(--suave);
+  font-size:11px;
+  margin-top:9px;
+  text-align:center;
+}
+.dato-mes {
+  font-size:10px;
+  color:var(--suave);
+  margin-top:4px;
+  text-align:center;
+}
+.estadistica-dos-columnas {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+.estadistica-linea {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 0;
+  border-bottom:1px solid #343951;
+}
+.estadistica-linea strong {color:var(--oro)}
+.bloqueo-estadisticas {
+  border:1px solid var(--oro);
+  background:var(--panel);
+  padding:20px;
+  border-radius:15px;
+  margin:15px 0;
+}
+.bloqueo-estadisticas p {color:var(--suave)}
+.bloqueo-estadisticas a {display:inline-block;margin-top:8px}
+
 footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
+
 @media(max-width:600px) {
   header {align-items:flex-start}
   main {padding:14px}
   h1 {font-size:23px}
+  .barras-meses {gap:4px}
+  .etiqueta-mes {font-size:9px}
+  .dato-mes {font-size:8px}
 }
 </style>
 </head>
@@ -225,6 +317,7 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
   <button data-seccion="compra">La compra</button>
   <button data-seccion="notas">Notas</button>
   <button data-seccion="documentos">Documentos</button>
+  <button data-seccion="estadisticas" id="botonEstadisticas" style="display:none">📊 Estadísticas</button>
 </nav>
 
 <main>
@@ -325,12 +418,22 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 
   <div class="panel">
     <h2>Registrar movimiento</h2>
+
+    <label for="tipoMovimiento">Tipo de movimiento:</label>
     <select id="tipoMovimiento">
       <option value="ingreso">Ingreso</option>
       <option value="gasto">Gasto</option>
     </select>
-    <input id="conceptoMovimiento" placeholder="Concepto">
+
+    <label for="conceptoMovimiento">Concepto:</label>
+    <input id="conceptoMovimiento" placeholder="Ej. Compra, nómina, recibo...">
+
+    <label for="cantidadMovimiento">Cantidad en euros:</label>
     <input id="cantidadMovimiento" type="number" min="0.01" step="0.01" placeholder="Cantidad en euros">
+
+    <label for="fechaMovimiento">Fecha del movimiento:</label>
+    <input id="fechaMovimiento" type="date">
+
     <button class="accion" onclick="agregarMovimiento()">Guardar movimiento</button>
   </div>
 
@@ -424,6 +527,17 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
   </div>
 </section>
 
+<section id="estadisticas" class="seccion">
+  <h1>📊 Mis estadísticas</h1>
+  <p class="subtitulo">Conoce la evolución de tus ingresos y gastos.</p>
+
+  <div id="contenidoEstadisticas">
+    <div class="panel">
+      <p>Comprobando los permisos de tu plan...</p>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>VIDA FÁCIL · Todo en orden. Más tiempo para vivir.</footer>
@@ -436,7 +550,8 @@ import {
   guardarDato,
   obtenerDatos,
   eliminarDato,
-  obtenerPlanSeleccionado
+  obtenerPlanSeleccionado,
+  obtenerPermisosUsuario
 } from "./firebase.js";
 
 import {
@@ -450,6 +565,7 @@ import {
 
 let usuarioActual = null;
 let aplicacionLista = false;
+let permisoEstadisticas = false;
 
 let tareas = [];
 let recordatorios = [];
@@ -457,6 +573,38 @@ let movimientos = [];
 let compras = [];
 let notas = [];
 let documentos = [];
+
+// =====================================
+// FECHAS
+// =====================================
+
+function fechaLocalHoy() {
+  const ahora = new Date();
+  const anio = ahora.getFullYear();
+  const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+  const dia = String(ahora.getDate()).padStart(2, "0");
+  return `${anio}-${mes}-${dia}`;
+}
+
+function establecerFechaMovimientoHoy() {
+  const campo = document.getElementById("fechaMovimiento");
+  if (campo && !campo.value) {
+    campo.value = fechaLocalHoy();
+  }
+}
+
+function nombreMes(fecha) {
+  return fecha.toLocaleDateString("es-ES", {month:"short"});
+}
+
+function fechaLegible(fecha) {
+  if (!fecha || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    return "Sin fecha";
+  }
+
+  const partes = fecha.split("-");
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
 
 // =====================================
 // ALMACENAMIENTO LOCAL DE ARCHIVOS
@@ -514,9 +662,6 @@ async function guardarArchivoLocal(archivo) {
   });
 }
 
-// Guardar un archivo con un identificador fijo.
-// Así no se crean archivos duplicados al repetir una restauración.
-
 async function guardarArchivoLocalConId(archivo, id) {
   const base = await abrirBaseArchivos();
 
@@ -552,9 +697,6 @@ async function guardarArchivoLocalConId(archivo, id) {
     };
   });
 }
-
-// Preparar objetos para comparar sus datos sin tener en cuenta
-// los identificadores ni las marcas internas de restauración.
 
 function ordenarObjetoParaComparar(objeto) {
   if (Array.isArray(objeto)) {
@@ -703,7 +845,7 @@ function euros(valor) {
 }
 
 // =====================================
-// PERFIL EN LA PÁGINA DE INICIO
+// PERFIL Y PLAN
 // =====================================
 
 async function actualizarPlanInicio(usuario) {
@@ -739,6 +881,82 @@ async function actualizarPlanInicio(usuario) {
     nombre.textContent = "No se ha podido consultar tu plan.";
     precio.textContent = "";
     estado.textContent = "Puedes revisarlo desde Planes y precios.";
+  }
+}
+
+async function comprobarAccesoEstadisticas(usuario) {
+  const boton = document.getElementById("botonEstadisticas");
+  const contenido = document.getElementById("contenidoEstadisticas");
+
+  boton.style.display = "none";
+  permisoEstadisticas = false;
+
+  try {
+    const resultado = await obtenerPermisosUsuario(usuario.uid);
+
+    permisoEstadisticas =
+      resultado &&
+      resultado.permisos &&
+      resultado.permisos.estadisticasAvanzadas === true;
+
+    if (permisoEstadisticas) {
+      boton.style.display = "inline-block";
+      contenido.innerHTML = `
+        <div class="panel">
+          <h2>Tu evolución financiera</h2>
+          <p class="subtitulo">Resumen de tus ingresos y gastos de los últimos seis meses.</p>
+          <div id="resumenEstadisticas" class="resumen"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Ingresos y gastos por mes</h2>
+          <div class="grafico-contenedor">
+            <div class="grafico-leyenda">
+              <span><i class="punto-leyenda" style="background:var(--verde)"></i>Ingresos</span>
+              <span><i class="punto-leyenda" style="background:var(--rojo)"></i>Gastos</span>
+            </div>
+            <div id="graficoMeses" class="barras-meses"></div>
+          </div>
+          <p class="subtitulo">Los movimientos antiguos que no tengan fecha no aparecen en este gráfico, pero sí se mantienen en los totales generales de Finanzas.</p>
+        </div>
+
+        <div class="panel">
+          <h2>Resumen de los últimos seis meses</h2>
+          <div class="estadistica-dos-columnas">
+            <div class="tarjeta">
+              <h3>Ingresos</h3>
+              <div id="detalleIngresos"></div>
+            </div>
+            <div class="tarjeta">
+              <h3>Gastos</h3>
+              <div id="detalleGastos"></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      mostrarEstadisticas();
+
+    } else {
+      contenido.innerHTML = `
+        <div class="bloqueo-estadisticas">
+          <h2>🔒 Estadísticas avanzadas</h2>
+          <p>Esta sección está incluida en los planes Premium y Familiar.</p>
+          <p>Con las estadísticas podrás consultar la evolución de tus ingresos y gastos por meses.</p>
+          <a class="perfil-link" href="planes.html">Ver planes y precios</a>
+        </div>
+      `;
+    }
+
+  } catch (error) {
+    console.error("Error comprobando permisos:", error);
+
+    contenido.innerHTML = `
+      <div class="panel">
+        <p class="rojo">No se han podido comprobar los permisos de tu plan.</p>
+        <p class="subtitulo">Vuelve a cargar la página para intentarlo de nuevo.</p>
+      </div>
+    `;
   }
 }
 
@@ -885,6 +1103,10 @@ async function borrarDato(apartado, lista, indice) {
 // =====================================
 
 function navegar(seccion) {
+  if (seccion === "estadisticas" && !permisoEstadisticas) {
+    return;
+  }
+
   document.querySelectorAll(".seccion").forEach(s =>
     s.classList.remove("active")
   );
@@ -902,6 +1124,10 @@ function navegar(seccion) {
   if (boton) boton.classList.add("active");
 
   actualizarResumen();
+
+  if (seccion === "estadisticas" && permisoEstadisticas) {
+    mostrarEstadisticas();
+  }
 }
 
 document.querySelectorAll("nav button").forEach(boton => {
@@ -1037,20 +1263,23 @@ async function agregarMovimiento() {
   const tipo = document.getElementById("tipoMovimiento").value;
   const concepto = document.getElementById("conceptoMovimiento").value.trim();
   const cantidad = Number(document.getElementById("cantidadMovimiento").value);
+  const fecha = document.getElementById("fechaMovimiento").value;
 
-  if (!concepto || !Number.isFinite(cantidad) || cantidad <= 0) {
-    return alert("Introduce un concepto y una cantidad válida.");
+  if (!concepto || !Number.isFinite(cantidad) || cantidad <= 0 || !fecha) {
+    return alert("Introduce un concepto, una cantidad válida y una fecha.");
   }
 
   const guardado = await guardarNuevo("movimientos", movimientos, {
     tipo,
     concepto,
-    cantidad
+    cantidad,
+    fecha
   });
 
   if (guardado) {
     document.getElementById("conceptoMovimiento").value = "";
     document.getElementById("cantidadMovimiento").value = "";
+    document.getElementById("fechaMovimiento").value = fechaLocalHoy();
   }
 }
 
@@ -1065,7 +1294,11 @@ function mostrarMovimientos() {
   let ingresos = 0;
   let gastos = 0;
 
-  movimientos.forEach((m,i) => {
+  const ordenados = movimientos
+    .map((m,i) => ({...m, indice:i}))
+    .sort((a,b) => String(b.fecha || "").localeCompare(String(a.fecha || "")));
+
+  ordenados.forEach(m => {
     if (m.tipo === "ingreso") ingresos += Number(m.cantidad);
     else gastos += Number(m.cantidad);
 
@@ -1073,12 +1306,14 @@ function mostrarMovimientos() {
     fila.className = "item";
 
     fila.innerHTML = `
-      <span>${escapar(m.concepto)} ·
+      <span>
+        <strong>${escapar(m.concepto)}</strong><br>
+        <small class="subtitulo">${escapar(fechaLegible(m.fecha))}</small><br>
         <strong class="${m.tipo === "ingreso" ? "verde" : "rojo"}">
           ${m.tipo === "ingreso" ? "+" : "-"}${euros(m.cantidad)}
         </strong>
       </span>
-      <button class="eliminar" onclick="eliminarMovimiento(${i})">Eliminar</button>
+      <button class="eliminar" onclick="eliminarMovimiento(${m.indice})">Eliminar</button>
     `;
 
     lista.appendChild(fila);
@@ -1091,6 +1326,119 @@ function mostrarMovimientos() {
   document.getElementById("totalIngresos").textContent = euros(ingresos);
   document.getElementById("totalGastos").textContent = euros(gastos);
   document.getElementById("balance").textContent = euros(ingresos - gastos);
+}
+
+// =====================================
+// ESTADÍSTICAS AVANZADAS
+// =====================================
+
+function obtenerUltimosSeisMeses() {
+  const hoy = new Date();
+  const meses = [];
+
+  for (let i = 5; i >= 0; i--) {
+    const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+
+    meses.push({
+      clave: `${anio}-${mes}`,
+      nombre: nombreMes(fecha),
+      ingresos:0,
+      gastos:0
+    });
+  }
+
+  return meses;
+}
+
+function mostrarEstadisticas() {
+  if (!permisoEstadisticas) return;
+
+  const meses = obtenerUltimosSeisMeses();
+
+  movimientos.forEach(m => {
+    if (!m.fecha || !/^\d{4}-\d{2}-\d{2}$/.test(m.fecha)) return;
+
+    const clave = m.fecha.slice(0,7);
+    const mes = meses.find(x => x.clave === clave);
+
+    if (!mes) return;
+
+    if (m.tipo === "ingreso") {
+      mes.ingresos += Number(m.cantidad) || 0;
+    } else if (m.tipo === "gasto") {
+      mes.gastos += Number(m.cantidad) || 0;
+    }
+  });
+
+  const totalIngresos = meses.reduce((s,m) => s + m.ingresos, 0);
+  const totalGastos = meses.reduce((s,m) => s + m.gastos, 0);
+  const balance = totalIngresos - totalGastos;
+
+  document.getElementById("resumenEstadisticas").innerHTML = `
+    <div class="tarjeta">
+      Ingresos de los últimos 6 meses
+      <strong class="verde">${euros(totalIngresos)}</strong>
+    </div>
+    <div class="tarjeta">
+      Gastos de los últimos 6 meses
+      <strong class="rojo">${euros(totalGastos)}</strong>
+    </div>
+    <div class="tarjeta">
+      Balance de los últimos 6 meses
+      <strong>${euros(balance)}</strong>
+    </div>
+  `;
+
+  const maximo = Math.max(
+    1,
+    ...meses.map(m => Math.max(m.ingresos, m.gastos))
+  );
+
+  const grafico = document.getElementById("graficoMeses");
+
+  grafico.innerHTML = meses.map(m => {
+    const alturaIngreso = m.ingresos > 0
+      ? Math.max(3, (m.ingresos / maximo) * 140)
+      : 2;
+
+    const alturaGasto = m.gastos > 0
+      ? Math.max(3, (m.gastos / maximo) * 140)
+      : 2;
+
+    return `
+      <div class="mes-columna">
+        <div class="barras">
+          <div class="barra ingreso"
+            style="height:${alturaIngreso}px"
+            title="Ingresos: ${euros(m.ingresos)}"></div>
+          <div class="barra gasto"
+            style="height:${alturaGasto}px"
+            title="Gastos: ${euros(m.gastos)}"></div>
+        </div>
+        <div class="etiqueta-mes">${escapar(m.nombre)}</div>
+        <div class="dato-mes">${euros(m.ingresos + m.gastos)}</div>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("detalleIngresos").innerHTML =
+    meses.map(m => `
+      <div class="estadistica-linea">
+        <span>${escapar(m.nombre)}</span>
+        <strong class="verde">${euros(m.ingresos)}</strong>
+      </div>
+    `).join("");
+
+  document.getElementById("detalleGastos").innerHTML =
+    meses.map(m => `
+      <div class="estadistica-linea">
+        <span>${escapar(m.nombre)}</span>
+        <strong class="rojo">${euros(m.gastos)}</strong>
+      </div>
+    `).join("");
 }
 
 // =====================================
@@ -1841,8 +2189,6 @@ async function restaurarCopiaSeguridad(evento) {
       return;
     }
 
-    // Obtener los datos reales que ya están guardados en Firebase.
-
     estado.textContent = "Comprobando los datos existentes...";
 
     const listasActualizadas = {};
@@ -1853,8 +2199,6 @@ async function restaurarCopiaSeguridad(evento) {
         apartado
       );
     }
-
-    // Restaurar archivos con identificadores estables.
 
     estado.textContent = "Comprobando archivos adjuntos...";
 
@@ -1890,8 +2234,6 @@ async function restaurarCopiaSeguridad(evento) {
     let importados = 0;
     let omitidos = 0;
 
-    // Importar los datos evitando duplicados.
-
     for (const apartado of apartados) {
       estado.textContent = "Restaurando " + apartado + "...";
 
@@ -1907,8 +2249,6 @@ async function restaurarCopiaSeguridad(evento) {
         const claveElemento =
           apartado + "_" + (elemento.id || indice);
 
-        // Comprobar si este elemento ya se importó en un intento anterior.
-
         const yaImportado = listaActual.some(x =>
           x._vidaCopiaId === copia.copiaId &&
           x._vidaElementoClave === claveElemento
@@ -1921,8 +2261,6 @@ async function restaurarCopiaSeguridad(evento) {
 
         const {id, ...datosOriginales} = elemento;
 
-        // Comprobar si ya existía un elemento con los mismos datos.
-
         const yaExistente = listaActual.some(x =>
           sonDatosIguales(x, datosOriginales)
         );
@@ -1934,8 +2272,6 @@ async function restaurarCopiaSeguridad(evento) {
 
         const datos = {...datosOriginales};
 
-        // Reconectar los archivos adjuntos restaurados.
-
         if (apartado === "documentos" && datos.archivoId) {
           const nuevoArchivoId = mapaArchivos.get(datos.archivoId);
 
@@ -1946,9 +2282,6 @@ async function restaurarCopiaSeguridad(evento) {
             datos.tamanoArchivo = 0;
           }
         }
-
-        // Marcas internas para reconocer los elementos
-        // si la restauración se interrumpe y se repite.
 
         datos._vidaCopiaId = copia.copiaId;
         datos._vidaElementoClave = claveElemento;
@@ -1968,8 +2301,6 @@ async function restaurarCopiaSeguridad(evento) {
       }
     }
 
-    // Registrar la copia cuando toda la restauración haya terminado.
-
     await guardarDato(
       usuarioActual.uid,
       "copiasRestauradas",
@@ -1981,16 +2312,12 @@ async function restaurarCopiaSeguridad(evento) {
       }
     );
 
-    // Actualizar las listas que utiliza la aplicación.
-
     tareas = listasActualizadas.tareas;
     recordatorios = listasActualizadas.recordatorios;
     movimientos = listasActualizadas.movimientos;
     compras = listasActualizadas.compras;
     notas = listasActualizadas.notas;
     documentos = listasActualizadas.documentos;
-
-    // Recuperar los datos del perfil incluidos en la copia.
 
     if (copia.perfil) {
       if (typeof copia.perfil.vidaNombre === "string") {
@@ -2085,6 +2412,10 @@ function mostrarTodo() {
   mostrarNotas();
   mostrarDocumentos();
   actualizarResumen();
+
+  if (permisoEstadisticas) {
+    mostrarEstadisticas();
+  }
 }
 
 // =====================================
@@ -2120,6 +2451,8 @@ document.getElementById("archivoCopiaSeguridad").addEventListener(
   restaurarCopiaSeguridad
 );
 
+establecerFechaMovimientoHoy();
+
 onAuthStateChanged(auth, async usuario => {
   if (!usuario) {
     window.location.href = "acceso.html";
@@ -2141,6 +2474,8 @@ onAuthStateChanged(auth, async usuario => {
   try {
     await migrarDatosAntiguos();
     await cargarDatosNube();
+
+    await comprobarAccesoEstadisticas(usuario);
 
     aplicacionLista = true;
 
