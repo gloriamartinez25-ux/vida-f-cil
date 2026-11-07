@@ -1,8 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="VIDA FÁCIL: organiza tus tareas, calendario, finanzas, compras, notas y documentos. Todo en orden. Más tiempo para vivir.">
+<meta name="theme-color" content="#101322">
+<link rel="manifest" href="manifest.json">
 <title>VIDA FÁCIL</title>
 
 <style>
@@ -191,9 +195,6 @@ button.editar {
   border-radius:7px;
   cursor:pointer;
 }
-
-/* ESTADÍSTICAS */
-
 .grafico-contenedor {
   background:var(--panel2);
   border-radius:12px;
@@ -281,7 +282,6 @@ button.editar {
 }
 .bloqueo-estadisticas p {color:var(--suave)}
 .bloqueo-estadisticas a {display:inline-block;margin-top:8px}
-
 footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 
 @media(max-width:600px) {
@@ -375,13 +375,11 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="tareas" class="seccion">
   <h1>Mis tareas</h1>
   <p class="subtitulo">Organiza todo lo que tienes pendiente.</p>
-
   <div class="panel">
     <h2>Añadir una tarea</h2>
     <input id="tareaTexto" placeholder="¿Qué tienes que hacer?">
     <button class="accion" onclick="agregarTarea()">Añadir tarea</button>
   </div>
-
   <div class="panel">
     <h2>Mi lista de tareas</h2>
     <div id="listaTareas"></div>
@@ -391,7 +389,6 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="calendario" class="seccion">
   <h1>Calendario y recordatorios</h1>
   <p class="subtitulo">No vuelvas a olvidar una fecha importante.</p>
-
   <div class="panel">
     <h2>Crear recordatorio</h2>
     <input id="recordatorioTexto" placeholder="Nombre del recordatorio">
@@ -399,7 +396,6 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
     <input id="recordatorioFecha" type="date">
     <button class="accion" onclick="agregarRecordatorio()">Guardar recordatorio</button>
   </div>
-
   <div class="panel">
     <h2>Mis recordatorios</h2>
     <div id="listaRecordatorios"></div>
@@ -409,34 +405,26 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="finanzas" class="seccion">
   <h1>Mis finanzas</h1>
   <p class="subtitulo">Controla tus ingresos y tus gastos.</p>
-
   <div class="resumen">
     <div class="tarjeta">Ingresos<strong id="totalIngresos" class="verde">0,00 €</strong></div>
     <div class="tarjeta">Gastos<strong id="totalGastos" class="rojo">0,00 €</strong></div>
     <div class="tarjeta">Balance<strong id="balance">0,00 €</strong></div>
   </div>
-
   <div class="panel">
     <h2>Registrar movimiento</h2>
-
     <label for="tipoMovimiento">Tipo de movimiento:</label>
     <select id="tipoMovimiento">
       <option value="ingreso">Ingreso</option>
       <option value="gasto">Gasto</option>
     </select>
-
     <label for="conceptoMovimiento">Concepto:</label>
     <input id="conceptoMovimiento" placeholder="Ej. Compra, nómina, recibo...">
-
     <label for="cantidadMovimiento">Cantidad en euros:</label>
     <input id="cantidadMovimiento" type="number" min="0.01" step="0.01" placeholder="Cantidad en euros">
-
     <label for="fechaMovimiento">Fecha del movimiento:</label>
     <input id="fechaMovimiento" type="date">
-
     <button class="accion" onclick="agregarMovimiento()">Guardar movimiento</button>
   </div>
-
   <div class="panel">
     <h2>Movimientos</h2>
     <div id="listaMovimientos"></div>
@@ -446,12 +434,10 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="compra" class="seccion">
   <h1>Lista de la compra</h1>
   <p class="subtitulo">Ten siempre a mano lo que necesitas comprar.</p>
-
   <div class="panel">
     <input id="compraTexto" placeholder="Añadir artículo">
     <button class="accion" onclick="agregarCompra()">Añadir artículo</button>
   </div>
-
   <div class="panel">
     <h2>Mi lista</h2>
     <div id="listaCompra"></div>
@@ -461,13 +447,11 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="notas" class="seccion">
   <h1>Mis notas</h1>
   <p class="subtitulo">Guarda ideas, información y cosas importantes.</p>
-
   <div class="panel">
     <input id="notaTitulo" placeholder="Título de la nota">
     <textarea id="notaTexto" placeholder="Escribe aquí tu nota..."></textarea>
     <button class="accion" onclick="agregarNota()">Guardar nota</button>
   </div>
-
   <div class="panel">
     <h2>Notas guardadas</h2>
     <div id="listaNotas"></div>
@@ -477,13 +461,10 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="documentos" class="seccion">
   <h1>Mis documentos</h1>
   <p class="subtitulo">Organiza tus documentos y encuentra rápidamente lo que necesitas.</p>
-
   <div class="panel">
     <h2>Añadir un documento</h2>
-
     <label for="documentoNombre">Nombre del documento:</label>
     <input id="documentoNombre" placeholder="Ej. Contrato de alquiler">
-
     <label for="documentoCategoria">Categoría:</label>
     <select id="documentoCategoria">
       <option value="Personal">Personal</option>
@@ -493,33 +474,18 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
       <option value="Estudios">Estudios</option>
       <option value="Otros">Otros</option>
     </select>
-
     <label for="documentoFecha">Fecha:</label>
     <input id="documentoFecha" type="date">
-
     <label for="documentoDescripcion">Descripción:</label>
     <textarea id="documentoDescripcion" placeholder="Añade una descripción (opcional)"></textarea>
-
     <label for="documentoArchivo">Adjuntar fotografía o PDF:</label>
-    <input
-      id="documentoArchivo"
-      type="file"
-      accept="image/jpeg,image/png,image/webp,application/pdf"
-    >
-
+    <input id="documentoArchivo" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
     <p class="subtitulo">Formatos: JPG, PNG, WEBP y PDF. Máximo 10 MB por archivo.</p>
-
     <label for="documentoEnlace">Enlace al documento (opcional):</label>
     <input id="documentoEnlace" type="url" placeholder="https://...">
-
     <button class="accion" onclick="agregarDocumento()">Guardar documento</button>
-
-    <p class="subtitulo">
-      Los datos se guardan en Firebase y el archivo adjunto se guarda
-      en este dispositivo y navegador.
-    </p>
+    <p class="subtitulo">Los datos se guardan en Firebase y el archivo adjunto se guarda en este dispositivo y navegador.</p>
   </div>
-
   <div class="panel">
     <h2>Mis documentos guardados</h2>
     <input id="buscarDocumento" type="search" placeholder="Buscar por nombre o categoría..." oninput="mostrarDocumentos()">
@@ -530,7 +496,6 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
 <section id="estadisticas" class="seccion">
   <h1>📊 Mis estadísticas</h1>
   <p class="subtitulo">Conoce la evolución de tus ingresos y gastos.</p>
-
   <div id="contenidoEstadisticas">
     <div class="panel">
       <p>Comprobando los permisos de tu plan...</p>
@@ -574,10 +539,6 @@ let compras = [];
 let notas = [];
 let documentos = [];
 
-// =====================================
-// FECHAS
-// =====================================
-
 function fechaLocalHoy() {
   const ahora = new Date();
   const anio = ahora.getFullYear();
@@ -588,9 +549,7 @@ function fechaLocalHoy() {
 
 function establecerFechaMovimientoHoy() {
   const campo = document.getElementById("fechaMovimiento");
-  if (campo && !campo.value) {
-    campo.value = fechaLocalHoy();
-  }
+  if (campo && !campo.value) campo.value = fechaLocalHoy();
 }
 
 function nombreMes(fecha) {
@@ -598,30 +557,22 @@ function nombreMes(fecha) {
 }
 
 function fechaLegible(fecha) {
-  if (!fecha || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
-    return "Sin fecha";
-  }
-
+  if (!fecha || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return "Sin fecha";
   const partes = fecha.split("-");
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
-// =====================================
 // ALMACENAMIENTO LOCAL DE ARCHIVOS
-// =====================================
 
 function abrirBaseArchivos() {
   return new Promise((resolve, reject) => {
     const solicitud = indexedDB.open("vidaFacilArchivos", 1);
-
     solicitud.onupgradeneeded = () => {
       const base = solicitud.result;
-
       if (!base.objectStoreNames.contains("archivos")) {
         base.createObjectStore("archivos", {keyPath:"id"});
       }
     };
-
     solicitud.onsuccess = () => resolve(solicitud.result);
     solicitud.onerror = () => reject(solicitud.error);
   });
@@ -629,32 +580,20 @@ function abrirBaseArchivos() {
 
 async function guardarArchivoLocal(archivo) {
   const base = await abrirBaseArchivos();
-
   const id = crypto.randomUUID
     ? crypto.randomUUID()
     : "archivo-" + Date.now() + "-" + Math.random().toString(16).slice(2);
 
   return new Promise((resolve, reject) => {
     const transaccion = base.transaction("archivos", "readwrite");
-    const almacen = transaccion.objectStore("archivos");
-
-    almacen.put({
+    transaccion.objectStore("archivos").put({
       id,
       nombre: archivo.name,
       tipo: archivo.type,
       contenido: archivo
     });
-
-    transaccion.oncomplete = () => {
-      base.close();
-      resolve(id);
-    };
-
-    transaccion.onerror = () => {
-      base.close();
-      reject(transaccion.error);
-    };
-
+    transaccion.oncomplete = () => { base.close(); resolve(id); };
+    transaccion.onerror = () => { base.close(); reject(transaccion.error); };
     transaccion.onabort = () => {
       base.close();
       reject(transaccion.error || new Error("No se pudo guardar el archivo."));
@@ -664,33 +603,17 @@ async function guardarArchivoLocal(archivo) {
 
 async function guardarArchivoLocalConId(archivo, id) {
   const base = await abrirBaseArchivos();
-
   return new Promise((resolve, reject) => {
     const transaccion = base.transaction("archivos", "readwrite");
     const almacen = transaccion.objectStore("archivos");
     const consulta = almacen.get(id);
-
     consulta.onsuccess = () => {
-      if (consulta.result) return;
-
-      almacen.put({
-        id,
-        nombre: archivo.name,
-        tipo: archivo.type,
-        contenido: archivo
-      });
+      if (!consulta.result) {
+        almacen.put({id, nombre:archivo.name, tipo:archivo.type, contenido:archivo});
+      }
     };
-
-    transaccion.oncomplete = () => {
-      base.close();
-      resolve(id);
-    };
-
-    transaccion.onerror = () => {
-      base.close();
-      reject(transaccion.error);
-    };
-
+    transaccion.oncomplete = () => { base.close(); resolve(id); };
+    transaccion.onerror = () => { base.close(); reject(transaccion.error); };
     transaccion.onabort = () => {
       base.close();
       reject(transaccion.error || new Error("No se pudo guardar el archivo."));
@@ -699,92 +622,55 @@ async function guardarArchivoLocalConId(archivo, id) {
 }
 
 function ordenarObjetoParaComparar(objeto) {
-  if (Array.isArray(objeto)) {
-    return objeto.map(ordenarObjetoParaComparar);
-  }
-
+  if (Array.isArray(objeto)) return objeto.map(ordenarObjetoParaComparar);
   if (objeto && typeof objeto === "object") {
     const resultado = {};
-
     Object.keys(objeto)
-      .filter(clave =>
-        clave !== "id" &&
-        clave !== "_vidaCopiaId" &&
-        clave !== "_vidaElementoClave"
-      )
+      .filter(clave => clave !== "id" && clave !== "_vidaCopiaId" && clave !== "_vidaElementoClave")
       .sort()
-      .forEach(clave => {
-        resultado[clave] = ordenarObjetoParaComparar(objeto[clave]);
-      });
-
+      .forEach(clave => resultado[clave] = ordenarObjetoParaComparar(objeto[clave]));
     return resultado;
   }
-
   return objeto;
 }
 
 function sonDatosIguales(a, b) {
   return JSON.stringify(ordenarObjetoParaComparar(a)) ===
-         JSON.stringify(ordenarObjetoParaComparar(b));
+    JSON.stringify(ordenarObjetoParaComparar(b));
 }
 
 async function obtenerArchivoLocal(id) {
   const base = await abrirBaseArchivos();
-
   return new Promise((resolve, reject) => {
     const transaccion = base.transaction("archivos", "readonly");
     const solicitud = transaccion.objectStore("archivos").get(id);
-
-    solicitud.onsuccess = () => {
-      const resultado = solicitud.result || null;
-      base.close();
-      resolve(resultado);
-    };
-
-    solicitud.onerror = () => {
-      base.close();
-      reject(solicitud.error);
-    };
+    solicitud.onsuccess = () => { const resultado = solicitud.result || null; base.close(); resolve(resultado); };
+    solicitud.onerror = () => { base.close(); reject(solicitud.error); };
   });
 }
 
 async function eliminarArchivoLocal(id) {
   if (!id) return;
-
   const base = await abrirBaseArchivos();
-
   return new Promise((resolve, reject) => {
     const transaccion = base.transaction("archivos", "readwrite");
     transaccion.objectStore("archivos").delete(id);
-
-    transaccion.oncomplete = () => {
-      base.close();
-      resolve();
-    };
-
-    transaccion.onerror = () => {
-      base.close();
-      reject(transaccion.error);
-    };
+    transaccion.oncomplete = () => { base.close(); resolve(); };
+    transaccion.onerror = () => { base.close(); reject(transaccion.error); };
   });
 }
 
 async function abrirArchivo(id, nombre) {
   if (!id) return;
-
   const ventana = window.open("about:blank", "_blank");
-
   try {
     const registro = await obtenerArchivoLocal(id);
-
     if (!registro || !registro.contenido) {
       if (ventana) ventana.close();
       alert("No se encuentra el archivo en este dispositivo.");
       return;
     }
-
     const url = URL.createObjectURL(registro.contenido);
-
     if (ventana) {
       ventana.location.href = url;
     } else {
@@ -795,9 +681,7 @@ async function abrirArchivo(id, nombre) {
       enlace.click();
       enlace.remove();
     }
-
     setTimeout(() => URL.revokeObjectURL(url), 60000);
-
   } catch (error) {
     if (ventana) ventana.close();
     console.error(error);
@@ -805,17 +689,13 @@ async function abrirArchivo(id, nombre) {
   }
 }
 
-// =====================================
 // FUNCIONES GENERALES
-// =====================================
 
 function leerLocal(clave) {
   try {
     const valor = JSON.parse(localStorage.getItem(clave));
     return Array.isArray(valor) ? valor : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 function guardarLocal() {
@@ -838,44 +718,31 @@ function mostrarVacio(id, mensaje) {
 }
 
 function euros(valor) {
-  return Number(valor || 0).toLocaleString("es-ES", {
-    style:"currency",
-    currency:"EUR"
-  });
+  return Number(valor || 0).toLocaleString("es-ES", {style:"currency", currency:"EUR"});
 }
 
-// =====================================
 // PERFIL Y PLAN
-// =====================================
 
 async function actualizarPlanInicio(usuario) {
   const nombre = document.getElementById("planNombre");
   const precio = document.getElementById("planPrecio");
   const estado = document.getElementById("planEstado");
-
   nombre.textContent = "Consultando tu plan...";
   precio.textContent = "";
   estado.textContent = "";
 
   try {
     const plan = await obtenerPlanSeleccionado(usuario.uid);
-
     if (!plan) {
       nombre.textContent = "Todavía no has seleccionado ningún plan.";
       precio.textContent = "Puedes consultar las opciones disponibles.";
-      estado.textContent = "";
       return;
     }
-
     nombre.textContent = "Plan " + (plan.nombre || "seleccionado");
     precio.textContent = plan.precio || "";
-
-    if (plan.estado === "seleccionado_sin_contratar") {
-      estado.textContent = "Seleccionado, pendiente de contratación.";
-    } else {
-      estado.textContent = "Selección guardada.";
-    }
-
+    estado.textContent = plan.estado === "seleccionado_sin_contratar"
+      ? "Seleccionado, pendiente de contratación."
+      : "Selección guardada.";
   } catch (error) {
     console.error("Error consultando el plan:", error);
     nombre.textContent = "No se ha podido consultar tu plan.";
@@ -887,17 +754,15 @@ async function actualizarPlanInicio(usuario) {
 async function comprobarAccesoEstadisticas(usuario) {
   const boton = document.getElementById("botonEstadisticas");
   const contenido = document.getElementById("contenidoEstadisticas");
-
   boton.style.display = "none";
   permisoEstadisticas = false;
 
   try {
     const resultado = await obtenerPermisosUsuario(usuario.uid);
-
-    permisoEstadisticas =
-      resultado &&
-      resultado.permisos &&
-      resultado.permisos.estadisticasAvanzadas === true;
+    permisoEstadisticas = !!(
+      resultado && resultado.permisos &&
+      resultado.permisos.estadisticasAvanzadas === true
+    );
 
     if (permisoEstadisticas) {
       boton.style.display = "inline-block";
@@ -907,7 +772,6 @@ async function comprobarAccesoEstadisticas(usuario) {
           <p class="subtitulo">Resumen de tus ingresos y gastos de los últimos seis meses.</p>
           <div id="resumenEstadisticas" class="resumen"></div>
         </div>
-
         <div class="panel">
           <h2>Ingresos y gastos por mes</h2>
           <div class="grafico-contenedor">
@@ -919,24 +783,14 @@ async function comprobarAccesoEstadisticas(usuario) {
           </div>
           <p class="subtitulo">Los movimientos antiguos que no tengan fecha no aparecen en este gráfico, pero sí se mantienen en los totales generales de Finanzas.</p>
         </div>
-
         <div class="panel">
           <h2>Resumen de los últimos seis meses</h2>
           <div class="estadistica-dos-columnas">
-            <div class="tarjeta">
-              <h3>Ingresos</h3>
-              <div id="detalleIngresos"></div>
-            </div>
-            <div class="tarjeta">
-              <h3>Gastos</h3>
-              <div id="detalleGastos"></div>
-            </div>
+            <div class="tarjeta"><h3>Ingresos</h3><div id="detalleIngresos"></div></div>
+            <div class="tarjeta"><h3>Gastos</h3><div id="detalleGastos"></div></div>
           </div>
-        </div>
-      `;
-
+        </div>`;
       mostrarEstadisticas();
-
     } else {
       contenido.innerHTML = `
         <div class="bloqueo-estadisticas">
@@ -944,46 +798,27 @@ async function comprobarAccesoEstadisticas(usuario) {
           <p>Esta sección está incluida en los planes Premium y Familiar.</p>
           <p>Con las estadísticas podrás consultar la evolución de tus ingresos y gastos por meses.</p>
           <a class="perfil-link" href="planes.html">Ver planes y precios</a>
-        </div>
-      `;
+        </div>`;
     }
-
   } catch (error) {
     console.error("Error comprobando permisos:", error);
-
     contenido.innerHTML = `
       <div class="panel">
         <p class="rojo">No se han podido comprobar los permisos de tu plan.</p>
         <p class="subtitulo">Vuelve a cargar la página para intentarlo de nuevo.</p>
-      </div>
-    `;
+      </div>`;
   }
 }
 
 function actualizarPerfil(usuario) {
-  const nombreGuardado =
-    localStorage.getItem("vidaNombre") ||
-    usuario.displayName ||
-    "Usuario de VIDA FÁCIL";
+  const nombreGuardado = localStorage.getItem("vidaNombre") || usuario.displayName || "Usuario de VIDA FÁCIL";
+  const correoGuardado = localStorage.getItem("vidaCorreo") || usuario.email || "";
+  const fotoGuardada = localStorage.getItem("vidaFoto") || usuario.photoURL || "";
 
-  const correoGuardado =
-    localStorage.getItem("vidaCorreo") ||
-    usuario.email ||
-    "";
-
-  const fotoGuardada =
-    localStorage.getItem("vidaFoto") ||
-    usuario.photoURL ||
-    "";
-
-  document.getElementById("nombreInicio").textContent =
-    "¡Hola, " + nombreGuardado + "!";
-
-  document.getElementById("correoInicio").textContent =
-    correoGuardado;
+  document.getElementById("nombreInicio").textContent = "¡Hola, " + nombreGuardado + "!";
+  document.getElementById("correoInicio").textContent = correoGuardado;
 
   const imagen = document.getElementById("fotoInicio");
-
   if (fotoGuardada) {
     imagen.src = fotoGuardada;
     imagen.alt = "Fotografía de " + nombreGuardado;
@@ -994,27 +829,23 @@ function actualizarPerfil(usuario) {
   }
 }
 
-// =====================================
 // MIGRACIÓN Y CARGA DE DATOS
-// =====================================
 
 async function migrarDatosAntiguos() {
   const marca = "vidaMigracionCompletada";
-
   if (localStorage.getItem(marca) === "si") return;
 
   const antiguos = {
-    tareas: leerLocal("vidaTareas"),
-    recordatorios: leerLocal("vidaRecordatorios"),
-    movimientos: leerLocal("vidaMovimientos"),
-    compras: leerLocal("vidaCompras"),
-    notas: leerLocal("vidaNotas"),
-    documentos: leerLocal("vidaDocumentos")
+    tareas:leerLocal("vidaTareas"),
+    recordatorios:leerLocal("vidaRecordatorios"),
+    movimientos:leerLocal("vidaMovimientos"),
+    compras:leerLocal("vidaCompras"),
+    notas:leerLocal("vidaNotas"),
+    documentos:leerLocal("vidaDocumentos")
   };
 
   for (const apartado of Object.keys(antiguos)) {
     const existentes = await obtenerDatos(usuarioActual.uid, apartado);
-
     if (existentes.length === 0) {
       for (const elemento of antiguos[apartado]) {
         const {id, ...datos} = elemento;
@@ -1022,7 +853,6 @@ async function migrarDatosAntiguos() {
       }
     }
   }
-
   localStorage.setItem(marca, "si");
 }
 
@@ -1033,25 +863,19 @@ async function cargarDatosNube() {
   compras = await obtenerDatos(usuarioActual.uid, "compras");
   notas = await obtenerDatos(usuarioActual.uid, "notas");
   documentos = await obtenerDatos(usuarioActual.uid, "documentos");
-
   guardarLocal();
 }
 
 async function guardarNuevo(apartado, lista, datos) {
   try {
     const referencia = await guardarDato(usuarioActual.uid, apartado, datos);
-
     lista.push({...datos, id:referencia.id});
     guardarLocal();
     mostrarTodo();
-
     return true;
-
   } catch (error) {
     console.error("Error guardando en Firebase:", error);
-    alert("No se ha podido guardar en la nube.\n\n" +
-      (error.code || error.message || "Error desconocido"));
-
+    alert("No se ha podido guardar en la nube.\n\n" + (error.code || error.message || "Error desconocido"));
     return false;
   }
 }
@@ -1059,108 +883,63 @@ async function guardarNuevo(apartado, lista, datos) {
 async function guardarCambio(apartado, lista, indice, datos) {
   try {
     const anterior = lista[indice];
-
-    if (anterior.id) {
-      await eliminarDato(usuarioActual.uid, apartado, anterior.id);
-    }
-
+    if (anterior.id) await eliminarDato(usuarioActual.uid, apartado, anterior.id);
     const referencia = await guardarDato(usuarioActual.uid, apartado, datos);
-
     lista[indice] = {...datos, id:referencia.id};
-
     guardarLocal();
     mostrarTodo();
-
   } catch (error) {
     console.error("Error actualizando en Firebase:", error);
-    alert("No se ha podido actualizar el dato.\n\n" +
-      (error.code || error.message || "Error desconocido"));
+    alert("No se ha podido actualizar el dato.\n\n" + (error.code || error.message || "Error desconocido"));
   }
 }
 
 async function borrarDato(apartado, lista, indice) {
   try {
     const elemento = lista[indice];
-
-    if (elemento.id) {
-      await eliminarDato(usuarioActual.uid, apartado, elemento.id);
-    }
-
+    if (elemento.id) await eliminarDato(usuarioActual.uid, apartado, elemento.id);
     lista.splice(indice, 1);
-
     guardarLocal();
     mostrarTodo();
-
   } catch (error) {
     console.error("Error eliminando en Firebase:", error);
-    alert("No se ha podido eliminar el dato.\n\n" +
-      (error.code || error.message || "Error desconocido"));
+    alert("No se ha podido eliminar el dato.\n\n" + (error.code || error.message || "Error desconocido"));
   }
 }
 
-// =====================================
 // NAVEGACIÓN
-// =====================================
 
 function navegar(seccion) {
-  if (seccion === "estadisticas" && !permisoEstadisticas) {
-    return;
-  }
+  if (seccion === "estadisticas" && !permisoEstadisticas) return;
 
-  document.querySelectorAll(".seccion").forEach(s =>
-    s.classList.remove("active")
-  );
-
-  document.querySelectorAll("nav button").forEach(b =>
-    b.classList.remove("active")
-  );
-
+  document.querySelectorAll(".seccion").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
   document.getElementById(seccion).classList.add("active");
 
-  const boton = document.querySelector(
-    `nav button[data-seccion="${seccion}"]`
-  );
-
+  const boton = document.querySelector(`nav button[data-seccion="${seccion}"]`);
   if (boton) boton.classList.add("active");
 
   actualizarResumen();
-
-  if (seccion === "estadisticas" && permisoEstadisticas) {
-    mostrarEstadisticas();
-  }
+  if (seccion === "estadisticas" && permisoEstadisticas) mostrarEstadisticas();
 }
 
 document.querySelectorAll("nav button").forEach(boton => {
   boton.addEventListener("click", () => navegar(boton.dataset.seccion));
 });
 
-// =====================================
 // TAREAS
-// =====================================
 
 async function agregarTarea() {
   if (!aplicacionLista) return;
-
   const campo = document.getElementById("tareaTexto");
   const texto = campo.value.trim();
-
   if (!texto) return alert("Escribe una tarea.");
-
-  const guardado = await guardarNuevo("tareas", tareas, {
-    texto,
-    hecha:false
-  });
-
+  const guardado = await guardarNuevo("tareas", tareas, {texto, hecha:false});
   if (guardado) campo.value = "";
 }
 
 function cambiarTarea(i, valor) {
-  if (aplicacionLista) {
-    guardarCambio("tareas", tareas, i, {
-      texto:tareas[i].texto,
-      hecha:valor
-    });
-  }
+  if (aplicacionLista) guardarCambio("tareas", tareas, i, {texto:tareas[i].texto, hecha:valor});
 }
 
 function eliminarTarea(i) {
@@ -1170,47 +949,30 @@ function eliminarTarea(i) {
 function mostrarTareas() {
   const lista = document.getElementById("listaTareas");
   lista.innerHTML = "";
-
-  if (!tareas.length) {
-    return mostrarVacio("listaTareas", "Todavía no tienes tareas.");
-  }
+  if (!tareas.length) return mostrarVacio("listaTareas", "Todavía no tienes tareas.");
 
   tareas.forEach((t,i) => {
     const fila = document.createElement("div");
     fila.className = "item";
-
     fila.innerHTML = `
       <label>
-        <input type="checkbox" ${t.hecha ? "checked" : ""}
-          onchange="cambiarTarea(${i},this.checked)">
+        <input type="checkbox" ${t.hecha ? "checked" : ""} onchange="cambiarTarea(${i},this.checked)">
         <span class="${t.hecha ? "completado" : ""}">${escapar(t.texto)}</span>
       </label>
-      <button class="eliminar" onclick="eliminarTarea(${i})">Eliminar</button>
-    `;
-
+      <button class="eliminar" onclick="eliminarTarea(${i})">Eliminar</button>`;
     lista.appendChild(fila);
   });
 }
 
-// =====================================
 // RECORDATORIOS
-// =====================================
 
 async function agregarRecordatorio() {
   if (!aplicacionLista) return;
-
   const texto = document.getElementById("recordatorioTexto").value.trim();
   const fecha = document.getElementById("recordatorioFecha").value;
+  if (!texto || !fecha) return alert("Escribe el recordatorio y elige una fecha.");
 
-  if (!texto || !fecha) {
-    return alert("Escribe el recordatorio y elige una fecha.");
-  }
-
-  const guardado = await guardarNuevo("recordatorios", recordatorios, {
-    texto,
-    fecha
-  });
-
+  const guardado = await guardarNuevo("recordatorios", recordatorios, {texto, fecha});
   if (guardado) {
     document.getElementById("recordatorioTexto").value = "";
     document.getElementById("recordatorioFecha").value = "";
@@ -1224,42 +986,28 @@ function eliminarRecordatorio(i) {
 function mostrarRecordatorios() {
   const lista = document.getElementById("listaRecordatorios");
   lista.innerHTML = "";
-
-  const ordenados = [...recordatorios].sort((a,b) =>
-    (a.fecha || "").localeCompare(b.fecha || "")
-  );
-
-  if (!ordenados.length) {
-    return mostrarVacio("listaRecordatorios", "No tienes recordatorios.");
-  }
+  const ordenados = [...recordatorios].sort((a,b) => (a.fecha || "").localeCompare(b.fecha || ""));
+  if (!ordenados.length) return mostrarVacio("listaRecordatorios", "No tienes recordatorios.");
 
   ordenados.forEach(r => {
     const indice = recordatorios.findIndex(x => x.id === r.id);
-
     const fila = document.createElement("div");
     fila.className = "item";
-
     const contenido = document.createElement("span");
-    contenido.innerHTML =
-      `<strong>${escapar(r.texto)}</strong><br><small>${escapar(r.fecha)}</small>`;
-
+    contenido.innerHTML = `<strong>${escapar(r.texto)}</strong><br><small>${escapar(r.fecha)}</small>`;
     const boton = document.createElement("button");
     boton.className = "eliminar";
     boton.textContent = "Eliminar";
     boton.onclick = () => eliminarRecordatorio(indice);
-
     fila.append(contenido, boton);
     lista.appendChild(fila);
   });
 }
 
-// =====================================
 // FINANZAS
-// =====================================
 
 async function agregarMovimiento() {
   if (!aplicacionLista) return;
-
   const tipo = document.getElementById("tipoMovimiento").value;
   const concepto = document.getElementById("conceptoMovimiento").value.trim();
   const cantidad = Number(document.getElementById("cantidadMovimiento").value);
@@ -1269,13 +1017,7 @@ async function agregarMovimiento() {
     return alert("Introduce un concepto, una cantidad válida y una fecha.");
   }
 
-  const guardado = await guardarNuevo("movimientos", movimientos, {
-    tipo,
-    concepto,
-    cantidad,
-    fecha
-  });
-
+  const guardado = await guardarNuevo("movimientos", movimientos, {tipo, concepto, cantidad, fecha});
   if (guardado) {
     document.getElementById("conceptoMovimiento").value = "";
     document.getElementById("cantidadMovimiento").value = "";
@@ -1290,12 +1032,10 @@ function eliminarMovimiento(i) {
 function mostrarMovimientos() {
   const lista = document.getElementById("listaMovimientos");
   lista.innerHTML = "";
-
   let ingresos = 0;
   let gastos = 0;
 
-  const ordenados = movimientos
-    .map((m,i) => ({...m, indice:i}))
+  const ordenados = movimientos.map((m,i) => ({...m, indice:i}))
     .sort((a,b) => String(b.fecha || "").localeCompare(String(a.fecha || "")));
 
   ordenados.forEach(m => {
@@ -1304,7 +1044,6 @@ function mostrarMovimientos() {
 
     const fila = document.createElement("div");
     fila.className = "item";
-
     fila.innerHTML = `
       <span>
         <strong>${escapar(m.concepto)}</strong><br>
@@ -1313,64 +1052,41 @@ function mostrarMovimientos() {
           ${m.tipo === "ingreso" ? "+" : "-"}${euros(m.cantidad)}
         </strong>
       </span>
-      <button class="eliminar" onclick="eliminarMovimiento(${m.indice})">Eliminar</button>
-    `;
-
+      <button class="eliminar" onclick="eliminarMovimiento(${m.indice})">Eliminar</button>`;
     lista.appendChild(fila);
   });
 
-  if (!movimientos.length) {
-    mostrarVacio("listaMovimientos", "Todavía no hay movimientos.");
-  }
-
+  if (!movimientos.length) mostrarVacio("listaMovimientos", "Todavía no hay movimientos.");
   document.getElementById("totalIngresos").textContent = euros(ingresos);
   document.getElementById("totalGastos").textContent = euros(gastos);
   document.getElementById("balance").textContent = euros(ingresos - gastos);
 }
 
-// =====================================
-// ESTADÍSTICAS AVANZADAS
-// =====================================
+// ESTADÍSTICAS
 
 function obtenerUltimosSeisMeses() {
   const hoy = new Date();
   const meses = [];
-
   for (let i = 5; i >= 0; i--) {
     const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
-
     const anio = fecha.getFullYear();
     const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-
-    meses.push({
-      clave: `${anio}-${mes}`,
-      nombre: nombreMes(fecha),
-      ingresos:0,
-      gastos:0
-    });
+    meses.push({clave:`${anio}-${mes}`, nombre:nombreMes(fecha), ingresos:0, gastos:0});
   }
-
   return meses;
 }
 
 function mostrarEstadisticas() {
   if (!permisoEstadisticas) return;
-
   const meses = obtenerUltimosSeisMeses();
 
   movimientos.forEach(m => {
     if (!m.fecha || !/^\d{4}-\d{2}-\d{2}$/.test(m.fecha)) return;
-
     const clave = m.fecha.slice(0,7);
     const mes = meses.find(x => x.clave === clave);
-
     if (!mes) return;
-
-    if (m.tipo === "ingreso") {
-      mes.ingresos += Number(m.cantidad) || 0;
-    } else if (m.tipo === "gasto") {
-      mes.gastos += Number(m.cantidad) || 0;
-    }
+    if (m.tipo === "ingreso") mes.ingresos += Number(m.cantidad) || 0;
+    else if (m.tipo === "gasto") mes.gastos += Number(m.cantidad) || 0;
   });
 
   const totalIngresos = meses.reduce((s,m) => s + m.ingresos, 0);
@@ -1378,96 +1094,45 @@ function mostrarEstadisticas() {
   const balance = totalIngresos - totalGastos;
 
   document.getElementById("resumenEstadisticas").innerHTML = `
-    <div class="tarjeta">
-      Ingresos de los últimos 6 meses
-      <strong class="verde">${euros(totalIngresos)}</strong>
-    </div>
-    <div class="tarjeta">
-      Gastos de los últimos 6 meses
-      <strong class="rojo">${euros(totalGastos)}</strong>
-    </div>
-    <div class="tarjeta">
-      Balance de los últimos 6 meses
-      <strong>${euros(balance)}</strong>
-    </div>
-  `;
+    <div class="tarjeta">Ingresos de los últimos 6 meses<strong class="verde">${euros(totalIngresos)}</strong></div>
+    <div class="tarjeta">Gastos de los últimos 6 meses<strong class="rojo">${euros(totalGastos)}</strong></div>
+    <div class="tarjeta">Balance de los últimos 6 meses<strong>${euros(balance)}</strong></div>`;
 
-  const maximo = Math.max(
-    1,
-    ...meses.map(m => Math.max(m.ingresos, m.gastos))
-  );
-
-  const grafico = document.getElementById("graficoMeses");
-
-  grafico.innerHTML = meses.map(m => {
-    const alturaIngreso = m.ingresos > 0
-      ? Math.max(3, (m.ingresos / maximo) * 140)
-      : 2;
-
-    const alturaGasto = m.gastos > 0
-      ? Math.max(3, (m.gastos / maximo) * 140)
-      : 2;
-
+  const maximo = Math.max(1, ...meses.map(m => Math.max(m.ingresos, m.gastos)));
+  document.getElementById("graficoMeses").innerHTML = meses.map(m => {
+    const alturaIngreso = m.ingresos > 0 ? Math.max(3, (m.ingresos / maximo) * 140) : 2;
+    const alturaGasto = m.gastos > 0 ? Math.max(3, (m.gastos / maximo) * 140) : 2;
     return `
       <div class="mes-columna">
         <div class="barras">
-          <div class="barra ingreso"
-            style="height:${alturaIngreso}px"
-            title="Ingresos: ${euros(m.ingresos)}"></div>
-          <div class="barra gasto"
-            style="height:${alturaGasto}px"
-            title="Gastos: ${euros(m.gastos)}"></div>
+          <div class="barra ingreso" style="height:${alturaIngreso}px" title="Ingresos: ${euros(m.ingresos)}"></div>
+          <div class="barra gasto" style="height:${alturaGasto}px" title="Gastos: ${euros(m.gastos)}"></div>
         </div>
         <div class="etiqueta-mes">${escapar(m.nombre)}</div>
         <div class="dato-mes">${euros(m.ingresos + m.gastos)}</div>
-      </div>
-    `;
+      </div>`;
   }).join("");
 
-  document.getElementById("detalleIngresos").innerHTML =
-    meses.map(m => `
-      <div class="estadistica-linea">
-        <span>${escapar(m.nombre)}</span>
-        <strong class="verde">${euros(m.ingresos)}</strong>
-      </div>
-    `).join("");
+  document.getElementById("detalleIngresos").innerHTML = meses.map(m => `
+    <div class="estadistica-linea"><span>${escapar(m.nombre)}</span><strong class="verde">${euros(m.ingresos)}</strong></div>`).join("");
 
-  document.getElementById("detalleGastos").innerHTML =
-    meses.map(m => `
-      <div class="estadistica-linea">
-        <span>${escapar(m.nombre)}</span>
-        <strong class="rojo">${euros(m.gastos)}</strong>
-      </div>
-    `).join("");
+  document.getElementById("detalleGastos").innerHTML = meses.map(m => `
+    <div class="estadistica-linea"><span>${escapar(m.nombre)}</span><strong class="rojo">${euros(m.gastos)}</strong></div>`).join("");
 }
 
-// =====================================
 // LISTA DE LA COMPRA
-// =====================================
 
 async function agregarCompra() {
   if (!aplicacionLista) return;
-
   const campo = document.getElementById("compraTexto");
   const texto = campo.value.trim();
-
   if (!texto) return alert("Escribe un artículo.");
-
-  const guardado = await guardarNuevo("compras", compras, {
-    texto,
-    comprado:false
-  });
-
+  const guardado = await guardarNuevo("compras", compras, {texto, comprado:false});
   if (guardado) campo.value = "";
 }
 
 function cambiarCompra(i, valor) {
-  if (aplicacionLista) {
-    guardarCambio("compras", compras, i, {
-      texto:compras[i].texto,
-      comprado:valor
-    });
-  }
+  if (aplicacionLista) guardarCambio("compras", compras, i, {texto:compras[i].texto, comprado:valor});
 }
 
 function eliminarCompra(i) {
@@ -1477,44 +1142,29 @@ function eliminarCompra(i) {
 function mostrarCompra() {
   const lista = document.getElementById("listaCompra");
   lista.innerHTML = "";
-
-  if (!compras.length) {
-    return mostrarVacio("listaCompra", "Tu lista está vacía.");
-  }
+  if (!compras.length) return mostrarVacio("listaCompra", "Tu lista está vacía.");
 
   compras.forEach((c,i) => {
     const fila = document.createElement("div");
     fila.className = "item";
-
     fila.innerHTML = `
       <label>
-        <input type="checkbox" ${c.comprado ? "checked" : ""}
-          onchange="cambiarCompra(${i},this.checked)">
+        <input type="checkbox" ${c.comprado ? "checked" : ""} onchange="cambiarCompra(${i},this.checked)">
         <span class="${c.comprado ? "completado" : ""}">${escapar(c.texto)}</span>
       </label>
-      <button class="eliminar" onclick="eliminarCompra(${i})">Eliminar</button>
-    `;
-
+      <button class="eliminar" onclick="eliminarCompra(${i})">Eliminar</button>`;
     lista.appendChild(fila);
   });
 }
 
-// =====================================
 // NOTAS
-// =====================================
 
 async function agregarNota() {
   if (!aplicacionLista) return;
-
   const titulo = document.getElementById("notaTitulo").value.trim();
   const texto = document.getElementById("notaTexto").value.trim();
-
-  if (!titulo || !texto) {
-    return alert("Escribe un título y el contenido de la nota.");
-  }
-
+  if (!titulo || !texto) return alert("Escribe un título y el contenido de la nota.");
   const guardado = await guardarNuevo("notas", notas, {titulo, texto});
-
   if (guardado) {
     document.getElementById("notaTitulo").value = "";
     document.getElementById("notaTexto").value = "";
@@ -1528,38 +1178,28 @@ function eliminarNota(i) {
 function mostrarNotas() {
   const lista = document.getElementById("listaNotas");
   lista.innerHTML = "";
-
-  if (!notas.length) {
-    return mostrarVacio("listaNotas", "Todavía no has guardado notas.");
-  }
+  if (!notas.length) return mostrarVacio("listaNotas", "Todavía no has guardado notas.");
 
   notas.forEach((n,i) => {
     const tarjeta = document.createElement("div");
     tarjeta.className = "nota";
-
     const titulo = document.createElement("h3");
     titulo.textContent = n.titulo;
-
     const contenido = document.createElement("p");
     contenido.textContent = n.texto;
-
     const boton = document.createElement("button");
     boton.className = "eliminar";
     boton.textContent = "Eliminar";
     boton.onclick = () => eliminarNota(i);
-
     tarjeta.append(titulo, contenido, boton);
     lista.appendChild(tarjeta);
   });
 }
 
-// =====================================
 // DOCUMENTOS Y ARCHIVOS ADJUNTOS
-// =====================================
 
 async function agregarDocumento() {
   if (!aplicacionLista) return;
-
   const nombre = document.getElementById("documentoNombre").value.trim();
   const categoria = document.getElementById("documentoCategoria").value;
   const fecha = document.getElementById("documentoFecha").value;
@@ -1568,24 +1208,14 @@ async function agregarDocumento() {
   const campoArchivo = document.getElementById("documentoArchivo");
   const archivo = campoArchivo.files[0];
 
-  if (!nombre) {
-    alert("Escribe el nombre del documento.");
-    return;
-  }
+  if (!nombre) return alert("Escribe el nombre del documento.");
 
   if (archivo) {
-    const tiposPermitidos = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "application/pdf"
-    ];
-
+    const tiposPermitidos = ["image/jpeg","image/png","image/webp","application/pdf"];
     if (!tiposPermitidos.includes(archivo.type)) {
       alert("Solo puedes adjuntar fotografías JPG, PNG, WEBP o documentos PDF.");
       return;
     }
-
     if (archivo.size > 10 * 1024 * 1024) {
       alert("El archivo supera el límite de 10 MB.");
       return;
@@ -1595,11 +1225,7 @@ async function agregarDocumento() {
   if (enlace) {
     try {
       const direccion = new URL(enlace);
-
-      if (direccion.protocol !== "https:" && direccion.protocol !== "http:") {
-        throw new Error("Enlace no permitido");
-      }
-
+      if (direccion.protocol !== "https:" && direccion.protocol !== "http:") throw new Error("Enlace no permitido");
     } catch {
       alert("Introduce un enlace válido que empiece por https:// o http://");
       return;
@@ -1607,35 +1233,18 @@ async function agregarDocumento() {
   }
 
   let archivoId = null;
-
   try {
-    if (archivo) {
-      archivoId = await guardarArchivoLocal(archivo);
-    }
+    if (archivo) archivoId = await guardarArchivoLocal(archivo);
 
     const datos = {
-      nombre,
-      categoria,
-      fecha,
-      descripcion,
-      enlace,
-      archivoId,
-      nombreArchivo: archivo ? archivo.name : "",
-      tipoArchivo: archivo ? archivo.type : "",
-      tamanoArchivo: archivo ? archivo.size : 0
+      nombre,categoria,fecha,descripcion,enlace,archivoId,
+      nombreArchivo:archivo ? archivo.name : "",
+      tipoArchivo:archivo ? archivo.type : "",
+      tamanoArchivo:archivo ? archivo.size : 0
     };
 
-    const referencia = await guardarDato(
-      usuarioActual.uid,
-      "documentos",
-      datos
-    );
-
-    documentos.push({
-      ...datos,
-      id:referencia.id
-    });
-
+    const referencia = await guardarDato(usuarioActual.uid, "documentos", datos);
+    documentos.push({...datos, id:referencia.id});
     guardarLocal();
     mostrarTodo();
 
@@ -1644,90 +1253,45 @@ async function agregarDocumento() {
     document.getElementById("documentoDescripcion").value = "";
     document.getElementById("documentoEnlace").value = "";
     campoArchivo.value = "";
-
     alert("¡Documento guardado correctamente!");
-
   } catch (error) {
     console.error("Error guardando documento:", error);
-
     if (archivoId) {
-      try {
-        await eliminarArchivoLocal(archivoId);
-      } catch (errorLocal) {
-        console.error("No se pudo retirar el archivo local:", errorLocal);
-      }
+      try { await eliminarArchivoLocal(archivoId); }
+      catch (errorLocal) { console.error("No se pudo retirar el archivo local:", errorLocal); }
     }
-
-    alert(
-      "No se ha podido guardar el documento.\n\n" +
-      (error.code || error.message || "Error desconocido")
-    );
+    alert("No se ha podido guardar el documento.\n\n" + (error.code || error.message || "Error desconocido"));
   }
 }
 
-// =====================================
-// EDITAR DOCUMENTO
-// =====================================
-
 async function editarDocumento(i) {
   if (!aplicacionLista) return;
-
   const documento = documentos[i];
   if (!documento) return;
 
   const nombre = prompt("Nombre del documento:", documento.nombre || "");
   if (nombre === null) return;
+  if (!nombre.trim()) return alert("El nombre no puede estar vacío.");
 
-  if (!nombre.trim()) {
-    alert("El nombre no puede estar vacío.");
-    return;
-  }
-
-  const categorias = [
-    "Personal", "Trabajo", "Vivienda",
-    "Facturas", "Estudios", "Otros"
-  ];
-
-  const categoriaActual = categorias.includes(documento.categoria)
-    ? documento.categoria
-    : "Otros";
-
-  const categoria = prompt(
-    "Categoría: Personal, Trabajo, Vivienda, Facturas, Estudios u Otros:",
-    categoriaActual
-  );
-
+  const categorias = ["Personal","Trabajo","Vivienda","Facturas","Estudios","Otros"];
+  const categoriaActual = categorias.includes(documento.categoria) ? documento.categoria : "Otros";
+  const categoria = prompt("Categoría: Personal, Trabajo, Vivienda, Facturas, Estudios u Otros:", categoriaActual);
   if (categoria === null) return;
 
-  const categoriaFinal = categorias.find(
-    c => c.toLowerCase() === categoria.trim().toLowerCase()
-  );
-
-  if (!categoriaFinal) {
-    alert("Escribe una categoría válida.");
-    return;
-  }
+  const categoriaFinal = categorias.find(c => c.toLowerCase() === categoria.trim().toLowerCase());
+  if (!categoriaFinal) return alert("Escribe una categoría válida.");
 
   const fecha = prompt("Fecha (AAAA-MM-DD):", documento.fecha || "");
   if (fecha === null) return;
-
   const descripcion = prompt("Descripción:", documento.descripcion || "");
   if (descripcion === null) return;
-
   const enlace = prompt("Enlace opcional:", documento.enlace || "");
   if (enlace === null) return;
 
   if (enlace.trim()) {
     try {
       const direccion = new URL(enlace.trim());
-
-      if (
-        direccion.protocol !== "https:" &&
-        direccion.protocol !== "http:"
-      ) {
-        throw new Error("Enlace no permitido");
-      }
-
+      if (direccion.protocol !== "https:" && direccion.protocol !== "http:") throw new Error("Enlace no permitido");
     } catch {
       alert("El enlace no es válido. Debe empezar por https:// o http://");
       return;
@@ -1735,116 +1299,65 @@ async function editarDocumento(i) {
   }
 
   const datos = {
-    nombre: nombre.trim(),
-    categoria: categoriaFinal,
-    fecha: fecha.trim(),
-    descripcion: descripcion.trim(),
-    enlace: enlace.trim(),
-    archivoId: documento.archivoId || null,
-    nombreArchivo: documento.nombreArchivo || "",
-    tipoArchivo: documento.tipoArchivo || "",
-    tamanoArchivo: documento.tamanoArchivo || 0
+    nombre:nombre.trim(),categoria:categoriaFinal,fecha:fecha.trim(),
+    descripcion:descripcion.trim(),enlace:enlace.trim(),
+    archivoId:documento.archivoId || null,
+    nombreArchivo:documento.nombreArchivo || "",
+    tipoArchivo:documento.tipoArchivo || "",
+    tamanoArchivo:documento.tamanoArchivo || 0
   };
 
   try {
     if (documento.id) {
-      const referencia = doc(
-        db,
-        "usuarios",
-        usuarioActual.uid,
-        "documentos",
-        documento.id
-      );
-
+      const referencia = doc(db, "usuarios", usuarioActual.uid, "documentos", documento.id);
       await updateDoc(referencia, datos);
-
     } else {
-      const referencia = await guardarDato(
-        usuarioActual.uid,
-        "documentos",
-        datos
-      );
-
+      const referencia = await guardarDato(usuarioActual.uid, "documentos", datos);
       documento.id = referencia.id;
     }
 
-    documentos[i] = {
-      ...datos,
-      id: documento.id
-    };
-
+    documentos[i] = {...datos, id:documento.id};
     guardarLocal();
     mostrarTodo();
-
     alert("¡Documento actualizado correctamente!");
-
   } catch (error) {
     console.error("Error actualizando documento:", error);
-
-    alert(
-      "No se ha podido actualizar el documento.\n\n" +
-      (error.code || error.message || "Error desconocido")
-    );
+    alert("No se ha podido actualizar el documento.\n\n" + (error.code || error.message || "Error desconocido"));
   }
 }
-
-// =====================================
-// ELIMINAR DOCUMENTO
-// =====================================
 
 async function eliminarDocumento(i) {
   if (!aplicacionLista) return;
-
   const documento = documentos[i];
   if (!documento) return;
-
-  if (!confirm("¿Quieres eliminar este documento y su archivo adjunto?")) {
-    return;
-  }
+  if (!confirm("¿Quieres eliminar este documento y su archivo adjunto?")) return;
 
   try {
-    if (documento.id) {
-      await eliminarDato(usuarioActual.uid, "documentos", documento.id);
-    }
-
-    if (documento.archivoId) {
-      await eliminarArchivoLocal(documento.archivoId);
-    }
-
+    if (documento.id) await eliminarDato(usuarioActual.uid, "documentos", documento.id);
+    if (documento.archivoId) await eliminarArchivoLocal(documento.archivoId);
     documentos.splice(i, 1);
     guardarLocal();
     mostrarTodo();
-
   } catch (error) {
     console.error("Error eliminando documento:", error);
-    alert("No se ha podido eliminar el documento.\n\n" +
-      (error.code || error.message || "Error desconocido"));
+    alert("No se ha podido eliminar el documento.\n\n" + (error.code || error.message || "Error desconocido"));
   }
 }
-
-// =====================================
-// MOSTRAR DOCUMENTOS
-// =====================================
 
 function mostrarDocumentos() {
   const lista = document.getElementById("listaDocumentos");
   const buscador = document.getElementById("buscarDocumento");
   const busqueda = buscador.value.trim().toLocaleLowerCase("es");
-
   lista.innerHTML = "";
 
-  const filtrados = documentos
-    .map((documento, indice) => ({...documento, indice}))
+  const filtrados = documentos.map((documento, indice) => ({...documento, indice}))
     .filter(documento =>
       String(documento.nombre || "").toLocaleLowerCase("es").includes(busqueda) ||
       String(documento.categoria || "").toLocaleLowerCase("es").includes(busqueda)
     );
 
   if (!filtrados.length) {
-    return mostrarVacio(
-      "listaDocumentos",
-      busqueda ? "No se encontraron documentos." : "Todavía no has guardado documentos."
-    );
+    return mostrarVacio("listaDocumentos", busqueda ? "No se encontraron documentos." : "Todavía no has guardado documentos.");
   }
 
   filtrados.forEach(documento => {
@@ -1853,10 +1366,8 @@ function mostrarDocumentos() {
 
     const titulo = document.createElement("h3");
     titulo.textContent = documento.nombre || "Documento sin nombre";
-
     const categoria = document.createElement("p");
     categoria.textContent = "Categoría: " + (documento.categoria || "Otros");
-
     tarjeta.append(titulo, categoria);
 
     if (documento.fecha) {
@@ -1874,17 +1385,13 @@ function mostrarDocumentos() {
     if (documento.archivoId) {
       const informacion = document.createElement("p");
       informacion.className = "archivo-info";
-      informacion.textContent =
-        "📎 Archivo adjunto: " + (documento.nombreArchivo || "Archivo");
-
+      informacion.textContent = "📎 Archivo adjunto: " + (documento.nombreArchivo || "Archivo");
       tarjeta.appendChild(informacion);
 
       const botonArchivo = document.createElement("button");
       botonArchivo.className = "archivo-boton";
       botonArchivo.textContent = "Abrir archivo adjunto";
-
-      botonArchivo.onclick = () =>
-        abrirArchivo(documento.archivoId, documento.nombreArchivo);
+      botonArchivo.onclick = () => abrirArchivo(documento.archivoId, documento.nombreArchivo);
 
       const accionesArchivo = document.createElement("div");
       accionesArchivo.className = "documento-acciones";
@@ -1914,54 +1421,32 @@ function mostrarDocumentos() {
     boton.className = "eliminar";
     boton.textContent = "Eliminar";
     boton.onclick = () => eliminarDocumento(documento.indice);
-
     acciones.appendChild(boton);
+
     tarjeta.appendChild(acciones);
     lista.appendChild(tarjeta);
   });
 }
 
-// =====================================
 // COPIAS DE SEGURIDAD
-// =====================================
 
 function convertirArchivoABase64(archivo) {
   return new Promise((resolve, reject) => {
     const lector = new FileReader();
-
     lector.onload = () => resolve(lector.result);
-
-    lector.onerror = () =>
-      reject(lector.error || new Error("No se pudo leer un archivo adjunto."));
-
+    lector.onerror = () => reject(lector.error || new Error("No se pudo leer un archivo adjunto."));
     lector.readAsDataURL(archivo);
   });
 }
 
 function convertirBase64AArchivo(dataUrl, nombre, tipo) {
   const partes = String(dataUrl || "").split(",");
-
-  if (partes.length !== 2) {
-    throw new Error("La copia contiene un archivo adjunto dañado.");
-  }
-
+  if (partes.length !== 2) throw new Error("La copia contiene un archivo adjunto dañado.");
   const binario = atob(partes[1]);
   const bytes = new Uint8Array(binario.length);
-
-  for (let i = 0; i < binario.length; i++) {
-    bytes[i] = binario.charCodeAt(i);
-  }
-
-  const mime =
-    tipo ||
-    partes[0].match(/data:([^;]+)/)?.[1] ||
-    "application/octet-stream";
-
-  return new File(
-    [bytes],
-    nombre || "archivo-adjunto",
-    {type:mime}
-  );
+  for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+  const mime = tipo || partes[0].match(/data:([^;]+)/)?.[1] || "application/octet-stream";
+  return new File([bytes], nombre || "archivo-adjunto", {type:mime});
 }
 
 async function crearCopiaSeguridad() {
@@ -1971,263 +1456,133 @@ async function crearCopiaSeguridad() {
   }
 
   const estado = document.getElementById("estadoCopiaSeguridad");
-
   estado.classList.remove("error");
   estado.textContent = "Preparando la copia de seguridad...";
 
   try {
-    const listas = {
-      tareas,
-      recordatorios,
-      movimientos,
-      compras,
-      notas,
-      documentos
-    };
-
+    const listas = {tareas,recordatorios,movimientos,compras,notas,documentos};
     const archivos = [];
     const faltantes = [];
     const idsIncluidos = new Set();
 
     for (const documento of documentos) {
-      if (!documento.archivoId || idsIncluidos.has(documento.archivoId)) {
-        continue;
-      }
-
+      if (!documento.archivoId || idsIncluidos.has(documento.archivoId)) continue;
       idsIncluidos.add(documento.archivoId);
-
       const registro = await obtenerArchivoLocal(documento.archivoId);
 
       if (!registro || !registro.contenido) {
-        faltantes.push(
-          documento.nombreArchivo ||
-          documento.nombre ||
-          "Archivo sin nombre"
-        );
+        faltantes.push(documento.nombreArchivo || documento.nombre || "Archivo sin nombre");
         continue;
       }
 
       const contenido = await convertirArchivoABase64(registro.contenido);
-
       archivos.push({
-        id: documento.archivoId,
-        nombre: registro.nombre || documento.nombreArchivo || "archivo-adjunto",
-        tipo: registro.tipo || documento.tipoArchivo || "application/octet-stream",
+        id:documento.archivoId,
+        nombre:registro.nombre || documento.nombreArchivo || "archivo-adjunto",
+        tipo:registro.tipo || documento.tipoArchivo || "application/octet-stream",
         contenido
       });
     }
 
     const copia = {
-      formato: "VIDA_FACIL_COPIA_SEGURIDAD",
-      version: 1,
-
-      copiaId: (
-        crypto.randomUUID
-          ? crypto.randomUUID()
-          : "copia-" + Date.now() + "-" + Math.random().toString(16).slice(2)
-      ),
-
-      fechaCreacion: new Date().toISOString(),
-
-      usuario: {
-        uid: usuarioActual.uid,
-        correo: usuarioActual.email || ""
+      formato:"VIDA_FACIL_COPIA_SEGURIDAD",
+      version:1,
+      copiaId:crypto.randomUUID ? crypto.randomUUID() : "copia-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+      fechaCreacion:new Date().toISOString(),
+      usuario:{uid:usuarioActual.uid, correo:usuarioActual.email || ""},
+      datos:listas,
+      perfil:{
+        vidaNombre:localStorage.getItem("vidaNombre") || "",
+        vidaCorreo:localStorage.getItem("vidaCorreo") || "",
+        vidaFoto:localStorage.getItem("vidaFoto") || ""
       },
-
-      datos: listas,
-
-      perfil: {
-        vidaNombre: localStorage.getItem("vidaNombre") || "",
-        vidaCorreo: localStorage.getItem("vidaCorreo") || "",
-        vidaFoto: localStorage.getItem("vidaFoto") || ""
-      },
-
       archivos
     };
 
-    const contenido = JSON.stringify(copia);
-    const blob = new Blob([contenido], {type:"application/json"});
+    const blob = new Blob([JSON.stringify(copia)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement("a");
-    const fecha = new Date().toISOString().slice(0,10);
-
     enlace.href = url;
-    enlace.download = "vida-facil-copia-" + fecha + ".json";
-
+    enlace.download = "vida-facil-copia-" + new Date().toISOString().slice(0,10) + ".json";
     document.body.appendChild(enlace);
     enlace.click();
     enlace.remove();
-
     setTimeout(() => URL.revokeObjectURL(url), 60000);
 
     if (faltantes.length) {
       estado.classList.add("error");
-
-      estado.textContent =
-        "Copia descargada, pero no se encontraron " +
-        faltantes.length +
-        " archivo(s) adjunto(s): " +
-        faltantes.join(", ");
-
+      estado.textContent = "Copia descargada, pero no se encontraron " + faltantes.length + " archivo(s) adjunto(s): " + faltantes.join(", ");
     } else {
-      estado.textContent =
-        "✓ Copia de seguridad descargada correctamente. Se han incluido " +
-        archivos.length +
-        " archivo(s) adjunto(s).";
+      estado.textContent = "✓ Copia de seguridad descargada correctamente. Se han incluido " + archivos.length + " archivo(s) adjunto(s).";
     }
-
   } catch (error) {
     console.error("Error creando copia:", error);
-
     estado.classList.add("error");
-
-    estado.textContent =
-      "No se pudo crear la copia: " +
-      (error.message || "Error desconocido");
-
-    alert(
-      "No se ha podido crear la copia de seguridad.\n\n" +
-      (error.message || "Error desconocido")
-    );
+    estado.textContent = "No se pudo crear la copia: " + (error.message || "Error desconocido");
+    alert("No se ha podido crear la copia de seguridad.\n\n" + (error.message || "Error desconocido"));
   }
 }
-
-// =====================================
-// RESTAURAR COPIA DE SEGURIDAD
-// =====================================
 
 async function restaurarCopiaSeguridad(evento) {
   const campo = evento.target;
   const archivoCopia = campo.files && campo.files[0];
-
   if (!archivoCopia) return;
 
   const estado = document.getElementById("estadoCopiaSeguridad");
-
   estado.classList.remove("error");
 
   try {
-    if (!aplicacionLista || !usuarioActual) {
-      throw new Error("Espera a que VIDA FÁCIL termine de cargar tus datos.");
-    }
-
-    if (archivoCopia.size > 100 * 1024 * 1024) {
-      throw new Error("La copia supera los 100 MB.");
-    }
+    if (!aplicacionLista || !usuarioActual) throw new Error("Espera a que VIDA FÁCIL termine de cargar tus datos.");
+    if (archivoCopia.size > 100 * 1024 * 1024) throw new Error("La copia supera los 100 MB.");
 
     estado.textContent = "Leyendo la copia de seguridad...";
-
     const copia = JSON.parse(await archivoCopia.text());
 
-    if (
-      copia.formato !== "VIDA_FACIL_COPIA_SEGURIDAD" ||
-      copia.version !== 1 ||
-      !copia.datos ||
-      !Array.isArray(copia.archivos) ||
-      !copia.copiaId
-    ) {
-      throw new Error(
-        "El archivo seleccionado no es una copia válida de VIDA FÁCIL."
-      );
+    if (copia.formato !== "VIDA_FACIL_COPIA_SEGURIDAD" || copia.version !== 1 ||
+        !copia.datos || !Array.isArray(copia.archivos) || !copia.copiaId) {
+      throw new Error("El archivo seleccionado no es una copia válida de VIDA FÁCIL.");
     }
 
     if (!copia.usuario || copia.usuario.uid !== usuarioActual.uid) {
-      throw new Error(
-        "Esta copia pertenece a otra cuenta."
-      );
+      throw new Error("Esta copia pertenece a otra cuenta.");
     }
 
-    const apartados = [
-      "tareas",
-      "recordatorios",
-      "movimientos",
-      "compras",
-      "notas",
-      "documentos"
-    ];
-
+    const apartados = ["tareas","recordatorios","movimientos","compras","notas","documentos"];
     for (const apartado of apartados) {
-      if (!Array.isArray(copia.datos[apartado])) {
-        throw new Error(
-          "La copia está incompleta: falta " + apartado + "."
-        );
-      }
+      if (!Array.isArray(copia.datos[apartado])) throw new Error("La copia está incompleta: falta " + apartado + ".");
     }
 
-    const copiasAnteriores = await obtenerDatos(
-      usuarioActual.uid,
-      "copiasRestauradas"
-    );
-
-    if (
-      copiasAnteriores.some(x => x.copiaId === copia.copiaId)
-    ) {
-      throw new Error(
-        "Esta copia ya se restauró completamente. No se han añadido datos."
-      );
+    const copiasAnteriores = await obtenerDatos(usuarioActual.uid, "copiasRestauradas");
+    if (copiasAnteriores.some(x => x.copiaId === copia.copiaId)) {
+      throw new Error("Esta copia ya se restauró completamente. No se han añadido datos.");
     }
 
-    const totalDatos = apartados.reduce(
-      (total, apartado) => total + copia.datos[apartado].length,
-      0
-    );
-
+    const totalDatos = apartados.reduce((total, apartado) => total + copia.datos[apartado].length, 0);
     const confirmar = confirm(
-      "Se comprobarán " +
-      totalDatos +
-      " elementos y " +
-      copia.archivos.length +
-      " archivos adjuntos.\n\n" +
-      "Los elementos que ya existan no se volverán a añadir.\n\n" +
+      "Se comprobarán " + totalDatos + " elementos y " + copia.archivos.length +
+      " archivos adjuntos.\n\nLos elementos que ya existan no se volverán a añadir.\n\n" +
       "No se borrará ningún dato actual.\n\n¿Quieres continuar?"
     );
 
     if (!confirmar) {
-      estado.textContent =
-        "Restauración cancelada. No se han cambiado datos.";
-
+      estado.textContent = "Restauración cancelada. No se han cambiado datos.";
       return;
     }
 
     estado.textContent = "Comprobando los datos existentes...";
-
     const listasActualizadas = {};
-
     for (const apartado of apartados) {
-      listasActualizadas[apartado] = await obtenerDatos(
-        usuarioActual.uid,
-        apartado
-      );
+      listasActualizadas[apartado] = await obtenerDatos(usuarioActual.uid, apartado);
     }
 
     estado.textContent = "Comprobando archivos adjuntos...";
-
     const mapaArchivos = new Map();
 
     for (const elemento of copia.archivos) {
-      if (!elemento || !elemento.id || !elemento.contenido) {
-        continue;
-      }
-
-      const archivoId =
-        "restaurado_" +
-        usuarioActual.uid +
-        "_" +
-        copia.copiaId +
-        "_" +
-        elemento.id;
-
-      const archivoRestaurado = convertirBase64AArchivo(
-        elemento.contenido,
-        elemento.nombre,
-        elemento.tipo
-      );
-
-      await guardarArchivoLocalConId(
-        archivoRestaurado,
-        archivoId
-      );
-
+      if (!elemento || !elemento.id || !elemento.contenido) continue;
+      const archivoId = "restaurado_" + usuarioActual.uid + "_" + copia.copiaId + "_" + elemento.id;
+      const archivoRestaurado = convertirBase64AArchivo(elemento.contenido, elemento.nombre, elemento.tipo);
+      await guardarArchivoLocalConId(archivoRestaurado, archivoId);
       mapaArchivos.set(elemento.id, archivoId);
     }
 
@@ -2236,47 +1591,27 @@ async function restaurarCopiaSeguridad(evento) {
 
     for (const apartado of apartados) {
       estado.textContent = "Restaurando " + apartado + "...";
-
       const listaActual = listasActualizadas[apartado];
 
-      for (
-        let indice = 0;
-        indice < copia.datos[apartado].length;
-        indice++
-      ) {
+      for (let indice = 0; indice < copia.datos[apartado].length; indice++) {
         const elemento = copia.datos[apartado][indice] || {};
+        const claveElemento = apartado + "_" + (elemento.id || indice);
 
-        const claveElemento =
-          apartado + "_" + (elemento.id || indice);
-
-        const yaImportado = listaActual.some(x =>
-          x._vidaCopiaId === copia.copiaId &&
-          x._vidaElementoClave === claveElemento
-        );
-
-        if (yaImportado) {
+        if (listaActual.some(x => x._vidaCopiaId === copia.copiaId && x._vidaElementoClave === claveElemento)) {
           omitidos++;
           continue;
         }
 
         const {id, ...datosOriginales} = elemento;
-
-        const yaExistente = listaActual.some(x =>
-          sonDatosIguales(x, datosOriginales)
-        );
-
-        if (yaExistente) {
+        if (listaActual.some(x => sonDatosIguales(x, datosOriginales))) {
           omitidos++;
           continue;
         }
 
         const datos = {...datosOriginales};
-
         if (apartado === "documentos" && datos.archivoId) {
           const nuevoArchivoId = mapaArchivos.get(datos.archivoId);
-
           datos.archivoId = nuevoArchivoId || null;
-
           if (!nuevoArchivoId) {
             datos.tipoArchivo = "";
             datos.tamanoArchivo = 0;
@@ -2285,32 +1620,18 @@ async function restaurarCopiaSeguridad(evento) {
 
         datos._vidaCopiaId = copia.copiaId;
         datos._vidaElementoClave = claveElemento;
-
-        const referencia = await guardarDato(
-          usuarioActual.uid,
-          apartado,
-          datos
-        );
-
-        listaActual.push({
-          ...datos,
-          id: referencia.id
-        });
-
+        const referencia = await guardarDato(usuarioActual.uid, apartado, datos);
+        listaActual.push({...datos, id:referencia.id});
         importados++;
       }
     }
 
-    await guardarDato(
-      usuarioActual.uid,
-      "copiasRestauradas",
-      {
-        copiaId: copia.copiaId,
-        fechaRestauracion: new Date().toISOString(),
-        elementosImportados: importados,
-        elementosOmitidos: omitidos
-      }
-    );
+    await guardarDato(usuarioActual.uid, "copiasRestauradas", {
+      copiaId:copia.copiaId,
+      fechaRestauracion:new Date().toISOString(),
+      elementosImportados:importados,
+      elementosOmitidos:omitidos
+    });
 
     tareas = listasActualizadas.tareas;
     recordatorios = listasActualizadas.recordatorios;
@@ -2320,88 +1641,39 @@ async function restaurarCopiaSeguridad(evento) {
     documentos = listasActualizadas.documentos;
 
     if (copia.perfil) {
-      if (typeof copia.perfil.vidaNombre === "string") {
-        localStorage.setItem(
-          "vidaNombre",
-          copia.perfil.vidaNombre
-        );
-      }
-
-      if (typeof copia.perfil.vidaCorreo === "string") {
-        localStorage.setItem(
-          "vidaCorreo",
-          copia.perfil.vidaCorreo
-        );
-      }
-
-      if (typeof copia.perfil.vidaFoto === "string") {
-        localStorage.setItem(
-          "vidaFoto",
-          copia.perfil.vidaFoto
-        );
-      }
-
+      if (typeof copia.perfil.vidaNombre === "string") localStorage.setItem("vidaNombre", copia.perfil.vidaNombre);
+      if (typeof copia.perfil.vidaCorreo === "string") localStorage.setItem("vidaCorreo", copia.perfil.vidaCorreo);
+      if (typeof copia.perfil.vidaFoto === "string") localStorage.setItem("vidaFoto", copia.perfil.vidaFoto);
       actualizarPerfil(usuarioActual);
     }
 
     guardarLocal();
     mostrarTodo();
 
-    estado.textContent =
-      "✓ Restauración completada. " +
-      importados +
-      " elementos añadidos y " +
-      omitidos +
-      " elementos ya existentes omitidos.";
-
-    alert(
-      "¡Restauración completada!\n\n" +
-      "Elementos añadidos: " + importados + "\n" +
-      "Elementos ya existentes: " + omitidos + "\n" +
-      "Archivos adjuntos comprobados: " + mapaArchivos.size + "\n\n" +
-      "No se ha borrado ningún dato."
-    );
-
+    estado.textContent = "✓ Restauración completada. " + importados + " elementos añadidos y " + omitidos + " elementos ya existentes omitidos.";
+    alert("¡Restauración completada!\n\nElementos añadidos: " + importados +
+      "\nElementos ya existentes: " + omitidos +
+      "\nArchivos adjuntos comprobados: " + mapaArchivos.size +
+      "\n\nNo se ha borrado ningún dato.");
   } catch (error) {
     console.error("Error restaurando copia:", error);
-
     estado.classList.add("error");
-
-    estado.textContent =
-      "No se pudo completar la restauración: " +
-      (error.message || "Error desconocido");
-
-    alert(
-      "No se ha podido completar la restauración.\n\n" +
-      (error.message || "Error desconocido") +
-      "\n\nPuedes volver a intentarlo con la misma copia. " +
-      "Los elementos ya importados se comprobarán antes de añadirlos."
-    );
-
+    estado.textContent = "No se pudo completar la restauración: " + (error.message || "Error desconocido");
+    alert("No se ha podido completar la restauración.\n\n" + (error.message || "Error desconocido") +
+      "\n\nPuedes volver a intentarlo con la misma copia. Los elementos ya importados se comprobarán antes de añadirlos.");
   } finally {
     campo.value = "";
   }
 }
 
-// =====================================
 // RESUMEN Y ACTUALIZACIÓN
-// =====================================
 
 function actualizarResumen() {
-  document.getElementById("resumenTareas").textContent =
-    tareas.filter(t => !t.hecha).length;
-
-  document.getElementById("resumenRecordatorios").textContent =
-    recordatorios.length;
-
-  const gastos = movimientos
-    .filter(m => m.tipo === "gasto")
-    .reduce((s,m) => s + Number(m.cantidad), 0);
-
+  document.getElementById("resumenTareas").textContent = tareas.filter(t => !t.hecha).length;
+  document.getElementById("resumenRecordatorios").textContent = recordatorios.length;
+  const gastos = movimientos.filter(m => m.tipo === "gasto").reduce((s,m) => s + Number(m.cantidad), 0);
   document.getElementById("resumenGastos").textContent = euros(gastos);
-
-  document.getElementById("resumenCompra").textContent =
-    compras.filter(c => !c.comprado).length;
+  document.getElementById("resumenCompra").textContent = compras.filter(c => !c.comprado).length;
 }
 
 function mostrarTodo() {
@@ -2412,15 +1684,10 @@ function mostrarTodo() {
   mostrarNotas();
   mostrarDocumentos();
   actualizarResumen();
-
-  if (permisoEstadisticas) {
-    mostrarEstadisticas();
-  }
+  if (permisoEstadisticas) mostrarEstadisticas();
 }
 
-// =====================================
 // FUNCIONES DISPONIBLES EN LA PÁGINA
-// =====================================
 
 Object.assign(window, {
   agregarTarea,
@@ -2442,15 +1709,9 @@ Object.assign(window, {
   crearCopiaSeguridad
 });
 
-// =====================================
 // INICIO DE SESIÓN Y CONEXIÓN
-// =====================================
 
-document.getElementById("archivoCopiaSeguridad").addEventListener(
-  "change",
-  restaurarCopiaSeguridad
-);
-
+document.getElementById("archivoCopiaSeguridad").addEventListener("change", restaurarCopiaSeguridad);
 establecerFechaMovimientoHoy();
 
 onAuthStateChanged(auth, async usuario => {
@@ -2460,48 +1721,42 @@ onAuthStateChanged(auth, async usuario => {
   }
 
   if (aplicacionLista) return;
-
   usuarioActual = usuario;
-
   actualizarPerfil(usuario);
   await actualizarPlanInicio(usuario);
 
   const estado = document.getElementById("estadoNube");
-
   estado.classList.remove("error");
   estado.textContent = "Conectando con tu espacio personal...";
 
   try {
     await migrarDatosAntiguos();
     await cargarDatosNube();
-
     await comprobarAccesoEstadisticas(usuario);
-
     aplicacionLista = true;
-
     mostrarTodo();
-
-    estado.textContent =
-      "✓ Tus datos están conectados con Firebase.";
-
+    estado.textContent = "✓ Tus datos están conectados con Firebase.";
   } catch (error) {
     console.error("Error al conectar con Firebase:", error);
-
     estado.classList.add("error");
-
-    estado.textContent =
-      "Error de conexión: " +
-      (error.code || error.message || "Error desconocido");
-
-    alert(
-      "No se han podido cargar tus datos de la nube.\n\nCódigo: " +
-      (error.code || "sin código") +
-      "\nDetalle: " +
-      (error.message || "Error desconocido")
-    );
+    estado.textContent = "Error de conexión: " + (error.code || error.message || "Error desconocido");
+    alert("No se han podido cargar tus datos de la nube.\n\nCódigo: " +
+      (error.code || "sin código") + "\nDetalle: " + (error.message || "Error desconocido"));
   }
 });
 
 </script>
+
+<!-- REGISTRO DEL SERVICE WORKER -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(() => console.log("Service Worker de VIDA FÁCIL registrado."))
+      .catch(error => console.error("Error Service Worker:", error));
+  });
+}
+</script>
+
 </body>
 </html>
