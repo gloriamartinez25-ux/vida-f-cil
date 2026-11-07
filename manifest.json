@@ -1,0 +1,26 @@
+
+{
+  "id": "/vida-f-cil/",
+  "name": "VIDA FÁCIL",
+  "short_name": "VIDA FÁCIL",
+  "description": "Todo en orden. Más tiempo para vivir. Organiza tus tareas, finanzas, compras, notas y documentos.",
+  "lang": "es",
+  "start_url": "/vida-f-cil/",
+  "scope": "/vida-f-cil/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101322",
+  "theme_color": "#101322",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
