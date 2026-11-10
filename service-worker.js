@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "vida-facil-v1";
+const CACHE_NAME = "vida-facil-v2";
 
 const ARCHIVOS = [
   "/vida-f-cil/",
@@ -7,26 +7,31 @@ const ARCHIVOS = [
   "/vida-f-cil/manifest.json"
 ];
 
+// Instalar la nueva versión
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ARCHIVOS))
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(ARCHIVOS))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
+// Activar la nueva versión y eliminar cachés antiguas
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
+    caches.keys()
+      .then(keys =>
+        Promise.all(
+          keys
+            .filter(key => key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+        )
       )
-    )
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+// Intentar obtener siempre la versión más reciente
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
@@ -38,19 +43,25 @@ self.addEventListener("fetch", event => {
     fetch(event.request)
       .then(response => {
         if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache =>
-            cache.put(event.request, copy)
-          );
+          const copia = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, copia);
+          });
         }
+
         return response;
       })
       .catch(() =>
-        caches.match(event.request).then(cached =>
-          cached || (event.request.mode === "navigate"
-            ? caches.match("/vida-f-cil/")
-            : Response.error())
-        )
+        caches.match(event.request).then(archivoGuardado => {
+          if (archivoGuardado) return archivoGuardado;
+
+          if (event.request.mode === "navigate") {
+            return caches.match("/vida-f-cil/");
+          }
+
+          return Response.error();
+        })
       )
   );
 });
