@@ -22,9 +22,9 @@ import {
 
 const firebaseConfig = {
   apiKey: "AIzaSyBu4Zc7xsmB2NEfZ7hT6zVbpN0c2xoiLY8",
-  authDomain: "vida-facil-b1ed.firebaseapp.com",
-  projectId: "vida-facil-b1ed",
-  storageBucket: "vida-facil-b1ed.firebasestorage.app",
+  authDomain: "vida-facil-b1ed1.firebaseapp.com",
+  projectId: "vida-facil-b1ed1",
+  storageBucket: "vida-facil-b1ed1.firebasestorage.app",
   messagingSenderId: "517345049194",
   appId: "1:517345049194:web:927456d5335ec8019ee813",
   measurementId: "G-N9L259CTKG"
@@ -36,13 +36,11 @@ export const auth = getAuth(app);
 export const proveedorGoogle = new GoogleAuthProvider();
 export const db = getFirestore(app);
 
-
 // ======================================
 // CONFIGURACIÓN DE LOS PLANES
 // ======================================
 
 export const PLANES = {
-
   Basico: {
     nombre: "Básica",
     precio: "0,99 €",
@@ -66,16 +64,13 @@ export const PLANES = {
     almacenamientoMB: 5120,
     miembros: 5
   }
-
 };
-
 
 // ======================================
 // FUNCIONES DISPONIBLES POR PLAN
 // ======================================
 
 export const PERMISOS_PLAN = {
-
   Basico: {
     tareas: true,
     calendario: true,
@@ -147,29 +142,23 @@ export const PERMISOS_PLAN = {
     invitaciones: true,
     datosCompartidos: true
   }
-
 };
-
 
 // ======================================
 // COMPROBAR USUARIO
 // ======================================
 
 function comprobarUsuario(usuarioId) {
-
   if (!auth.currentUser || auth.currentUser.uid !== usuarioId) {
     throw new Error("Usuario no autorizado.");
   }
-
 }
-
 
 // ======================================
 // GUARDAR DATOS
 // ======================================
 
 export async function guardarDato(usuarioId, apartado, datos) {
-
   comprobarUsuario(usuarioId);
 
   const referencia = collection(
@@ -183,16 +172,13 @@ export async function guardarDato(usuarioId, apartado, datos) {
     ...datos,
     fechaCreacion: serverTimestamp()
   });
-
 }
-
 
 // ======================================
 // OBTENER DATOS
 // ======================================
 
 export async function obtenerDatos(usuarioId, apartado) {
-
   comprobarUsuario(usuarioId);
 
   const referencia = collection(
@@ -213,16 +199,13 @@ export async function obtenerDatos(usuarioId, apartado) {
     id: documento.id,
     ...documento.data()
   }));
-
 }
-
 
 // ======================================
 // ELIMINAR DATOS
 // ======================================
 
 export async function eliminarDato(usuarioId, apartado, datoId) {
-
   comprobarUsuario(usuarioId);
 
   const referencia = doc(
@@ -234,9 +217,7 @@ export async function eliminarDato(usuarioId, apartado, datoId) {
   );
 
   return await deleteDoc(referencia);
-
 }
-
 
 // ======================================
 // GUARDAR PLAN SELECCIONADO
@@ -244,7 +225,6 @@ export async function eliminarDato(usuarioId, apartado, datoId) {
 // ======================================
 
 export async function guardarPlanSeleccionado(usuarioId, plan) {
-
   comprobarUsuario(usuarioId);
 
   const planElegido = PLANES[plan];
@@ -262,32 +242,22 @@ export async function guardarPlanSeleccionado(usuarioId, plan) {
   );
 
   await setDoc(referencia, {
-
     clave: plan,
-
     nombre: planElegido.nombre,
-
     precio: planElegido.precio,
-
     periodicidad: planElegido.periodicidad,
-
     estado: "seleccionado_sin_contratar",
-
     fechaSeleccion: serverTimestamp()
-
   });
 
   return true;
-
 }
-
 
 // ======================================
 // RECUPERAR PLAN SELECCIONADO
 // ======================================
 
 export async function obtenerPlanSeleccionado(usuarioId) {
-
   comprobarUsuario(usuarioId);
 
   const referencia = doc(
@@ -305,21 +275,13 @@ export async function obtenerPlanSeleccionado(usuarioId) {
   }
 
   return resultado.data();
-
 }
-
 
 // ======================================
 // RECUPERAR PLAN REALMENTE ACTIVO
 // ======================================
 
-// Por seguridad, la ausencia de una suscripción
-// verificada significa que el usuario tiene Básica.
-//
-// Este estado NO se puede activar desde seleccionarPlan().
-
 export async function obtenerPlanActivo(usuarioId) {
-
   comprobarUsuario(usuarioId);
 
   const referencia = doc(
@@ -333,47 +295,37 @@ export async function obtenerPlanActivo(usuarioId) {
   const resultado = await getDoc(referencia);
 
   if (!resultado.exists()) {
-
     return {
       clave: "Basico",
       nombre: "Básica",
       estado: "activo",
       origen: "plan_predeterminado"
     };
-
   }
 
   const suscripcion = resultado.data();
-
-  // Los planes de pago necesitan una validación
-  // que deberá realizar el servidor.
 
   if (
     suscripcion.estado !== "activo" ||
     !["Premium", "Familiar"].includes(suscripcion.clave) ||
     suscripcion.verificadoPorServidor !== true
   ) {
-
     return {
       clave: "Basico",
       nombre: "Básica",
       estado: "activo",
       origen: "plan_predeterminado"
     };
-
   }
 
   return suscripcion;
-
 }
-
 
 // ======================================
 // COMPROBAR PERMISOS
 // ======================================
 
 export async function comprobarPermiso(usuarioId, permiso) {
-
   const planActivo = await obtenerPlanActivo(usuarioId);
 
   const permisos = PERMISOS_PLAN[planActivo.clave];
@@ -383,22 +335,17 @@ export async function comprobarPermiso(usuarioId, permiso) {
   }
 
   return permisos[permiso];
-
 }
-
 
 // ======================================
 // OBTENER TODOS LOS PERMISOS
 // ======================================
 
 export async function obtenerPermisosUsuario(usuarioId) {
-
   const planActivo = await obtenerPlanActivo(usuarioId);
 
   return {
-
     plan: planActivo.clave,
-
     nombre: planActivo.nombre,
 
     permisos: {
@@ -410,40 +357,31 @@ export async function obtenerPermisosUsuario(usuarioId) {
 
     miembros:
       PLANES[planActivo.clave].miembros
-
   };
-
 }
-
 
 // ======================================
 // COMPROBAR SI TIENE PREMIUM
 // ======================================
 
 export async function tienePremium(usuarioId) {
-
   const planActivo = await obtenerPlanActivo(usuarioId);
 
   return (
     planActivo.clave === "Premium" ||
     planActivo.clave === "Familiar"
   );
-
 }
-
 
 // ======================================
 // COMPROBAR SI TIENE PLAN FAMILIAR
 // ======================================
 
 export async function tienePlanFamiliar(usuarioId) {
-
   const planActivo = await obtenerPlanActivo(usuarioId);
 
   return planActivo.clave === "Familiar";
-
 }
-
 
 // ======================================
 // EXPORTAR APLICACIÓN
