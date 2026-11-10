@@ -509,13 +509,14 @@ button:disabled {
 
   <div class="aviso">
     <strong>Información importante:</strong>
-    Los precios y características describen los planes
-    previstos de VIDA FÁCIL. La contratación, los cobros,
-    las pruebas gratuitas, los límites de almacenamiento
-    en la nube y las funciones familiares todavía
-    no están habilitados.
-    Seleccionar un plan no realiza ningún cobro ni activa
-    automáticamente sus ventajas.
+    El plan Básico se contratará mediante PayPal
+    por un único pago de 0,99 €. La activación se
+    realizará después de verificar el pago en el servidor.
+    Premium y Familiar todavía no están disponibles.
+    La prueba gratuita y el almacenamiento en la nube
+    tampoco están habilitados todavía.
+    Los pagos actuales se realizan en el entorno de pruebas
+    de PayPal, no mediante cobros reales.
   </div>
 
   <p class="nota">
@@ -543,7 +544,7 @@ button:disabled {
     <p class="modal-texto" id="precioElegido"></p>
 
     <p class="modal-texto" id="mensajeModal">
-      Guardando tu selección...
+      Preparando...
     </p>
 
     <button class="boton-cerrar" id="botonCerrar"
@@ -557,11 +558,20 @@ button:disabled {
 
 <script type="module">
 
-import { auth, guardarPlanSeleccionado } from "./firebase.js";
+import { auth } from "./firebase.js";
 
 import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+/*
+  DIRECCIÓN DEL SERVIDOR DE VIDA FÁCIL
+  Los precios y la verificación del pago se controlan
+  también en el servidor, no desde esta página.
+*/
+
+const WORKER_URL =
+  "https://restless-dust-14da.gloriamartinez25.workers.dev";
 
 const planes = {
 
@@ -587,20 +597,130 @@ const planes = {
 
 let guardando = false;
 
+const modal = document.getElementById("modalPlan");
+const nombrePlan = document.getElementById("planElegido");
+const precioPlan = document.getElementById("precioElegido");
+const mensaje = document.getElementById("mensajeModal");
+const botonCerrar = document.getElementById("botonCerrar");
+
 function esperarUsuario() {
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
 
-    const cancelar = onAuthStateChanged(auth, (usuario) => {
+    let cancelar = null;
 
-      cancelar();
-      resolve(usuario);
-
-    });
+    cancelar = onAuthStateChanged(
+      auth,
+      (usuario) => {
+        if (cancelar) cancelar();
+        resolve(usuario);
+      },
+      (error) => {
+        if (cancelar) cancelar();
+        reject(error);
+      }
+    );
 
   });
 
 }
+
+function mostrarModal(clave, texto, permitirCerrar = false) {
+
+  const plan = planes[clave];
+
+  nombrePlan.textContent = plan ? plan.nombre : "VIDA FÁCIL";
+
+  precioPlan.textContent = plan
+    ? "Precio: " + plan.precio +
+      " · Almacenamiento previsto: " + plan.almacenamiento
+    : "";
+
+  mensaje.textContent = texto;
+
+  botonCerrar.disabled = !permitirCerrar;
+
+  modal.classList.add("contenido-visible");
+
+}
+
+function limpiarParametrosPaypal() {
+
+  const nuevaUrl = new URL(window.location.href);
+
+  nuevaUrl.searchParams.delete("paypal");
+  nuevaUrl.searchParams.delete("token");
+  nuevaUrl.searchParams.delete("PayerID");
+
+  window.history.replaceState(
+    {},
+    document.title,
+    nuevaUrl.pathname + nuevaUrl.search + nuevaUrl.hash
+  );
+
+}
+
+window.cerrarModal = function() {
+
+  if (guardando) return;
+
+  modal.classList.remove("contenido-visible");
+
+};
+
+/*
+  INICIAR EL PAGO DE BÁSICA
+*/
+
+async function iniciarPagoBasico(usuario) {
+
+  const tokenFirebase = await usuario.getIdToken();
+
+  const respuesta = await fetch(
+    WORKER_URL + "/paypal-order",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + tokenFirebase
+      },
+
+      body: JSON.stringify({})
+    }
+  );
+
+  const datos = await respuesta.json();
+
+  if (!respuesta.ok) {
+
+    throw new Error(
+      datos.error ||
+      "El servidor no ha podido crear el pedido de PayPal."
+    );
+
+  }
+
+  if (!datos.approvalUrl || !datos.orderId) {
+
+    throw new Error(
+      "PayPal no ha devuelto el enlace de aprobación del pedido."
+    );
+
+  }
+
+  /*
+    Redirigimos al usuario a PayPal.
+    El pago todavía no está confirmado en este momento.
+  */
+
+  window.location.href = datos.approvalUrl;
+
+}
+
+/*
+  BOTONES DE SELECCIÓN DE PLAN
+*/
 
 window.seleccionarPlan = async function(clave) {
 
@@ -615,25 +735,30 @@ window.seleccionarPlan = async function(clave) {
 
   }
 
-  const modal = document.getElementById("modalPlan");
-  const nombre = document.getElementById("planElegido");
-  const precio = document.getElementById("precioElegido");
-  const mensaje = document.getElementById("mensajeModal");
-  const botonCerrar = document.getElementById("botonCerrar");
+  /*
+    Premium y Familiar todavía no se pueden contratar.
+  */
 
-  nombre.textContent = plan.nombre;
+  if (clave !== "Basico") {
 
-  precio.textContent =
-    "Precio: " + plan.precio +
-    " · Almacenamiento previsto: " + plan.almacenamiento;
+    mostrarModal(
+      clave,
+      "Este plan todavía no está disponible para contratación. " +
+      "Estamos preparando su sistema de pago.",
+      true
+    );
 
-  mensaje.textContent = "Guardando tu selección...";
+    return;
 
-  botonCerrar.disabled = true;
-
-  modal.classList.add("contenido-visible");
+  }
 
   guardando = true;
+
+  mostrarModal(
+    clave,
+    "Comprobando tu cuenta y preparando el pago seguro de PayPal...",
+    false
+  );
 
   try {
 
@@ -641,57 +766,213 @@ window.seleccionarPlan = async function(clave) {
 
     if (!usuario) {
 
-      alert(
-        "Para seleccionar un plan, primero debes iniciar sesión."
-      );
+      guardando = false;
 
-      window.location.href = "acceso.html";
+      mostrarModal(
+        clave,
+        "Para contratar el plan Básica primero debes iniciar sesión. " +
+        "Después podrás volver a esta página para continuar.",
+        true
+      );
 
       return;
 
     }
 
-    await guardarPlanSeleccionado(usuario.uid, clave);
-
-    mensaje.textContent =
-      "Tu selección se ha guardado correctamente en tu cuenta. " +
-      "Recuerda que todavía no has contratado ni activado este plan.";
+    await iniciarPagoBasico(usuario);
 
   } catch (error) {
 
-    console.error("Error al guardar el plan:", error);
-
-    mensaje.textContent =
-      "No se ha podido guardar tu selección. " +
-      "Comprueba tu conexión e inténtalo de nuevo.";
-
-  } finally {
+    console.error("Error al iniciar el pago:", error);
 
     guardando = false;
 
-    botonCerrar.disabled = false;
+    mostrarModal(
+      clave,
+      error.message ||
+      "No se ha podido iniciar el pago. Comprueba tu conexión e inténtalo de nuevo.",
+      true
+    );
 
   }
 
 };
 
-window.cerrarModal = function() {
+/*
+  CONFIRMAR EL PAGO CUANDO PAYPAL DEVUELVE AL USUARIO
+*/
 
-  document.getElementById("modalPlan")
-    .classList.remove("contenido-visible");
+async function confirmarPagoAlVolver(usuario, orderId) {
 
-};
+  guardando = true;
 
-document.getElementById("modalPlan")
-  .addEventListener("click", function(evento) {
+  mostrarModal(
+    "Basico",
+    "Estamos verificando tu pago con PayPal. " +
+    "No cierres esta página.",
+    false
+  );
 
-    if (evento.target === this && !guardando) {
+  try {
 
-      window.cerrarModal();
+    const tokenFirebase = await usuario.getIdToken();
+
+    const respuesta = await fetch(
+      WORKER_URL + "/paypal-capture",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + tokenFirebase
+        },
+
+        body: JSON.stringify({
+          orderId: orderId
+        })
+      }
+    );
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+
+      throw new Error(
+        datos.error ||
+        "El servidor no ha podido confirmar el pago."
+      );
 
     }
 
-  });
+    /*
+      Solo mostramos la activación si el servidor
+      confirma que el pago se ha completado.
+    */
+
+    limpiarParametrosPaypal();
+
+    mostrarModal(
+      "Basico",
+      "¡Pago verificado correctamente! " +
+      "El plan Básica ha sido activado en tu cuenta. " +
+      "Ya puedes continuar utilizando VIDA FÁCIL.",
+      true
+    );
+
+  } catch (error) {
+
+    console.error("Error al confirmar el pago:", error);
+
+    mostrarModal(
+      "Basico",
+      "No hemos podido confirmar todavía el pago. " +
+      "No vuelvas a pagar. Puedes recargar esta página " +
+      "para intentar de nuevo la verificación. " +
+      "Si el problema continúa, contacta con soporte.",
+      true
+    );
+
+  } finally {
+
+    guardando = false;
+
+  }
+
+}
+
+/*
+  DETECTAR EL REGRESO DESDE PAYPAL
+*/
+
+async function revisarRegresoPaypal() {
+
+  const parametros = new URLSearchParams(window.location.search);
+
+  const resultado = parametros.get("paypal");
+  const orderId = parametros.get("token");
+
+  if (resultado === "cancel") {
+
+    limpiarParametrosPaypal();
+
+    mostrarModal(
+      "Basico",
+      "Has cancelado el pago en PayPal. " +
+      "No se ha activado ningún plan ni se ha confirmado ningún cobro.",
+      true
+    );
+
+    return;
+
+  }
+
+  if (resultado !== "success") return;
+
+  if (!orderId) {
+
+    mostrarModal(
+      "Basico",
+      "PayPal ha devuelto la página sin un identificador de pedido. " +
+      "No se ha podido verificar el pago. Contacta con soporte antes de volver a intentarlo.",
+      true
+    );
+
+    return;
+
+  }
+
+  try {
+
+    const usuario = await esperarUsuario();
+
+    if (!usuario) {
+
+      mostrarModal(
+        "Basico",
+        "Para verificar el pago debes iniciar sesión con la misma cuenta " +
+        "de VIDA FÁCIL que utilizaste antes de ir a PayPal. " +
+        "Después vuelve a esta página para continuar.",
+        true
+      );
+
+      return;
+
+    }
+
+    await confirmarPagoAlVolver(usuario, orderId);
+
+  } catch (error) {
+
+    console.error("Error al recuperar la sesión:", error);
+
+    mostrarModal(
+      "Basico",
+      "No hemos podido comprobar tu sesión. " +
+      "Inicia sesión con tu cuenta y vuelve a cargar esta página.",
+      true
+    );
+
+  }
+
+}
+
+/*
+  CERRAR EL MODAL AL PULSAR FUERA DE ÉL
+*/
+
+modal.addEventListener("click", function(evento) {
+
+  if (evento.target === modal && !guardando) {
+
+    window.cerrarModal();
+
+  }
+
+});
+
+/*
+  CERRAR EL MODAL CON ESCAPE
+*/
 
 document.addEventListener("keydown", function(evento) {
 
@@ -702,6 +983,12 @@ document.addEventListener("keydown", function(evento) {
   }
 
 });
+
+/*
+  COMPROBAR SI EL USUARIO REGRESA DE PAYPAL
+*/
+
+revisarRegresoPaypal();
 
 </script>
 
