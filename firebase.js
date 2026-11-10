@@ -36,9 +36,7 @@ export const auth = getAuth(app);
 export const proveedorGoogle = new GoogleAuthProvider();
 export const db = getFirestore(app);
 
-// ======================================
 // CONFIGURACIÓN DE LOS PLANES
-// ======================================
 
 export const PLANES = {
   Basico: {
@@ -66,9 +64,7 @@ export const PLANES = {
   }
 };
 
-// ======================================
 // FUNCIONES DISPONIBLES POR PLAN
-// ======================================
 
 export const PERMISOS_PLAN = {
   Basico: {
@@ -80,7 +76,6 @@ export const PERMISOS_PLAN = {
     notas: true,
     documentos: true,
     copiasManuales: true,
-
     estadisticasAvanzadas: false,
     presupuestosMensuales: false,
     objetivosAhorro: false,
@@ -89,7 +84,6 @@ export const PERMISOS_PLAN = {
     personalizacion: false,
     copiasAutomaticas: false,
     organizacionAvanzada: false,
-
     espacioFamiliar: false,
     invitaciones: false,
     datosCompartidos: false
@@ -104,7 +98,6 @@ export const PERMISOS_PLAN = {
     notas: true,
     documentos: true,
     copiasManuales: true,
-
     estadisticasAvanzadas: true,
     presupuestosMensuales: true,
     objetivosAhorro: true,
@@ -113,7 +106,6 @@ export const PERMISOS_PLAN = {
     personalizacion: true,
     copiasAutomaticas: true,
     organizacionAvanzada: true,
-
     espacioFamiliar: false,
     invitaciones: false,
     datosCompartidos: false
@@ -128,7 +120,6 @@ export const PERMISOS_PLAN = {
     notas: true,
     documentos: true,
     copiasManuales: true,
-
     estadisticasAvanzadas: true,
     presupuestosMensuales: true,
     objetivosAhorro: true,
@@ -137,16 +128,13 @@ export const PERMISOS_PLAN = {
     personalizacion: true,
     copiasAutomaticas: true,
     organizacionAvanzada: true,
-
     espacioFamiliar: true,
     invitaciones: true,
     datosCompartidos: true
   }
 };
 
-// ======================================
 // COMPROBAR USUARIO
-// ======================================
 
 function comprobarUsuario(usuarioId) {
   if (!auth.currentUser || auth.currentUser.uid !== usuarioId) {
@@ -154,19 +142,12 @@ function comprobarUsuario(usuarioId) {
   }
 }
 
-// ======================================
 // GUARDAR DATOS
-// ======================================
 
 export async function guardarDato(usuarioId, apartado, datos) {
   comprobarUsuario(usuarioId);
 
-  const referencia = collection(
-    db,
-    "usuarios",
-    usuarioId,
-    apartado
-  );
+  const referencia = collection(db, "usuarios", usuarioId, apartado);
 
   return await addDoc(referencia, {
     ...datos,
@@ -174,19 +155,12 @@ export async function guardarDato(usuarioId, apartado, datos) {
   });
 }
 
-// ======================================
 // OBTENER DATOS
-// ======================================
 
 export async function obtenerDatos(usuarioId, apartado) {
   comprobarUsuario(usuarioId);
 
-  const referencia = collection(
-    db,
-    "usuarios",
-    usuarioId,
-    apartado
-  );
+  const referencia = collection(db, "usuarios", usuarioId, apartado);
 
   const consulta = query(
     referencia,
@@ -201,28 +175,19 @@ export async function obtenerDatos(usuarioId, apartado) {
   }));
 }
 
-// ======================================
 // ELIMINAR DATOS
-// ======================================
 
 export async function eliminarDato(usuarioId, apartado, datoId) {
   comprobarUsuario(usuarioId);
 
   const referencia = doc(
-    db,
-    "usuarios",
-    usuarioId,
-    apartado,
-    datoId
+    db, "usuarios", usuarioId, apartado, datoId
   );
 
   return await deleteDoc(referencia);
 }
 
-// ======================================
 // GUARDAR PLAN SELECCIONADO
-// NO ACTIVA UNA SUSCRIPCIÓN
-// ======================================
 
 export async function guardarPlanSeleccionado(usuarioId, plan) {
   comprobarUsuario(usuarioId);
@@ -234,11 +199,7 @@ export async function guardarPlanSeleccionado(usuarioId, plan) {
   }
 
   const referencia = doc(
-    db,
-    "usuarios",
-    usuarioId,
-    "preferencias",
-    "plan"
+    db, "usuarios", usuarioId, "preferencias", "plan"
   );
 
   await setDoc(referencia, {
@@ -253,19 +214,13 @@ export async function guardarPlanSeleccionado(usuarioId, plan) {
   return true;
 }
 
-// ======================================
 // RECUPERAR PLAN SELECCIONADO
-// ======================================
 
 export async function obtenerPlanSeleccionado(usuarioId) {
   comprobarUsuario(usuarioId);
 
   const referencia = doc(
-    db,
-    "usuarios",
-    usuarioId,
-    "preferencias",
-    "plan"
+    db, "usuarios", usuarioId, "preferencias", "plan"
   );
 
   const resultado = await getDoc(referencia);
@@ -277,19 +232,14 @@ export async function obtenerPlanSeleccionado(usuarioId) {
   return resultado.data();
 }
 
-// ======================================
 // RECUPERAR PLAN REALMENTE ACTIVO
-// ======================================
 
 export async function obtenerPlanActivo(usuarioId) {
   comprobarUsuario(usuarioId);
 
+  // La ruta correcta es "suscripcion", en singular.
   const referencia = doc(
-    db,
-    "usuarios",
-    usuarioId,
-    "suscripciones",
-    "actual"
+    db, "usuarios", usuarioId, "suscripcion", "actual"
   );
 
   const resultado = await getDoc(referencia);
@@ -305,29 +255,28 @@ export async function obtenerPlanActivo(usuarioId) {
 
   const suscripcion = resultado.data();
 
+  const planesValidos = ["Basico", "Premium", "Familiar"];
+
   if (
-    suscripcion.estado !== "activo" ||
-    !["Premium", "Familiar"].includes(suscripcion.clave) ||
-    suscripcion.verificadoPorServidor !== true
+    suscripcion.estado === "activo" &&
+    planesValidos.includes(suscripcion.clave) &&
+    suscripcion.verificadoPorServidor === true
   ) {
-    return {
-      clave: "Basico",
-      nombre: "Básica",
-      estado: "activo",
-      origen: "plan_predeterminado"
-    };
+    return suscripcion;
   }
 
-  return suscripcion;
+  return {
+    clave: "Basico",
+    nombre: "Básica",
+    estado: "activo",
+    origen: "plan_predeterminado"
+  };
 }
 
-// ======================================
 // COMPROBAR PERMISOS
-// ======================================
 
 export async function comprobarPermiso(usuarioId, permiso) {
   const planActivo = await obtenerPlanActivo(usuarioId);
-
   const permisos = PERMISOS_PLAN[planActivo.clave];
 
   if (!permisos || typeof permisos[permiso] !== "boolean") {
@@ -337,9 +286,7 @@ export async function comprobarPermiso(usuarioId, permiso) {
   return permisos[permiso];
 }
 
-// ======================================
 // OBTENER TODOS LOS PERMISOS
-// ======================================
 
 export async function obtenerPermisosUsuario(usuarioId) {
   const planActivo = await obtenerPlanActivo(usuarioId);
@@ -347,22 +294,17 @@ export async function obtenerPermisosUsuario(usuarioId) {
   return {
     plan: planActivo.clave,
     nombre: planActivo.nombre,
-
     permisos: {
       ...PERMISOS_PLAN[planActivo.clave]
     },
-
     almacenamientoMB:
       PLANES[planActivo.clave].almacenamientoMB,
-
     miembros:
       PLANES[planActivo.clave].miembros
   };
 }
 
-// ======================================
 // COMPROBAR SI TIENE PREMIUM
-// ======================================
 
 export async function tienePremium(usuarioId) {
   const planActivo = await obtenerPlanActivo(usuarioId);
@@ -373,9 +315,7 @@ export async function tienePremium(usuarioId) {
   );
 }
 
-// ======================================
 // COMPROBAR SI TIENE PLAN FAMILIAR
-// ======================================
 
 export async function tienePlanFamiliar(usuarioId) {
   const planActivo = await obtenerPlanActivo(usuarioId);
@@ -383,8 +323,6 @@ export async function tienePlanFamiliar(usuarioId) {
   return planActivo.clave === "Familiar";
 }
 
-// ======================================
 // EXPORTAR APLICACIÓN
-// ======================================
 
 export default app;
