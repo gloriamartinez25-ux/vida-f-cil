@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -516,10 +517,11 @@ import {
   eliminarDato,
   obtenerPlanSeleccionado,
   obtenerPermisosUsuario
-} from "./firebase.js?v=3";
+} from "./firebase.js?v=4";
 
 import {
   doc,
+  getDoc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
@@ -726,27 +728,59 @@ async function actualizarPlanInicio(usuario) {
   const nombre = document.getElementById("planNombre");
   const precio = document.getElementById("planPrecio");
   const estado = document.getElementById("planEstado");
+
   nombre.textContent = "Consultando tu plan...";
   precio.textContent = "";
   estado.textContent = "";
 
   try {
-    const plan = await obtenerPlanSeleccionado(usuario.uid);
-    if (!plan) {
+    // Leer directamente el documento del usuario, donde el servidor
+    // guarda la suscripción verificada en suscripcion.actual.
+    const referenciaUsuario = doc(db, "usuarios", usuario.uid);
+    const documentoUsuario = await getDoc(referenciaUsuario);
+
+    if (!documentoUsuario.exists()) {
       nombre.textContent = "Todavía no has seleccionado ningún plan.";
       precio.textContent = "Puedes consultar las opciones disponibles.";
       return;
     }
-    nombre.textContent = "Plan " + (plan.nombre || "seleccionado");
-    precio.textContent = plan.precio || "";
-    estado.textContent = plan.estado === "seleccionado_sin_contratar"
-      ? "Seleccionado, pendiente de contratación."
-      : "Selección guardada.";
+
+    const datosUsuario = documentoUsuario.data();
+    const plan = datosUsuario?.suscripcion?.actual;
+
+    if (
+      !plan ||
+      plan.estado !== "activo" ||
+      plan.verificadoPorServidor !== true
+    ) {
+      nombre.textContent = "Todavía no has seleccionado ningún plan.";
+      precio.textContent = "Puedes consultar las opciones disponibles.";
+      return;
+    }
+
+    const nombresPlanes = {
+      Basico: "Básica",
+      Premium: "Premium",
+      Familiar: "Familiar"
+    };
+
+    nombre.textContent = "Plan " + (plan.nombre || nombresPlanes[plan.clave] || "activo");
+
+    if (plan.periodicidad === "pago_unico" || plan.clave === "Basico") {
+      precio.textContent = "Pago único · 0,99 €";
+    } else if (plan.clave === "Premium") {
+      precio.textContent = "3,99 € al mes";
+    } else if (plan.clave === "Familiar") {
+      precio.textContent = "5,99 € al mes";
+    }
+
+    estado.textContent = "✓ Plan activo y verificado.";
+
   } catch (error) {
-    console.error("Error consultando el plan:", error);
-    nombre.textContent = "No se ha podido consultar el plan.";
+    console.error("Error consultando la suscripción en Firebase:", error);
+    nombre.textContent = "No se ha podido consultar tu plan.";
     precio.textContent = "";
-    estado.textContent = "Puedes revisarlo desde Planes y precios.";
+    estado.textContent = "Comprueba tu conexión e inténtalo de nuevo.";
   }
 }
 
