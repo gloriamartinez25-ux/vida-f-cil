@@ -232,12 +232,52 @@ export async function guardarPlanSeleccionado(usuarioId, plan) {
   return true;
 }
 
-// RECUPERAR PLAN SELECCIONADO
+// RECUPERAR PLAN SELECCIONADO O CONTRATADO
 
 export async function obtenerPlanSeleccionado(usuarioId) {
   comprobarUsuario(usuarioId);
 
-  const referencia = doc(
+  // PRIMERO: consultar la suscripción real del usuario.
+
+  const referenciaUsuario = doc(
+    db,
+    "usuarios",
+    usuarioId
+  );
+
+  const resultadoUsuario = await getDoc(referenciaUsuario);
+
+  if (resultadoUsuario.exists()) {
+    const datosUsuario = resultadoUsuario.data();
+
+    const suscripcion = datosUsuario?.suscripcion?.actual;
+
+    // Si el servidor ha confirmado el pago,
+    // mostrar el plan realmente contratado.
+
+    if (
+      suscripcion &&
+      suscripcion.estado === "activo" &&
+      ["Basico", "Premium", "Familiar"].includes(suscripcion.clave) &&
+      suscripcion.verificadoPorServidor === true
+    ) {
+      const configuracion = PLANES[suscripcion.clave];
+
+      return {
+        ...suscripcion,
+        nombre: configuracion.nombre,
+        precio: configuracion.precio,
+        periodicidad: configuracion.periodicidad,
+        almacenamientoMB: configuracion.almacenamientoMB,
+        miembros: configuracion.miembros
+      };
+    }
+  }
+
+  // SEGUNDO: si no hay una suscripción confirmada,
+  // consultar el plan que el usuario había seleccionado.
+
+  const referenciaPlan = doc(
     db,
     "usuarios",
     usuarioId,
@@ -245,13 +285,13 @@ export async function obtenerPlanSeleccionado(usuarioId) {
     "plan"
   );
 
-  const resultado = await getDoc(referencia);
+  const resultadoPlan = await getDoc(referenciaPlan);
 
-  if (!resultado.exists()) {
+  if (!resultadoPlan.exists()) {
     return null;
   }
 
-  return resultado.data();
+  return resultadoPlan.data();
 }
 
 // RECUPERAR PLAN REALMENTE ACTIVO
@@ -259,7 +299,6 @@ export async function obtenerPlanSeleccionado(usuarioId) {
 export async function obtenerPlanActivo(usuarioId) {
   comprobarUsuario(usuarioId);
 
-  // La suscripción está dentro del documento del usuario.
   const referencia = doc(
     db,
     "usuarios",
@@ -274,7 +313,6 @@ export async function obtenerPlanActivo(usuarioId) {
 
   const datosUsuario = resultado.data();
 
-  // Leer el campo suscripcion y, dentro de él, actual.
   const suscripcion = datosUsuario?.suscripcion?.actual;
 
   if (
