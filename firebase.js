@@ -64,7 +64,7 @@ export const PLANES = {
   }
 };
 
-// FUNCIONES DISPONIBLES POR PLAN
+// PERMISOS DE LOS PLANES
 
 export const PERMISOS_PLAN = {
   Basico: {
@@ -147,7 +147,12 @@ function comprobarUsuario(usuarioId) {
 export async function guardarDato(usuarioId, apartado, datos) {
   comprobarUsuario(usuarioId);
 
-  const referencia = collection(db, "usuarios", usuarioId, apartado);
+  const referencia = collection(
+    db,
+    "usuarios",
+    usuarioId,
+    apartado
+  );
 
   return await addDoc(referencia, {
     ...datos,
@@ -160,7 +165,12 @@ export async function guardarDato(usuarioId, apartado, datos) {
 export async function obtenerDatos(usuarioId, apartado) {
   comprobarUsuario(usuarioId);
 
-  const referencia = collection(db, "usuarios", usuarioId, apartado);
+  const referencia = collection(
+    db,
+    "usuarios",
+    usuarioId,
+    apartado
+  );
 
   const consulta = query(
     referencia,
@@ -181,7 +191,11 @@ export async function eliminarDato(usuarioId, apartado, datoId) {
   comprobarUsuario(usuarioId);
 
   const referencia = doc(
-    db, "usuarios", usuarioId, apartado, datoId
+    db,
+    "usuarios",
+    usuarioId,
+    apartado,
+    datoId
   );
 
   return await deleteDoc(referencia);
@@ -199,7 +213,11 @@ export async function guardarPlanSeleccionado(usuarioId, plan) {
   }
 
   const referencia = doc(
-    db, "usuarios", usuarioId, "preferencias", "plan"
+    db,
+    "usuarios",
+    usuarioId,
+    "preferencias",
+    "plan"
   );
 
   await setDoc(referencia, {
@@ -220,7 +238,11 @@ export async function obtenerPlanSeleccionado(usuarioId) {
   comprobarUsuario(usuarioId);
 
   const referencia = doc(
-    db, "usuarios", usuarioId, "preferencias", "plan"
+    db,
+    "usuarios",
+    usuarioId,
+    "preferencias",
+    "plan"
   );
 
   const resultado = await getDoc(referencia);
@@ -237,29 +259,28 @@ export async function obtenerPlanSeleccionado(usuarioId) {
 export async function obtenerPlanActivo(usuarioId) {
   comprobarUsuario(usuarioId);
 
-  // La ruta correcta es "suscripcion", en singular.
+  // La suscripción está dentro del documento del usuario.
   const referencia = doc(
-    db, "usuarios", usuarioId, "suscripcion", "actual"
+    db,
+    "usuarios",
+    usuarioId
   );
 
   const resultado = await getDoc(referencia);
 
   if (!resultado.exists()) {
-    return {
-      clave: "Basico",
-      nombre: "Básica",
-      estado: "activo",
-      origen: "plan_predeterminado"
-    };
+    throw new Error("No se encuentra el documento del usuario.");
   }
 
-  const suscripcion = resultado.data();
+  const datosUsuario = resultado.data();
 
-  const planesValidos = ["Basico", "Premium", "Familiar"];
+  // Leer el campo suscripcion y, dentro de él, actual.
+  const suscripcion = datosUsuario?.suscripcion?.actual;
 
   if (
+    suscripcion &&
     suscripcion.estado === "activo" &&
-    planesValidos.includes(suscripcion.clave) &&
+    ["Basico", "Premium", "Familiar"].includes(suscripcion.clave) &&
     suscripcion.verificadoPorServidor === true
   ) {
     return suscripcion;
@@ -277,6 +298,7 @@ export async function obtenerPlanActivo(usuarioId) {
 
 export async function comprobarPermiso(usuarioId, permiso) {
   const planActivo = await obtenerPlanActivo(usuarioId);
+
   const permisos = PERMISOS_PLAN[planActivo.clave];
 
   if (!permisos || typeof permisos[permiso] !== "boolean") {
@@ -294,11 +316,14 @@ export async function obtenerPermisosUsuario(usuarioId) {
   return {
     plan: planActivo.clave,
     nombre: planActivo.nombre,
+
     permisos: {
       ...PERMISOS_PLAN[planActivo.clave]
     },
+
     almacenamientoMB:
       PLANES[planActivo.clave].almacenamientoMB,
+
     miembros:
       PLANES[planActivo.clave].miembros
   };
