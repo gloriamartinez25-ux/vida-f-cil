@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -517,7 +516,7 @@ import {
   eliminarDato,
   obtenerPlanSeleccionado,
   obtenerPermisosUsuario
-} from "./firebase.js?v=4";
+} from "./firebase.js?v=5";
 
 import {
   doc,
@@ -732,41 +731,67 @@ async function actualizarPlanInicio(usuario) {
   nombre.textContent = "Consultando tu plan...";
   precio.textContent = "";
   estado.textContent = "";
+  estado.style.whiteSpace = "pre-line";
 
   try {
-    // Leer directamente el documento del usuario, donde el servidor
-    // guarda la suscripción verificada en suscripcion.actual.
     const referenciaUsuario = doc(db, "usuarios", usuario.uid);
     const documentoUsuario = await getDoc(referenciaUsuario);
 
     if (!documentoUsuario.exists()) {
-      nombre.textContent = "Todavía no has seleccionado ningún plan.";
-      precio.textContent = "Puedes consultar las opciones disponibles.";
+      nombre.textContent = "No se encuentra tu documento de usuario.";
+      precio.textContent = "No se ha modificado ningún dato.";
+      estado.textContent =
+        "DIAGNÓSTICO TEMPORAL\n" +
+        "Documento encontrado: NO\n" +
+        "Cuenta conectada (final del UID): " + String(usuario.uid).slice(-6) + "\n" +
+        "Ruta consultada: usuarios/" + String(usuario.uid).slice(0, 6) + "…";
+      console.warn("VIDA FÁCIL diagnóstico: documento de usuario no encontrado", usuario.uid);
       return;
     }
 
-    const datosUsuario = documentoUsuario.data();
-    const plan = datosUsuario?.suscripcion?.actual;
+    const datosUsuario = documentoUsuario.data() || {};
+    const suscripcionExiste = !!datosUsuario.suscripcion;
+    const plan = datosUsuario?.suscripcion?.actual || null;
+    const estadoPlan = plan?.estado ?? "(no encontrado)";
+    const verificado = plan?.verificadoPorServidor;
+    const clave = plan?.clave ?? "(no encontrada)";
 
-    if (
-      !plan ||
-      plan.estado !== "activo" ||
-      plan.verificadoPorServidor !== true
-    ) {
-      nombre.textContent = "Todavía no has seleccionado ningún plan.";
-      precio.textContent = "Puedes consultar las opciones disponibles.";
+    console.log("VIDA FÁCIL diagnóstico de suscripción", {
+      uidFinal: String(usuario.uid).slice(-6),
+      documentoEncontrado: true,
+      suscripcionExiste,
+      actualExiste: !!plan,
+      clave,
+      estado: estadoPlan,
+      verificadoPorServidor: verificado,
+      tipoVerificado: typeof verificado
+    });
+
+    if (!plan || estadoPlan !== "activo" || verificado !== true) {
+      nombre.textContent = "No se ha podido reconocer tu plan.";
+      precio.textContent = "El documento sí existe; revisaremos los valores que está leyendo.";
+      estado.textContent =
+        "DIAGNÓSTICO TEMPORAL\n" +
+        "Documento encontrado: SÍ\n" +
+        "Campo suscripcion: " + (suscripcionExiste ? "SÍ" : "NO") + "\n" +
+        "Campo suscripcion.actual: " + (plan ? "SÍ" : "NO") + "\n" +
+        "clave: " + String(clave) + "\n" +
+        "estado: " + String(estadoPlan) + "\n" +
+        "verificadoPorServidor: " + String(verificado) + " (tipo: " + typeof verificado + ")\n" +
+        "Cuenta conectada (final del UID): " + String(usuario.uid).slice(-6);
       return;
     }
 
     const nombresPlanes = {
       Basico: "Básica",
+      Basica: "Básica",
       Premium: "Premium",
       Familiar: "Familiar"
     };
 
     nombre.textContent = "Plan " + (plan.nombre || nombresPlanes[plan.clave] || "activo");
 
-    if (plan.periodicidad === "pago_unico" || plan.clave === "Basico") {
+    if (plan.periodicidad === "pago_unico" || plan.clave === "Basico" || plan.clave === "Basica") {
       precio.textContent = "Pago único · 0,99 €";
     } else if (plan.clave === "Premium") {
       precio.textContent = "3,99 € al mes";
@@ -774,13 +799,16 @@ async function actualizarPlanInicio(usuario) {
       precio.textContent = "5,99 € al mes";
     }
 
-    estado.textContent = "✓ Plan activo y verificado.";
+    estado.textContent = "✓ Plan activo y verificado.\nDiagnóstico temporal: documento y suscripción encontrados.";
 
   } catch (error) {
     console.error("Error consultando la suscripción en Firebase:", error);
     nombre.textContent = "No se ha podido consultar tu plan.";
-    precio.textContent = "";
-    estado.textContent = "Comprueba tu conexión e inténtalo de nuevo.";
+    precio.textContent = "Firebase ha devuelto un error.";
+    estado.textContent =
+      "DIAGNÓSTICO TEMPORAL\n" +
+      "Código: " + (error.code || "sin código") + "\n" +
+      "Detalle: " + (error.message || "sin detalle");
   }
 }
 
