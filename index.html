@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -361,7 +362,7 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
       <input id="archivoCopiaSeguridad" type="file" accept=".json,application/json" style="display:none">
     </div>
 
-    <p class="subtitulo">La copia se descarga en tu ordenador. Los archivos adjuntos se incluyen si están disponibles en este navegador. Para restaurarla, inicia sesión con la misma cuenta de VIDA FÁCIL.</p>
+    <p class="subtitulo">La copia se descarga en tu ordenador e incluye los adjuntos de la nube y los archivos antiguos que sigan disponibles en este navegador. Para restaurarla, inicia sesión con la misma cuenta de VIDA FÁCIL.</p>
     <p id="estadoCopiaSeguridad" class="estado" aria-live="polite"></p>
   </div>
 
@@ -483,7 +484,7 @@ footer {text-align:center;padding:25px;color:var(--suave);font-size:12px}
     <label for="documentoEnlace">Enlace al documento (opcional):</label>
     <input id="documentoEnlace" type="url" placeholder="https://...">
     <button class="accion" onclick="agregarDocumento()">Guardar documento</button>
-    <p class="subtitulo">Los datos se guardan en Firebase y el archivo adjunto se guarda en este dispositivo y navegador.</p>
+    <p class="subtitulo">Los datos se guardan en Firebase y los nuevos archivos adjuntos se guardan de forma privada en la nube.</p>
   </div>
   <div class="panel">
     <h2>Mis documentos guardados</h2>
@@ -531,6 +532,9 @@ import {
 let usuarioActual = null;
 let aplicacionLista = false;
 let permisoEstadisticas = false;
+
+// Almacenamiento privado de documentos en Backblaze mediante Cloudflare Worker.
+const WORKER_VIDA_FACIL = "https://restless-dust-14da.gloriamartinez25.workers.dev";
 
 let tareas = [];
 let recordatorios = [];
@@ -660,23 +664,82 @@ async function eliminarArchivoLocal(id) {
   });
 }
 
-async function abrirArchivo(id, nombre) {
-  if (!id) return;
+async function tokenSesionVidaFacil() {
+  if (!auth.currentUser) throw new Error("Tu sesión ha caducado. Vuelve a iniciar sesión.");
+  return await auth.currentUser.getIdToken();
+}
+
+async function llamadaAlmacenamiento(ruta, opciones = {}) {
+  const token = await tokenSesionVidaFacil();
+  const cabeceras = new Headers(opciones.headers || {});
+  cabeceras.set("Authorization", "Bearer " + token);
+  const respuesta = await fetch(WORKER_VIDA_FACIL + ruta, {
+    ...opciones,
+    headers: cabeceras
+  });
+  if (!respuesta.ok) {
+    let mensaje = "No se pudo completar la operación de almacenamiento.";
+    try {
+      const datos = await respuesta.clone().json();
+      if (datos.error) mensaje = datos.error;
+    } catch {
+      try { mensaje = (await respuesta.text()) || mensaje; } catch {}
+    }
+    throw new Error(mensaje + " (" + respuesta.status + ")");
+  }
+  return respuesta;
+}
+
+async function subirArchivoNube(archivo) {
+  const formulario = new FormData();
+  formulario.append("archivo", archivo, archivo.name);
+  const respuesta = await llamadaAlmacenamiento("/storage-upload", {
+    method: "POST",
+    body: formulario
+  });
+  const datos = await respuesta.json();
+  if (!datos.key) throw new Error("Backblaze no ha devuelto la referencia del archivo.");
+  return datos;
+}
+
+async function obtenerArchivoNube(storageKey) {
+  if (!storageKey) throw new Error("No se ha indicado el archivo que se quiere descargar.");
+  const respuesta = await llamadaAlmacenamiento("/storage-download?key=" + encodeURIComponent(storageKey));
+  return await respuesta.blob();
+}
+
+async function eliminarArchivoNube(storageKey) {
+  if (!storageKey) return;
+  await llamadaAlmacenamiento("/storage-delete", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({key:storageKey})
+  });
+}
+
+async function abrirArchivo(id, nombre, storageKey = "", tipo = "") {
+  if (!id && !storageKey) return;
   const ventana = window.open("about:blank", "_blank");
   try {
-    const registro = await obtenerArchivoLocal(id);
-    if (!registro || !registro.contenido) {
-      if (ventana) ventana.close();
-      alert("No se encuentra el archivo en este dispositivo.");
-      return;
+    let contenido;
+    let nombreFinal = nombre || "documento";
+    if (storageKey) {
+      contenido = await obtenerArchivoNube(storageKey);
+    } else {
+      const registro = await obtenerArchivoLocal(id);
+      if (!registro || !registro.contenido) {
+        throw new Error("No se encuentra el archivo antiguo en este dispositivo.");
+      }
+      contenido = registro.contenido;
+      nombreFinal = nombreFinal || registro.nombre || "documento";
     }
-    const url = URL.createObjectURL(registro.contenido);
+    const url = URL.createObjectURL(contenido);
     if (ventana) {
       ventana.location.href = url;
     } else {
       const enlace = document.createElement("a");
       enlace.href = url;
-      enlace.download = nombre || registro.nombre || "documento";
+      enlace.download = nombreFinal;
       document.body.appendChild(enlace);
       enlace.click();
       enlace.remove();
@@ -684,8 +747,8 @@ async function abrirArchivo(id, nombre) {
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   } catch (error) {
     if (ventana) ventana.close();
-    console.error(error);
-    alert("No se ha podido abrir el archivo.");
+    console.error("Error abriendo archivo adjunto:", error);
+    alert("No se ha podido abrir el archivo.\n\n" + (error.message || "Error desconocido"));
   }
 }
 
@@ -1293,12 +1356,18 @@ async function agregarDocumento() {
     }
   }
 
-  let archivoId = null;
+  let storageKey = "";
   try {
-    if (archivo) archivoId = await guardarArchivoLocal(archivo);
+    // Los archivos nuevos se suben primero a Backblaze. Los antiguos permanecen en IndexedDB.
+    if (archivo) {
+      const subida = await subirArchivoNube(archivo);
+      storageKey = subida.key;
+    }
 
     const datos = {
-      nombre,categoria,fecha,descripcion,enlace,archivoId,
+      nombre,categoria,fecha,descripcion,enlace,
+      archivoId:null,
+      storageKey,
       nombreArchivo:archivo ? archivo.name : "",
       tipoArchivo:archivo ? archivo.type : "",
       tamanoArchivo:archivo ? archivo.size : 0
@@ -1314,12 +1383,13 @@ async function agregarDocumento() {
     document.getElementById("documentoDescripcion").value = "";
     document.getElementById("documentoEnlace").value = "";
     campoArchivo.value = "";
-    alert("¡Documento guardado correctamente!");
+    alert("¡Documento guardado correctamente en la nube!");
   } catch (error) {
     console.error("Error guardando documento:", error);
-    if (archivoId) {
-      try { await eliminarArchivoLocal(archivoId); }
-      catch (errorLocal) { console.error("No se pudo retirar el archivo local:", errorLocal); }
+    // Si falló el guardado de sus datos después de subirlo, intentamos retirar el archivo huérfano.
+    if (storageKey) {
+      try { await eliminarArchivoNube(storageKey); }
+      catch (errorNube) { console.error("No se pudo retirar el archivo de Backblaze:", errorNube); }
     }
     alert("No se ha podido guardar el documento.\n\n" + (error.code || error.message || "Error desconocido"));
   }
@@ -1363,6 +1433,7 @@ async function editarDocumento(i) {
     nombre:nombre.trim(),categoria:categoriaFinal,fecha:fecha.trim(),
     descripcion:descripcion.trim(),enlace:enlace.trim(),
     archivoId:documento.archivoId || null,
+    storageKey:documento.storageKey || "",
     nombreArchivo:documento.nombreArchivo || "",
     tipoArchivo:documento.tipoArchivo || "",
     tamanoArchivo:documento.tamanoArchivo || 0
@@ -1394,6 +1465,8 @@ async function eliminarDocumento(i) {
   if (!confirm("¿Quieres eliminar este documento y su archivo adjunto?")) return;
 
   try {
+    // No quitamos la ficha de Firebase hasta confirmar que el archivo en la nube se ha eliminado.
+    if (documento.storageKey) await eliminarArchivoNube(documento.storageKey);
     if (documento.id) await eliminarDato(usuarioActual.uid, "documentos", documento.id);
     if (documento.archivoId) await eliminarArchivoLocal(documento.archivoId);
     documentos.splice(i, 1);
@@ -1443,16 +1516,22 @@ function mostrarDocumentos() {
       tarjeta.appendChild(descripcion);
     }
 
-    if (documento.archivoId) {
+    if (documento.archivoId || documento.storageKey) {
       const informacion = document.createElement("p");
       informacion.className = "archivo-info";
-      informacion.textContent = "📎 Archivo adjunto: " + (documento.nombreArchivo || "Archivo");
+      informacion.textContent = "📎 Archivo adjunto: " + (documento.nombreArchivo || "Archivo") +
+        (documento.storageKey ? " · Guardado en la nube" : " · Archivo de este dispositivo");
       tarjeta.appendChild(informacion);
 
       const botonArchivo = document.createElement("button");
       botonArchivo.className = "archivo-boton";
       botonArchivo.textContent = "Abrir archivo adjunto";
-      botonArchivo.onclick = () => abrirArchivo(documento.archivoId, documento.nombreArchivo);
+      botonArchivo.onclick = () => abrirArchivo(
+        documento.archivoId,
+        documento.nombreArchivo,
+        documento.storageKey || "",
+        documento.tipoArchivo || ""
+      );
 
       const accionesArchivo = document.createElement("div");
       accionesArchivo.className = "documento-acciones";
@@ -1527,22 +1606,36 @@ async function crearCopiaSeguridad() {
     const idsIncluidos = new Set();
 
     for (const documento of documentos) {
-      if (!documento.archivoId || idsIncluidos.has(documento.archivoId)) continue;
-      idsIncluidos.add(documento.archivoId);
-      const registro = await obtenerArchivoLocal(documento.archivoId);
+      const referenciaArchivo = documento.storageKey || documento.archivoId;
+      if (!referenciaArchivo || idsIncluidos.has(referenciaArchivo)) continue;
+      idsIncluidos.add(referenciaArchivo);
 
-      if (!registro || !registro.contenido) {
+      try {
+        let contenidoArchivo;
+        let nombreArchivo = documento.nombreArchivo || "archivo-adjunto";
+        let tipoArchivo = documento.tipoArchivo || "application/octet-stream";
+
+        if (documento.storageKey) {
+          contenidoArchivo = await obtenerArchivoNube(documento.storageKey);
+        } else {
+          const registro = await obtenerArchivoLocal(documento.archivoId);
+          if (!registro || !registro.contenido) throw new Error("Archivo local no encontrado");
+          contenidoArchivo = registro.contenido;
+          nombreArchivo = registro.nombre || nombreArchivo;
+          tipoArchivo = registro.tipo || tipoArchivo;
+        }
+
+        const contenido = await convertirArchivoABase64(contenidoArchivo);
+        archivos.push({
+          id:referenciaArchivo,
+          nombre:nombreArchivo,
+          tipo:tipoArchivo,
+          contenido
+        });
+      } catch (errorArchivo) {
+        console.warn("No se pudo incluir un archivo en la copia:", errorArchivo);
         faltantes.push(documento.nombreArchivo || documento.nombre || "Archivo sin nombre");
-        continue;
       }
-
-      const contenido = await convertirArchivoABase64(registro.contenido);
-      archivos.push({
-        id:documento.archivoId,
-        nombre:registro.nombre || documento.nombreArchivo || "archivo-adjunto",
-        tipo:registro.tipo || documento.tipoArchivo || "application/octet-stream",
-        contenido
-      });
     }
 
     const copia = {
@@ -1641,10 +1734,9 @@ async function restaurarCopiaSeguridad(evento) {
 
     for (const elemento of copia.archivos) {
       if (!elemento || !elemento.id || !elemento.contenido) continue;
-      const archivoId = "restaurado_" + usuarioActual.uid + "_" + copia.copiaId + "_" + elemento.id;
       const archivoRestaurado = convertirBase64AArchivo(elemento.contenido, elemento.nombre, elemento.tipo);
-      await guardarArchivoLocalConId(archivoRestaurado, archivoId);
-      mapaArchivos.set(elemento.id, archivoId);
+      const subida = await subirArchivoNube(archivoRestaurado);
+      mapaArchivos.set(elemento.id, subida.key);
     }
 
     let importados = 0;
@@ -1670,12 +1762,20 @@ async function restaurarCopiaSeguridad(evento) {
         }
 
         const datos = {...datosOriginales};
-        if (apartado === "documentos" && datos.archivoId) {
-          const nuevoArchivoId = mapaArchivos.get(datos.archivoId);
-          datos.archivoId = nuevoArchivoId || null;
-          if (!nuevoArchivoId) {
-            datos.tipoArchivo = "";
-            datos.tamanoArchivo = 0;
+        if (apartado === "documentos") {
+          const referenciaAntigua = datos.storageKey || datos.archivoId;
+          if (referenciaAntigua) {
+            const nuevaStorageKey = mapaArchivos.get(referenciaAntigua);
+            datos.storageKey = nuevaStorageKey || "";
+            datos.archivoId = null;
+            if (!nuevaStorageKey) {
+              datos.tipoArchivo = "";
+              datos.tamanoArchivo = 0;
+              datos.nombreArchivo = "";
+            }
+          } else {
+            datos.storageKey = "";
+            datos.archivoId = null;
           }
         }
 
